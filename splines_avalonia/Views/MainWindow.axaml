@@ -1,0 +1,50 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:splines_avalonia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="splines_avalonia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="splines_avalonia">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="400" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Привязка Canvas -->
+        <Canvas x:Name="GraphicHolder" Background="White" Grid.Column="0" />
+        
+        <Design.DataContext>
+            <vm:MainWindowViewModel/>
+        </Design.DataContext>
+
+        <Grid Grid.Column="1" Background="#1E1E1E">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Список функций и сплайнов -->
+            <Border Margin="10" Background="White" CornerRadius="4" BorderBrush="DarkGray" BorderThickness="1">
+                <ListBox>
+                    <ListBoxItem>Функция 1</ListBoxItem>
+                    <ListBoxItem>Сплайн A</ListBoxItem>
+                    <ListBoxItem>Функция 2</ListBoxItem>
+                </ListBox>
+            </Border>
+
+            <!-- Кнопки внизу -->
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
+                <Button Content="Добавить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnAddSpline"/>
+                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
