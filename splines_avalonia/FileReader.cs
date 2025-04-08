@@ -18,7 +18,7 @@ namespace splines_avalonia
                 throw new InvalidDataException("Недостаточно точек в файле.");
 
             if (lines.Length - 1 > numPoints)
-                Console.WriteLine($"Имеются избыточние точки в файле. Будут считаны только первые {numPoints} точек.");
+                Console.WriteLine($"Имеются лишние точки в файле. Будут считаны только первые {numPoints} точек.");
 
             Point[] controlPoints = new Point[numPoints];
             var format = CultureInfo.InvariantCulture;

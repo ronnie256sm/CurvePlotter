@@ -1,3 +1,5 @@
+using NCalc;
+
 namespace splines_avalonia
 {
     public class Point
@@ -16,6 +18,13 @@ namespace splines_avalonia
         string Type { get; }
         double[] Grid { get; }
         Point[] ControlPoints { get; }
+        Point[] OutputPoints { get; }
+    }
+
+    public interface IFunction
+    {
+        string FunctionString { get; }
+        Expression Function { get; }
         Point[] OutputPoints { get; }
     }
 
