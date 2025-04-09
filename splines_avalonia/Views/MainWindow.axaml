@@ -9,28 +9,25 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="splines_avalonia">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" /> <!-- Статус-бар -->
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <!-- Привязка Canvas -->
-        <Canvas x:Name="GraphicHolder" Background="White" Grid.Column="0" />
-        
-        <Design.DataContext>
-            <vm:MainWindowViewModel/>
-        </Design.DataContext>
+        <!-- Canvas -->
+        <Canvas x:Name="GraphicHolder" Background="White" Grid.Row="0" Grid.Column="0" />
 
-        <Grid Grid.Column="1" Background="#1E1E1E">
+        <!-- Правая панель -->
+        <Grid Grid.Row="0" Grid.Column="1" Background="#1E1E1E">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Список функций и сплайнов -->
             <Border Margin="10" Background="White" CornerRadius="4" BorderBrush="DarkGray" BorderThickness="1">
                 <ListBox>
                     <ListBoxItem>Функция 1</ListBoxItem>
@@ -39,12 +36,22 @@
                 </ListBox>
             </Border>
 
-            <!-- Кнопки внизу -->
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
-                <Button Content="Добавить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnAddSpline"/>
-                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button Content="Добавить" Height="40" FontSize="16" Click="OnAddSpline"/>
+                <Button Content="Редактировать" Height="40" FontSize="16" />
+                <Button Content="Удалить" Height="40" FontSize="16" />
             </StackPanel>
         </Grid>
+
+        <!-- Статус-бар -->
+        <TextBlock x:Name="StatusBar"
+                   Grid.ColumnSpan="2"
+                   Grid.Row="1"
+                   Padding="5"
+                   Background="#EEE"
+                   FontSize="14"
+                   Foreground="Black"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Center" />
     </Grid>
 </Window>

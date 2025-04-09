@@ -6,6 +6,8 @@ using System.Linq;
 using Avalonia.Controls.Shapes;
 using Avalonia;
 using System;
+using splines_avalonia.Views;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace splines_avalonia.ViewModels
 {
@@ -13,6 +15,7 @@ namespace splines_avalonia.ViewModels
     {
         public ObservableCollection<ISpline> SplineList { get; set; }
         public Canvas GraphicCanvas { get; set; }
+        private TextBlock _statusBar;
         private double _offsetX = 0;
         private double _offsetY = 0;
         private double _zoom = 50;
@@ -94,11 +97,9 @@ namespace splines_avalonia.ViewModels
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
-            // адаптивный шаг сетки на основе масштаба
             double[] baseSteps = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-            double step = baseSteps.First(s => s * _zoom >= 40); // минимум 40 пикселей между линиями
-
-            double labelStep = step;
+            double step = baseSteps.FirstOrDefault(s => s * _zoom >= 40);
+            if (step == 0) step = 1000;
 
             double startX = -(CenterX() + _offsetX) / _zoom;
             double endX = (width - CenterX() - _offsetX) / _zoom;
@@ -106,7 +107,6 @@ namespace splines_avalonia.ViewModels
             double startY = -(CenterY() + _offsetY) / _zoom;
             double endY = (height - CenterY() - _offsetY) / _zoom;
 
-            // Вертикальные линии и подписи по X
             for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
             {
                 double screenX = x * _zoom + CenterX() + _offsetX;
@@ -119,7 +119,7 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(x) > 1e-6) // исключаем 0.00 в центре
+                if (Math.Abs(x) > 1e-3)
                 {
                     var text = new TextBlock
                     {
@@ -133,10 +133,10 @@ namespace splines_avalonia.ViewModels
                 }
             }
 
-            // Горизонтальные линии и подписи по Y
             for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
             {
-                double screenY = -y * _zoom + CenterY() + _offsetY;
+                double screenY = y * _zoom + CenterY() + _offsetY;
+
                 var line = new Line
                 {
                     StartPoint = new Avalonia.Point(0, screenY),
@@ -146,11 +146,11 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(y) > 1e-6) // исключаем 0.00 в центре
+                if (Math.Abs(y) > 1e-3)
                 {
                     var text = new TextBlock
                     {
-                        Text = y.ToString("0.##"),
+                        Text = (-y).ToString("0.##"), // инверсия только для текста
                         Foreground = Brushes.Gray,
                         FontSize = 12
                     };
@@ -160,7 +160,6 @@ namespace splines_avalonia.ViewModels
                 }
             }
 
-            // Оси
             var xAxis = new Line
             {
                 StartPoint = new Avalonia.Point(0, CenterY() + _offsetY),
@@ -178,6 +177,25 @@ namespace splines_avalonia.ViewModels
                 StrokeThickness = 2
             };
             GraphicCanvas.Children.Add(yAxis);
+        }
+
+        public void UpdateStatusBar(Avalonia.Point mousePosition)
+        {
+            if (_statusBar == null)
+            {
+                if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                    desktop.MainWindow is MainWindow mainWindow)
+                {
+                    _statusBar = mainWindow.FindControl<TextBlock>("StatusBar");
+                }
+            }
+
+            if (_statusBar != null)
+            {
+                double x = (mousePosition.X - CenterX() - _offsetX) / _zoom;
+                double y = -(mousePosition.Y - CenterY() - _offsetY) / _zoom;
+                _statusBar.Text = $"X: {x:0.###}, Y: {y:0.###}";
+            }
         }
     }
 }

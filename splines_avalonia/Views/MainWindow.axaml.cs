@@ -52,9 +52,12 @@ public partial class MainWindow : Window
 
     private void OnMouseMove(object? sender, PointerEventArgs e)
     {
+        var pos = e.GetPosition(GraphicHolder);
+        _viewModel.UpdateStatusBar(pos);
+
         if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
         {
-            _viewModel.DoPan(e.GetPosition(this));
+            _viewModel.DoPan(pos);
         }
     }
 }
