@@ -13,10 +13,9 @@ namespace splines_avalonia.ViewModels
     {
         public ObservableCollection<ISpline> SplineList { get; set; }
         public Canvas GraphicCanvas { get; set; }
-
         private double _offsetX = 0;
         private double _offsetY = 0;
-        private double _zoom = 1;
+        private double _zoom = 50;
 
         private Avalonia.Point _lastPanPosition;
 
@@ -95,7 +94,7 @@ namespace splines_avalonia.ViewModels
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
-            // Адаптивный шаг сетки на основе масштаба
+            // адаптивный шаг сетки на основе масштаба
             double[] baseSteps = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
             double step = baseSteps.First(s => s * _zoom >= 40); // минимум 40 пикселей между линиями
 
