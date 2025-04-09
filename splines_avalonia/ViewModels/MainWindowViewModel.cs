@@ -92,14 +92,31 @@ namespace splines_avalonia.ViewModels
             DrawSplines();
         }
 
+        private double CalculateGridStep()
+        {
+            double minPixelStep = 40;
+            double targetStep = minPixelStep / _zoom;
+
+            // Получаем порядок величины, например для 0.123 → 0.1
+            double exponent = Math.Pow(10, Math.Floor(Math.Log10(targetStep)));
+            double[] mantissas = { 1, 2, 5 };
+
+            foreach (var m in mantissas)
+            {
+                double s = m * exponent;
+                if (s >= targetStep)
+                    return s;
+            }
+
+            return 10 * exponent; // fallback
+        }
+
         private void DrawGrid()
         {
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
-            double[] baseSteps = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000 };
-            double step = baseSteps.FirstOrDefault(s => s * _zoom >= 40);
-            if (step == 0) step = 1000;
+            double step = CalculateGridStep();
 
             double startX = -(CenterX() + _offsetX) / _zoom;
             double endX = (width - CenterX() - _offsetX) / _zoom;
@@ -119,11 +136,11 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(x) > 1e-3)
+                if (Math.Abs(x) > 1e-16)
                 {
                     var text = new TextBlock
                     {
-                        Text = x.ToString("0.##"),
+                        Text = x.ToString("G5"),
                         Foreground = Brushes.Gray,
                         FontSize = 12
                     };
@@ -146,11 +163,11 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(y) > 1e-3)
+                if (Math.Abs(y) > 1e-16)
                 {
                     var text = new TextBlock
                     {
-                        Text = (-y).ToString("0.##"), // инверсия только для текста
+                        Text = (-y).ToString("G5"), // инверсия только для текста
                         Foreground = Brushes.Gray,
                         FontSize = 12
                     };
