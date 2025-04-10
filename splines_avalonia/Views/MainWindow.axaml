@@ -47,8 +47,9 @@
         <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
-                    <RepeatButton Content="+" Width="30" Height="25" Click="OnZoomIn"/>
-                    <RepeatButton Content="−" Width="30" Height="25" Click="OnZoomOut"/>
+                    <Button Content="R" Width="30" Height="30" Click="OnResetPosition"/>
+                    <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn"/>
+                    <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut"/>
                 </StackPanel>
                 <TextBlock x:Name="StatusBar"
                         FontSize="14"

@@ -65,4 +65,9 @@ public partial class MainWindow : Window
     {
         _viewModel.ZoomOut();
     }
+
+    private void OnResetPosition(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ResetPosition();
+    }
 }

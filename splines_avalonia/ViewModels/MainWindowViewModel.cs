@@ -19,7 +19,7 @@ namespace splines_avalonia.ViewModels
         private double _offsetX = 0;
         private double _offsetY = 0;
         private double _zoom = 50;
-        private double _fixedCenterX = 400; // Пример — можно позже инициализировать из размеров Canvas
+        private double _fixedCenterX = 400;
         private double _fixedCenterY = 300;
 
         private Avalonia.Point _lastPanPosition;
@@ -155,18 +155,16 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(x) > 1e-16)
+                string labelText = Math.Abs(x) < 1e-6 ? "0" : x.ToString("G5");
+                var text = new TextBlock
                 {
-                    var text = new TextBlock
-                    {
-                        Text = x.ToString("G5"),
-                        Foreground = Brushes.Gray,
-                        FontSize = 12
-                    };
-                    Canvas.SetLeft(text, screenX + 2);
-                    Canvas.SetTop(text, CenterY() + _offsetY + 2);
-                    GraphicCanvas.Children.Add(text);
-                }
+                    Text = labelText,
+                    Foreground = Brushes.Gray,
+                    FontSize = 12
+                };
+                Canvas.SetLeft(text, screenX + 2);
+                Canvas.SetTop(text, CenterY() + _offsetY + 2);
+                GraphicCanvas.Children.Add(text);
             }
 
             for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
@@ -182,18 +180,16 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(line);
 
-                if (Math.Abs(y) > 1e-16)
+                string labelText = Math.Abs(y) < 1e-6 ? "0" : (-y).ToString("G5");
+                var text = new TextBlock
                 {
-                    var text = new TextBlock
-                    {
-                        Text = (-y).ToString("G5"), // инверсия только для текста
-                        Foreground = Brushes.Gray,
-                        FontSize = 12
-                    };
-                    Canvas.SetLeft(text, CenterX() + _offsetX + 2);
-                    Canvas.SetTop(text, screenY + 2);
-                    GraphicCanvas.Children.Add(text);
-                }
+                    Text = labelText,
+                    Foreground = Brushes.Gray,
+                    FontSize = 12
+                };
+                Canvas.SetLeft(text, CenterX() + _offsetX + 2);
+                Canvas.SetTop(text, screenY + 2);
+                GraphicCanvas.Children.Add(text);
             }
 
             var xAxis = new Line
@@ -232,6 +228,14 @@ namespace splines_avalonia.ViewModels
                 double y = -(mousePosition.Y - CenterY() - _offsetY) / _zoom;
                 _statusBar.Text = $"X: {x:0.###}, Y: {y:0.###}";
             }
+        }
+
+        public void ResetPosition()
+        {
+            _offsetX = 0;
+            _offsetY = 0;
+            _zoom = 50;
+            DrawSplines();
         }
     }
 }
