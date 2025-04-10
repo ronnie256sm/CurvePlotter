@@ -14,6 +14,7 @@ namespace splines_avalonia.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         public ObservableCollection<ISpline> SplineList { get; set; }
+        public ObservableCollection<IFunction> FunctionList { get; set; }
         public Canvas GraphicCanvas { get; set; }
         private TextBlock _statusBar;
         private double _offsetX = 0;
@@ -27,53 +28,62 @@ namespace splines_avalonia.ViewModels
         public MainWindowViewModel()
         {
             SplineList = new ObservableCollection<ISpline>();
+            FunctionList = new ObservableCollection<IFunction>();
         }
 
         public void ZoomIn()
         {
             HandleZoom(1);
-            DrawSplines();
+            DrawCurves();
         }
 
         public void ZoomOut()
         {
             HandleZoom(-1);
-            DrawSplines();
+            DrawCurves();
         }
 
         public void MoveLeft()
         {
             _offsetX += 10;
-            DrawSplines();
+            DrawCurves();
         }
 
         public void MoveRight()
         {
             _offsetX -= 10;
-            DrawSplines();
+            DrawCurves();
         }
 
         public void MoveUp()
         {
             _offsetY += 10;
-            DrawSplines();
+            DrawCurves();
         }
 
         public void MoveDown()
         {
             _offsetY -= 10;
-            DrawSplines();
+            DrawCurves();
         }
 
         public void AddSpline(string type, Point[] points, double[] grid)
         {
             var _splineLogic = new SplineLogic();
-            var spline = _splineLogic.Create(type, grid, points);
+            var spline = _splineLogic.CreateSpline(type, grid, points);
             SplineList.Add(spline);
-            DrawSplines();
+            DrawCurves();
         }
 
-        public void DrawSplines()
+        public void AddFunction(string function)
+        {
+            var _functionLogic = new SplineLogic();
+            var _function = _functionLogic.CreateFunction(function);
+            FunctionList.Add(_function);
+            DrawCurves();
+        }
+
+        public void DrawCurves()
         {
             if (GraphicCanvas == null)
                 return;
@@ -82,6 +92,7 @@ namespace splines_avalonia.ViewModels
 
             DrawGrid();
 
+            // Отрисовываем сплайны
             foreach (var spline in SplineList)
             {
                 var points = spline.OutputPoints
@@ -102,6 +113,61 @@ namespace splines_avalonia.ViewModels
                     GraphicCanvas.Children.Add(line);
                 }
             }
+
+            // Отрисовываем функции
+            foreach (var function in FunctionList)
+            {
+                double width = GraphicCanvas.Bounds.Width;
+                double height = GraphicCanvas.Bounds.Height;
+
+                // Определяем начальные и конечные значения X
+                double startX = -(CenterX() + _offsetX) / _zoom;
+                double endX = (width - CenterX() - _offsetX) / _zoom;
+
+                // Шаг по оси X, который зависит от масштаба
+                double step = 1.0 / _zoom; // шаг в мировых координатах, соотносимый с пикселями
+
+                // Для хранения последней точки
+                Avalonia.Point? lastPoint = null;
+
+                // Идем по пикселям вдоль оси X только в пределах видимой области
+                for (double x = startX; x <= endX; x += step)
+                {
+                    // Вычисляем значение функции для данной точки x
+                    double y = function.CalculateFunctionValue(function.FunctionString, x);
+
+                    // Переводим мировые координаты в пиксели
+                    var screenPoint = new Avalonia.Point(
+                        (x * _zoom) + CenterX() + _offsetX,
+                        (-y * _zoom) + CenterY() + _offsetY
+                    );
+
+                    // Проверяем, что точка лежит в пределах видимой области графика
+                    if (screenPoint.Y >= 0 && screenPoint.Y <= height)
+                    {
+                        // Если это не первая точка, рисуем линию
+                        if (lastPoint != null)
+                        {
+                            var line = new Line
+                            {
+                                StartPoint = (Avalonia.Point)lastPoint,
+                                EndPoint = screenPoint,
+                                Stroke = Brushes.Black,
+                                StrokeThickness = 2
+                            };
+                            GraphicCanvas.Children.Add(line);
+                        }
+
+                        // Запоминаем текущую точку для рисования следующей линии
+                        lastPoint = screenPoint;
+                    }
+                    else
+                    {
+                        // Если точка выходит за пределы видимой области, сбрасываем lastPoint
+                        lastPoint = null;
+                    }
+                }
+            }
         }
 
         private double CenterX() => _fixedCenterX;
@@ -115,7 +181,7 @@ namespace splines_avalonia.ViewModels
         public void HandleZoom(double delta)
         {
             _zoom *= delta > 0 ? 1.1 : 0.9;
-            DrawSplines();
+            DrawCurves();
         }
 
         public void StartPan(Avalonia.Point point)
@@ -132,7 +198,7 @@ namespace splines_avalonia.ViewModels
             _offsetY += dy;
             _lastPanPosition = current;
 
-            DrawSplines();
+            DrawCurves();
         }
 
         private double CalculateGridStep()
@@ -259,7 +325,7 @@ namespace splines_avalonia.ViewModels
             _offsetX = 0;
             _offsetY = 0;
             _zoom = 50;
-            DrawSplines();
+            DrawCurves();
         }
     }
 }

@@ -24,13 +24,15 @@ namespace splines_avalonia
     public interface IFunction
     {
         string FunctionString { get; }
-        Expression Function { get; }
+        Expression FunctionExpression { get; }
         Point[] OutputPoints { get; }
+        public double CalculateFunctionValue(string functionString, double x);
     }
 
     public interface ILogic
     {
-        public ISpline Create(string type, double[] grid, Point[] controlPoints);
+        public ISpline CreateSpline(string type, double[] grid, Point[] controlPoints);
+        public IFunction CreateFunction(string FunctionString);
     }
 
     interface IGrid

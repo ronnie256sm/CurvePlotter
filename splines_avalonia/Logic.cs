@@ -4,7 +4,7 @@ namespace splines_avalonia
 {
     public class SplineLogic : ILogic
     {
-        public ISpline Create(string type, double[] grid, Point[] controlPoints)
+        public ISpline CreateSpline(string type, double[] grid, Point[] controlPoints)
         {
             return type switch
             {
@@ -12,6 +12,11 @@ namespace splines_avalonia
                 "Smoothing Cubic" => new SmoothingSpline(controlPoints, grid),
                 _ => throw new NotSupportedException($"Тип сплайна '{type}' не поддерживается.")
             };
+        }
+
+        public IFunction CreateFunction(string functionString)
+        {
+            return new Function(functionString);
         }
     }
 }
