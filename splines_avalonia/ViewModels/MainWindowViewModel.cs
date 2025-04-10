@@ -41,6 +41,30 @@ namespace splines_avalonia.ViewModels
             DrawSplines();
         }
 
+        public void MoveLeft()
+        {
+            _offsetX += 10;
+            DrawSplines();
+        }
+
+        public void MoveRight()
+        {
+            _offsetX -= 10;
+            DrawSplines();
+        }
+
+        public void MoveUp()
+        {
+            _offsetY += 10;
+            DrawSplines();
+        }
+
+        public void MoveDown()
+        {
+            _offsetY -= 10;
+            DrawSplines();
+        }
+
         public void AddSpline(string type, Point[] points, double[] grid)
         {
             var _splineLogic = new SplineLogic();

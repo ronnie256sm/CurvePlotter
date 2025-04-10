@@ -37,9 +37,9 @@
             </Border>
 
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
-                <Button Content="Добавить" Height="40" FontSize="16" Click="OnAddSpline"/>
-                <Button Content="Редактировать" Height="40" FontSize="16" />
-                <Button Content="Удалить" Height="40" FontSize="16" />
+                <Button Content="Добавить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnAddSpline"/>
+                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             </StackPanel>
         </Grid>
 
@@ -47,7 +47,11 @@
         <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
-                    <Button Content="R" Width="30" Height="30" Click="OnResetPosition"/>
+                    <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition"/>
+                    <RepeatButton Content="←" Width="30" Height="30" Click="OnMoveLeft"/>
+                    <RepeatButton Content="↓" Width="30" Height="30" Click="OnMoveDown"/>
+                    <RepeatButton Content="↑" Width="30" Height="30" Click="OnMoveUp"/>
+                    <RepeatButton Content="→" Width="30" Height="30" Click="OnMoveRight"/>
                     <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn"/>
                     <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut"/>
                 </StackPanel>

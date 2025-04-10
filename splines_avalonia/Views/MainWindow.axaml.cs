@@ -70,4 +70,24 @@ public partial class MainWindow : Window
     {
         _viewModel.ResetPosition();
     }
+
+    private void OnMoveLeft(object sender, RoutedEventArgs e)
+    {
+        _viewModel.MoveLeft();
+    }
+
+    private void OnMoveRight(object sender, RoutedEventArgs e)
+    {
+        _viewModel.MoveRight();
+    }
+
+    private void OnMoveUp(object sender, RoutedEventArgs e)
+    {
+        _viewModel.MoveUp();
+    }
+
+    private void OnMoveDown(object sender, RoutedEventArgs e)
+    {
+        _viewModel.MoveDown();
+    }
 }
