@@ -19,12 +19,26 @@ namespace splines_avalonia.ViewModels
         private double _offsetX = 0;
         private double _offsetY = 0;
         private double _zoom = 50;
+        private double _fixedCenterX = 400; // Пример — можно позже инициализировать из размеров Canvas
+        private double _fixedCenterY = 300;
 
         private Avalonia.Point _lastPanPosition;
 
         public MainWindowViewModel()
         {
             SplineList = new ObservableCollection<ISpline>();
+        }
+
+        public void ZoomIn()
+        {
+            HandleZoom(1);
+            DrawSplines();
+        }
+
+        public void ZoomOut()
+        {
+            HandleZoom(-1);
+            DrawSplines();
         }
 
         public void AddSpline(string type, Point[] points, double[] grid)
@@ -66,8 +80,13 @@ namespace splines_avalonia.ViewModels
             }
         }
 
-        private double CenterX() => GraphicCanvas.Bounds.Width / 2;
-        private double CenterY() => GraphicCanvas.Bounds.Height / 2;
+        private double CenterX() => _fixedCenterX;
+        private double CenterY() => _fixedCenterY;
+        public void SetInitialCenter(double x, double y)
+        {
+            _fixedCenterX = x;
+            _fixedCenterY = y;
+        }
 
         public void HandleZoom(double delta)
         {

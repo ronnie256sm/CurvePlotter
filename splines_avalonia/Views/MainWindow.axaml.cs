@@ -20,14 +20,14 @@ public partial class MainWindow : Window
         this.AddHandler(LoadedEvent, new EventHandler<RoutedEventArgs>(OnWindowLoaded), handledEventsToo: true);
 
         // События мыши
-        this.PointerWheelChanged += OnMouseWheel;
-        this.PointerMoved += OnMouseMove;
-        this.PointerPressed += OnMouseDown;
+        GraphicHolder.PointerPressed += OnMouseDown;
+        GraphicHolder.PointerMoved += OnMouseMove;
     }
 
     private void OnWindowLoaded(object sender, RoutedEventArgs e)
     {
         _viewModel.GraphicCanvas = GraphicHolder;
+        _viewModel.SetInitialCenter(GraphicHolder.Bounds.Width / 2, GraphicHolder.Bounds.Height / 2);
         _viewModel.DrawSplines();
     }
 
@@ -38,11 +38,6 @@ public partial class MainWindow : Window
         var grid = FileReader.ReadGrid("../../../mesh.txt");
 
         _viewModel.AddSpline(type, controlPoints, grid);
-    }
-
-    private void OnMouseWheel(object? sender, PointerWheelEventArgs e)
-    {
-        _viewModel.HandleZoom(e.Delta.Y);
     }
 
     private void OnMouseDown(object? sender, PointerPressedEventArgs e)
@@ -59,5 +54,15 @@ public partial class MainWindow : Window
         {
             _viewModel.DoPan(pos);
         }
+    }
+
+    private void OnZoomIn(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ZoomIn();
+    }
+
+    private void OnZoomOut(object sender, RoutedEventArgs e)
+    {
+        _viewModel.ZoomOut();
     }
 }

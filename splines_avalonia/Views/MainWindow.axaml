@@ -44,14 +44,17 @@
         </Grid>
 
         <!-- Статус-бар -->
-        <TextBlock x:Name="StatusBar"
-                   Grid.ColumnSpan="2"
-                   Grid.Row="1"
-                   Padding="5"
-                   Background="#EEE"
-                   FontSize="14"
-                   Foreground="Black"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Center" />
+        <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
+            <DockPanel LastChildFill="True">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
+                    <RepeatButton Content="+" Width="30" Height="25" Click="OnZoomIn"/>
+                    <RepeatButton Content="−" Width="30" Height="25" Click="OnZoomOut"/>
+                </StackPanel>
+                <TextBlock x:Name="StatusBar"
+                        FontSize="14"
+                        Foreground="White"
+                        VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>
