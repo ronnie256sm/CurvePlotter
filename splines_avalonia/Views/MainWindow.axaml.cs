@@ -47,6 +47,7 @@ public partial class MainWindow : Window
         _viewModel.AddFunction("sin(x)");
         _viewModel.AddFunction("x*cos(x)");
         _viewModel.AddFunction("pow(x,2)");
+        _viewModel.AddFunction("sin(x)+pow(sin(x),2)+lg(pow(x,3))+pow(log(x,3),4)");
     }
 
     private void OnMouseDown(object? sender, PointerPressedEventArgs e)

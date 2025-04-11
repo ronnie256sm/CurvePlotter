@@ -24,7 +24,6 @@ namespace splines_avalonia
     public interface IFunction
     {
         string FunctionString { get; }
-        Expression FunctionExpression { get; }
         Point[] OutputPoints { get; }
         public double CalculateFunctionValue(string functionString, double x);
     }
