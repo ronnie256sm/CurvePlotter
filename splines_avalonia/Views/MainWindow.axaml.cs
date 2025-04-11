@@ -17,7 +17,7 @@ public partial class MainWindow : Window
         _viewModel = new MainWindowViewModel();
         DataContext = _viewModel;
 
-        this.AddHandler(LoadedEvent, new EventHandler<RoutedEventArgs>(OnWindowLoaded), handledEventsToo: true);
+        this.AddHandler(LoadedEvent, new EventHandler<RoutedEventArgs>(InitializeWindow), handledEventsToo: true);
         this.SizeChanged += new EventHandler<SizeChangedEventArgs>(OnWindowLoaded);
 
         // События мыши
@@ -25,9 +25,14 @@ public partial class MainWindow : Window
         GraphicHolder.PointerMoved += OnMouseMove;
     }
 
-    private void OnWindowLoaded(object sender, RoutedEventArgs e)
+    private void InitializeWindow(object sender, RoutedEventArgs e)
     {
         _viewModel.GraphicCanvas = GraphicHolder;
+        OnWindowLoaded(sender, e);
+    }
+
+    private void OnWindowLoaded(object sender, RoutedEventArgs e)
+    {
         _viewModel.SetInitialCenter(GraphicHolder.Bounds.Width / 2, GraphicHolder.Bounds.Height / 2);
         _viewModel.DrawCurves();
     }
