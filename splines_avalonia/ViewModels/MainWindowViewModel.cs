@@ -89,28 +89,31 @@ namespace splines_avalonia.ViewModels
                 return;
 
             GraphicCanvas.Children.Clear();
-
             DrawGrid();
 
             // Отрисовываем сплайны
             foreach (var spline in SplineList)
             {
-                var points = spline.OutputPoints
-                    .Select(p => new Avalonia.Point(
-                        (p.X * _zoom) + CenterX() + _offsetX,
-                        (-p.Y * _zoom) + CenterY() + _offsetY))
-                    .ToArray();
+                var points = new Points();
 
-                for (int i = 0; i < points.Length - 1; i++)
+                foreach (var p in spline.OutputPoints)
                 {
-                    var line = new Line
+                    var screenPoint = new Avalonia.Point(
+                        (p.X * _zoom) + CenterX() + _offsetX,
+                        (-p.Y * _zoom) + CenterY() + _offsetY
+                    );
+                    points.Add(screenPoint);
+                }
+
+                if (points.Count >= 2)
+                {
+                    var polyline = new Polyline
                     {
-                        StartPoint = points[i],
-                        EndPoint = points[i + 1],
+                        Points = points,
                         Stroke = Brushes.Black,
                         StrokeThickness = 2
                     };
-                    GraphicCanvas.Children.Add(line);
+                    GraphicCanvas.Children.Add(polyline);
                 }
             }
 
@@ -120,7 +123,6 @@ namespace splines_avalonia.ViewModels
                 double width = GraphicCanvas.Bounds.Width;
                 double height = GraphicCanvas.Bounds.Height;
 
-                // Определяем начальные и конечные значения X
                 double startX = -(CenterX() + _offsetX) / _zoom;
                 double endX = (width - CenterX() - _offsetX) / _zoom;
 
@@ -128,45 +130,67 @@ namespace splines_avalonia.ViewModels
                 double visibleWidth = endX - startX;
                 double step = visibleWidth / maxPoints;
 
-                // Для хранения последней точки
-                Avalonia.Point? lastPoint = null;
+                var points = new Points();
 
-                // Идем по пикселям вдоль оси X только в пределах видимой области
                 for (double x = startX; x <= endX; x += step)
                 {
-                    // Вычисляем значение функции для данной точки x
                     double y = function.CalculateFunctionValue(function.FunctionString, x);
 
-                    // Переводим мировые координаты в пиксели
+                    if (double.IsNaN(y) || double.IsInfinity(y))
+                    {
+                        // Прерывание, если значение невалидно — начинаем новую полилинию
+                        if (points.Count >= 2)
+                        {
+                            var polyline = new Polyline
+                            {
+                                Points = new Points(points),
+                                Stroke = Brushes.Black,
+                                StrokeThickness = 2
+                            };
+                            GraphicCanvas.Children.Add(polyline);
+                        }
+
+                        points.Clear();
+                        continue;
+                    }
+
                     var screenPoint = new Avalonia.Point(
                         (x * _zoom) + CenterX() + _offsetX,
                         (-y * _zoom) + CenterY() + _offsetY
                     );
 
-                    // Проверяем, что точка лежит в пределах видимой области графика
                     if (screenPoint.Y >= 0 && screenPoint.Y <= height)
                     {
-                        // Если это не первая точка, рисуем линию
-                        if (lastPoint != null)
-                        {
-                            var line = new Line
-                            {
-                                StartPoint = (Avalonia.Point)lastPoint,
-                                EndPoint = screenPoint,
-                                Stroke = Brushes.Black,
-                                StrokeThickness = 2
-                            };
-                            GraphicCanvas.Children.Add(line);
-                        }
-
-                        // Запоминаем текущую точку для рисования следующей линии
-                        lastPoint = screenPoint;
+                        points.Add(screenPoint);
                     }
                     else
                     {
-                        // Если точка выходит за пределы видимой области, сбрасываем lastPoint
-                        lastPoint = null;
+                        // точка вне экрана — отрисовываем то, что уже есть
+                        if (points.Count >= 2)
+                        {
+                            var polyline = new Polyline
+                            {
+                                Points = new Points(points),
+                                Stroke = Brushes.Black,
+                                StrokeThickness = 2
+                            };
+                            GraphicCanvas.Children.Add(polyline);
+                        }
+
+                        points.Clear();
                     }
+                }
+
+                // добавляем последнюю часть, если она есть
+                if (points.Count >= 2)
+                {
+                    var polyline = new Polyline
+                    {
+                        Points = points,
+                        Stroke = Brushes.Black,
+                        StrokeThickness = 2
+                    };
+                    GraphicCanvas.Children.Add(polyline);
                 }
             }
         }
