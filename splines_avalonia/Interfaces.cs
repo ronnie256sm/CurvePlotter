@@ -34,16 +34,4 @@ namespace splines_avalonia
         public ISpline CreateSpline(string type, double[] grid, Point[] controlPoints);
         public IFunction CreateFunction(string FunctionString);
     }
-
-    interface IGrid
-    {
-        void Move(double x, double y);
-        void ScrollChanged(int delta);
-        double ScrollValue();
-        void DrawGrid();
-        void DrawGraphic(int step, double deltaX, double deltaY, double start, double end);
-        void UnselectGraph();
-        void RerenderGrid();
-        void RerenderGraphics();
-    }
 }
