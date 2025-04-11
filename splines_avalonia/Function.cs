@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NCalc;
 
 namespace splines_avalonia;
@@ -16,25 +17,31 @@ public class Function : IFunction
         double yValue = CalculateFunctionValue(functionString, xValue);
     }
 
+    Expression _cachedExpr;
+
     public double CalculateFunctionValue(string function, double x)
     {
+        Console.SetOut(TextWriter.Null);
         try
         {
-            function = function.Replace("sin", "Sin")
-                                .Replace("cos", "Cos")
-                                .Replace("tg", "Tan")
-                                .Replace("ln", "Ln")
-                                .Replace("log", "Log")
-                                .Replace("lg", "Log10")
-                                .Replace("pow", "Pow")
-                                .Replace("sqrt", "Sqrt")
-                                .Replace("exp", "Exp")
-                                .Replace("π", "3.1415926535897932");
+            if(_cachedExpr == null || function != FunctionString)
+            {
+                function = function.Replace("sin", "Sin")
+                                    .Replace("cos", "Cos")
+                                    .Replace("tg", "Tan")
+                                    .Replace("ln", "Ln")
+                                    .Replace("log", "Log")
+                                    .Replace("lg", "Log10")
+                                    .Replace("pow", "Pow")
+                                    .Replace("sqrt", "Sqrt")
+                                    .Replace("exp", "Exp")
+                                    .Replace("π", "3.1415926535897932");
 
-            ValidateFunctionArguments(function);
-            Expression expression = new Expression(function);
-            expression.Parameters["x"] = x;
-            return Convert.ToSingle(expression.Evaluate());
+                ValidateFunctionArguments(function);
+                _cachedExpr = new Expression(function);
+            }
+            _cachedExpr.Parameters["x"] = x;
+            return Convert.ToSingle(_cachedExpr.Evaluate());
         }
         catch
         {

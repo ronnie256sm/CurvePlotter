@@ -124,8 +124,9 @@ namespace splines_avalonia.ViewModels
                 double startX = -(CenterX() + _offsetX) / _zoom;
                 double endX = (width - CenterX() - _offsetX) / _zoom;
 
-                // Шаг по оси X, который зависит от масштаба
-                double step = 1.0 / _zoom; // шаг в мировых координатах, соотносимый с пикселями
+                int maxPoints = 1000;
+                double visibleWidth = endX - startX;
+                double step = visibleWidth / maxPoints;
 
                 // Для хранения последней точки
                 Avalonia.Point? lastPoint = null;

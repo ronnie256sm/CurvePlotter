@@ -44,7 +44,7 @@ public partial class MainWindow : Window
         var grid = FileReader.ReadGrid("../../../mesh.txt");
 
         _viewModel.AddSpline(type, controlPoints, grid);
-        //_viewModel.AddFunction("sin(x)");
+        _viewModel.AddFunction("sin(x)");
     }
 
     private void OnMouseDown(object? sender, PointerPressedEventArgs e)

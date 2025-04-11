@@ -36,7 +36,7 @@ namespace splines_avalonia
 
             // Вычисление точек сплайна
             List<Point> output = new();
-            int numPoints = 100;
+            int numPoints = 20;
 
             for (int i = 0; i < n - 1; i++)
             {
