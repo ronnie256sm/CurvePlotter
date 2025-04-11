@@ -45,6 +45,8 @@ public partial class MainWindow : Window
 
         _viewModel.AddSpline(type, controlPoints, grid);
         _viewModel.AddFunction("sin(x)");
+        _viewModel.AddFunction("x*cos(x)");
+        _viewModel.AddFunction("pow(x,2)");
     }
 
     private void OnMouseDown(object? sender, PointerPressedEventArgs e)

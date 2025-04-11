@@ -126,7 +126,7 @@ namespace splines_avalonia.ViewModels
                 double startX = -(CenterX() + _offsetX) / _zoom;
                 double endX = (width - CenterX() - _offsetX) / _zoom;
 
-                int maxPoints = 1000;
+                int maxPoints = 2000;
                 double visibleWidth = endX - startX;
                 double step = visibleWidth / maxPoints;
 
