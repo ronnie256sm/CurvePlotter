@@ -9,12 +9,14 @@ using splines_avalonia;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Views;
+using System.Collections.Generic;
+using DynamicData;
 
 namespace splines_avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-       private Canvas _graphicCanvas;
+        private Canvas _graphicCanvas;
         private TextBlock _statusBar;
         private double _offsetX;
         private double _offsetY;
@@ -24,6 +26,12 @@ namespace splines_avalonia.ViewModels
         private Avalonia.Point _lastPanPosition;
 
         public ObservableCollection<ICurve> CurveList { get; } = new();
+        private ICurve? _selectedCurve;
+        public ICurve? SelectedCurve
+        {
+            get => _selectedCurve;
+            set => this.RaiseAndSetIfChanged(ref _selectedCurve, value);
+        }
         
         public Canvas GraphicCanvas
         {
@@ -33,19 +41,14 @@ namespace splines_avalonia.ViewModels
 
         public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
-        public ReactiveCommand<Unit, Unit> ZoomInCommand { get; }
-        public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
-        public ReactiveCommand<Unit, Unit> ResetPositionCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveLeftCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveRightCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveUpCommand { get; }
-        public ReactiveCommand<Unit, Unit> MoveDownCommand { get; }
+        public ReactiveCommand<Unit, Unit> DeleteCurveCommand { get; }
 
         public MainWindowViewModel()
         {
             // Initialize commands
             AddSplineCommand = ReactiveCommand.Create(AddSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
+            DeleteCurveCommand = ReactiveCommand.Create(DeleteSelectedCurve);
         }
 
         public void ZoomIn()
@@ -84,26 +87,56 @@ namespace splines_avalonia.ViewModels
             DrawCurves();
         }
 
-        private void AddSpline()
+        private async void AddFunction()
         {
-            string type = "Interpolating Cubic";
-            var controlPoints = FileReader.ReadPoints("../../../points.txt");
-            var grid = FileReader.ReadGrid("../../../mesh.txt");
+            var dialog = new FunctionInputDialog();
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            var splineLogic = new SplineLogic();
-            var spline = splineLogic.CreateCurve("Spline", type, null, grid, controlPoints);
-            CurveList.Add(spline);
+            var result = await dialog.ShowDialog<string>(mainWindow);
 
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                var logic = new SplineLogic();
+                var curve = logic.CreateCurve("Function", null, result, null, null);
+                CurveList.Add(curve);
+                DrawCurves();
+            }
+        }
+
+        private async void AddSpline()
+        {
+            var chooser = new AddCurveDialog();
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            var choice = await chooser.ShowDialog<AddCurveDialog.CurveType?>(mainWindow);
+
+            if (choice == null) return;
+
+            var inputDialog = new SplineInputDialog();
+            await inputDialog.ShowDialog(mainWindow);
+
+            var points = FileReader.ReadPoints(inputDialog.PointsFile);
+            double[] mesh = null;
+
+            if (choice == AddCurveDialog.CurveType.SmoothingSpline)
+            {
+                mesh = FileReader.ReadGrid(inputDialog.MeshFile);
+            }
+
+            string type = choice == AddCurveDialog.CurveType.InterpolatingSpline ? "Interpolating Cubic" : "Smoothing Cubic";
+            var logic = new SplineLogic();
+            var curve = logic.CreateCurve("Spline", type, null, mesh, points);
+            CurveList.Add(curve);
             DrawCurves();
         }
 
-        private void AddFunction()
+        private void DeleteSelectedCurve()
         {
-            string function = "sin(x)";
-            var functionLogic = new SplineLogic();
-            var func = functionLogic.CreateCurve("Function", null, function, null, null);
-            CurveList.Add(func);
-            DrawCurves();
+            if (SelectedCurve != null && CurveList.Contains(SelectedCurve))
+            {
+                CurveList.Remove(SelectedCurve);
+                SelectedCurve = null;
+                DrawCurves();
+            }
         }
         
         public void DrawCurves()

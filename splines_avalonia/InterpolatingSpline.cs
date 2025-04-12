@@ -14,11 +14,13 @@ namespace splines_avalonia
         public string SplineType => "Interpolating Cubic";
 
         public string Name { get; set; }
+        public bool IsVisible { get; set; }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
             ControlPoints = controlPoints;
             Name = SplineType;
+            IsVisible = true;
 
             int n = controlPoints.Length;
 

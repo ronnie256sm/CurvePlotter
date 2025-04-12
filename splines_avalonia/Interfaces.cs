@@ -22,6 +22,7 @@ namespace splines_avalonia
         double[] Grid { get; }
         Point[] ControlPoints { get; }
         Point[] OutputPoints { get; }
+        bool IsVisible { get; set; }
         public double CalculateFunctionValue(string functionString, double x);
     }
 

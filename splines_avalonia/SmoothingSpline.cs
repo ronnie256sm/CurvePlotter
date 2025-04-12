@@ -11,7 +11,7 @@ namespace splines_avalonia
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
         public string Name { get; set; }
-
+        public bool IsVisible { get; set; }
         public string FunctionString => throw new NotImplementedException();
 
         public string SplineType => "Smoothing Spline";
@@ -21,6 +21,7 @@ namespace splines_avalonia
             ControlPoints = controlPoints;
             Name = SplineType;
             Grid = grid;
+            IsVisible = true;
 
             var mesh = Grid;
             var points = ControlPoints;

@@ -13,12 +13,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         InitializeComponent();
         
-        // Упрощенная инициализация WhenActivated
-        this.WhenActivated(disposables => 
-        {
-            // Здесь можно регистрировать disposable объекты, если нужно
-        });
-        
+        DataContext = new MainWindowViewModel();
         this.AddHandler(LoadedEvent, InitializeWindow, handledEventsToo: true);
         this.SizeChanged += OnWindowLoaded;
 

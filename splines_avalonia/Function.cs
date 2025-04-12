@@ -17,7 +17,7 @@ public class Function : ICurve
     public string SplineType => null;
 
     public double[] Grid => null;
-
+    public bool IsVisible { get; set; }
     public Point[] ControlPoints => null;
 
     private Expression _cachedExpr;
@@ -27,6 +27,7 @@ public class Function : ICurve
     {
         FunctionString = functionString;
         Name = functionString; 
+        IsVisible = true;
         PrepareExpression(FunctionString);
     }
 
