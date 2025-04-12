@@ -1,14 +1,11 @@
 ﻿using System.Collections.ObjectModel;
 using Avalonia.Controls;
 using Avalonia.Media;
-using splines_avalonia;
-using System.Linq;
 using Avalonia.Controls.Shapes;
 using Avalonia;
 using System;
 using splines_avalonia.Views;
 using Avalonia.Controls.ApplicationLifetimes;
-using System.Reactive.Concurrency;
 
 namespace splines_avalonia.ViewModels
 {

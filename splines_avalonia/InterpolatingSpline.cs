@@ -18,7 +18,7 @@ namespace splines_avalonia
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
             ControlPoints = controlPoints;
-            Name = $"{SplineType}";
+            Name = SplineType;
 
             int n = controlPoints.Length;
 

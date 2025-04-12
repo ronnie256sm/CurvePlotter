@@ -26,7 +26,7 @@ public class Function : ICurve
     public Function(string functionString)
     {
         FunctionString = functionString;
-        Name = $"Function: {functionString}"; 
+        Name = functionString; 
         PrepareExpression(FunctionString);
     }
 

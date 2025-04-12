@@ -19,7 +19,7 @@ namespace splines_avalonia
         public SmoothingSpline(Point[] controlPoints, double[] grid)
         {
             ControlPoints = controlPoints;
-            Name = $"{SplineType}";
+            Name = SplineType;
             Grid = grid;
 
             var mesh = Grid;
