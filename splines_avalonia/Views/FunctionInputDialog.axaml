@@ -1,11 +1,137 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="splines_avalonia.Views.FunctionInputDialog"
-        Width="400" Height="200"
-        Title="Введите функцию">
-    <StackPanel Margin="20" Spacing="10">
-        <TextBlock Text="Введите выражение:"/>
-        <TextBox Name="FunctionInput"/>
-        <Button Content="OK" Click="OnOkClick"/>
-    </StackPanel>
+        Width="600" Height="600"
+        Title="Ввод функции"
+        CanResize="false">
+
+    <DockPanel Margin="10">
+
+        <!-- Верхняя часть для отображения выражения -->
+        <StackPanel DockPanel.Dock="Top" Spacing="10">
+            <TextBlock Text="Выражение:" FontWeight="Bold" FontSize="16"/>
+            <TextBox Name="FunctionDisplay" IsReadOnly="True" FontSize="18" Height="40" HorizontalAlignment="Stretch"/>
+        </StackPanel>
+
+        <!-- Панель кнопок с ScrollViewer -->
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="400">
+            <StackPanel Spacing="5">
+                <!-- Цифры и переменные (в два ряда) -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Ряд 1 -->
+                    <Button Content="1" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="2" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="3" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="4" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                    <Button Content="5" Click="OnInputClick" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Stretch"/>
+                    <Button Content="6" Click="OnInputClick" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Stretch"/>
+
+                    <!-- Ряд 2 -->
+                    <Button Content="7" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="8" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="9" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="0" Click="OnInputClick" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                    <Button Content="." Click="OnInputClick" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch"/>
+                    <Button Content="x" Click="OnInputClick" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <!-- Операции -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="+" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="-" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="*" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="/" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <!-- Функции (в два ряда) -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Ряд 1 -->
+                    <Button Content="pow(" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="sqrt(" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="sin(" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="cos(" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                    <Button Content="tg(" Click="OnInputClick" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Stretch"/>
+                    <Button Content="lg(" Click="OnInputClick" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Stretch"/>
+
+                    <!-- Ряд 2 -->
+                    <Button Content="ln(" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="log(" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="exp(" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <!-- Скобки -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="(" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content=")" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="," Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                </Grid>
+
+                <!-- Управление -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="Стереть всё" Click="OnClearAllClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="Стереть символ" Click="OnBackspaceClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- OK / Отмена -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,10,0,0">
+            <Button Content="OK" Width="120" Click="OnOkClick"/>
+            <Button Content="Отмена" Width="120" Click="OnCancelClick"/>
+        </StackPanel>
+
+    </DockPanel>
 </Window>
