@@ -1,31 +1,51 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Reactive;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Controls.Shapes;
+using ReactiveUI;
+using splines_avalonia;
 using Avalonia;
-using System;
-using splines_avalonia.Views;
 using Avalonia.Controls.ApplicationLifetimes;
+using splines_avalonia.Views;
 
 namespace splines_avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public ObservableCollection<ICurve> CurveList { get; set; }
-        public Canvas GraphicCanvas { get; set; }
+       private Canvas _graphicCanvas;
         private TextBlock _statusBar;
-        private double _offsetX = 0;
-        private double _offsetY = 0;
+        private double _offsetX;
+        private double _offsetY;
         private double _zoom = 50;
         private double _fixedCenterX = 400;
         private double _fixedCenterY = 300;
-
         private Avalonia.Point _lastPanPosition;
+
+        public ObservableCollection<ICurve> CurveList { get; } = new();
+        
+        public Canvas GraphicCanvas
+        {
+            get => _graphicCanvas;
+            set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
+        }
+
+        public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
+        public ReactiveCommand<Unit, Unit> ZoomInCommand { get; }
+        public ReactiveCommand<Unit, Unit> ZoomOutCommand { get; }
+        public ReactiveCommand<Unit, Unit> ResetPositionCommand { get; }
+        public ReactiveCommand<Unit, Unit> MoveLeftCommand { get; }
+        public ReactiveCommand<Unit, Unit> MoveRightCommand { get; }
+        public ReactiveCommand<Unit, Unit> MoveUpCommand { get; }
+        public ReactiveCommand<Unit, Unit> MoveDownCommand { get; }
 
         public MainWindowViewModel()
         {
-            CurveList = new ObservableCollection<ICurve>();
-            CurveList.Add(new Function("sin(x)") { Name = "Test Function" });
+            // Initialize commands
+            AddSplineCommand = ReactiveCommand.Create(AddSpline);
+            AddFunctionCommand = ReactiveCommand.Create(AddFunction);
         }
 
         public void ZoomIn()
@@ -64,19 +84,25 @@ namespace splines_avalonia.ViewModels
             DrawCurves();
         }
 
-        public void AddSpline(string type, Point[] points, double[] grid)
+        private void AddSpline()
         {
-            var _splineLogic = new SplineLogic();
-            var spline = _splineLogic.CreateCurve("Spline", type, null, grid, points);
+            string type = "Interpolating Cubic";
+            var controlPoints = FileReader.ReadPoints("../../../points.txt");
+            var grid = FileReader.ReadGrid("../../../mesh.txt");
+
+            var splineLogic = new SplineLogic();
+            var spline = splineLogic.CreateCurve("Spline", type, null, grid, controlPoints);
             CurveList.Add(spline);
+
             DrawCurves();
         }
 
-        public void AddFunction(string function)
+        private void AddFunction()
         {
-            var _functionLogic = new SplineLogic();
-            var _function = _functionLogic.CreateCurve("Function", null, function, null, null);
-            CurveList.Add(_function);
+            string function = "sin(x)";
+            var functionLogic = new SplineLogic();
+            var func = functionLogic.CreateCurve("Function", null, function, null, null);
+            CurveList.Add(func);
             DrawCurves();
         }
         

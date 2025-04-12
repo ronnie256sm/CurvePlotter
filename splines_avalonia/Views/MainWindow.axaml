@@ -11,17 +11,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" /> <!-- Статус-бар -->
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
 
-        <!-- Canvas -->
         <Canvas x:Name="GraphicHolder" Background="White" Grid.Row="0" Grid.Column="0" />
 
-        <!-- Правая панель -->
         <Grid Grid.Row="0" Grid.Column="1" Background="#1E1E1E">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
@@ -39,13 +37,13 @@
             </Border>
 
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
-                <Button Content="Добавить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnAddSpline"/>
-                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                <Button Content="Добавить сплайн" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddSplineCommand}"/>
+                <Button Content="Добавить функцию" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddFunctionCommand}"/>
+                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
         </Grid>
 
-        <!-- Статус-бар -->
         <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
@@ -57,10 +55,7 @@
                     <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn"/>
                     <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut"/>
                 </StackPanel>
-                <TextBlock x:Name="StatusBar"
-                        FontSize="14"
-                        Foreground="White"
-                        VerticalAlignment="Center" />
+                <TextBlock x:Name="StatusBar" FontSize="14" Foreground="White" VerticalAlignment="Center" />
             </DockPanel>
         </Border>
     </Grid>
