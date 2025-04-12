@@ -4,12 +4,17 @@ using System.Linq;
 
 namespace splines_avalonia
 {
-    public class SmoothingSpline : ISpline
+    public class SmoothingSpline : ICurve
     {
-        public string Type => "Smoothing Cubic";
+        public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public string FunctionString => throw new NotImplementedException();
+
+        public string SplineType => "Smoothing Spline";
 
         public SmoothingSpline(Point[] controlPoints, double[] grid)
         {
@@ -156,6 +161,11 @@ namespace splines_avalonia
                 result += slae.X[2 * elem + i] * Psi(i, t, h);
 
             return result;
+        }
+
+        public double CalculateFunctionValue(string functionString, double x)
+        {
+            throw new NotImplementedException();
         }
     }
 

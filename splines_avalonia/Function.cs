@@ -6,10 +6,19 @@ using NCalc;
 
 namespace splines_avalonia;
 
-public class Function : IFunction
+public class Function : ICurve
 {
     public string FunctionString { get; }
     public Point[] OutputPoints { get; }
+    public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public string Type => "Function";
+
+    public string SplineType => null;
+
+    public double[] Grid => null;
+
+    public Point[] ControlPoints => null;
 
     private Expression _cachedExpr;
     private bool _hasError = false;

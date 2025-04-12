@@ -13,6 +13,18 @@ namespace splines_avalonia
         }
     }
 
+    public interface ICurve
+    {
+        string Name { get; set; }
+        string Type { get; }
+        string FunctionString { get; }
+        string SplineType { get; }
+        double[] Grid { get; }
+        Point[] ControlPoints { get; }
+        Point[] OutputPoints { get; }
+        public double CalculateFunctionValue(string functionString, double x);
+    }
+
     public interface ISpline
     {
         string Type { get; }
@@ -30,7 +42,6 @@ namespace splines_avalonia
 
     public interface ILogic
     {
-        public ISpline CreateSpline(string type, double[] grid, Point[] controlPoints);
-        public IFunction CreateFunction(string FunctionString);
+        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints);
     }
 }

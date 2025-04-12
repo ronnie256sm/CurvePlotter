@@ -2,12 +2,18 @@ using System.Collections.Generic;
 
 namespace splines_avalonia
 {
-    public class CubicSpline : ISpline
+    public class CubicSpline : ICurve
     {
-        public string Type => "Interpolating Cubic";
+        public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
+
+        public string FunctionString => null;
+
+        public string SplineType => "Interpolating Cubic";
+
+        public string Name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
@@ -123,6 +129,11 @@ namespace splines_avalonia
                 x[i] = dPrime[i] - cPrime[i] * x[i + 1];
 
             return x;
+        }
+
+        public double CalculateFunctionValue(string functionString, double x)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
