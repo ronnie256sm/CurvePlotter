@@ -43,6 +43,7 @@ public partial class MainWindow : Window
         var controlPoints = FileReader.ReadPoints("../../../points.txt");
         var grid = FileReader.ReadGrid("../../../mesh.txt");
 
+        //_viewModel.CurveList.Add(new Function("sin(x)") { Name = "Test Function" });
         _viewModel.AddSpline(type, controlPoints, grid);
         _viewModel.AddFunction("sin(x)");
         _viewModel.AddFunction("x*cos(x)");

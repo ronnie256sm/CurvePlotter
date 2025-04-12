@@ -10,7 +10,7 @@ namespace splines_avalonia
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
-        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Name { get; set; }
 
         public string FunctionString => throw new NotImplementedException();
 
@@ -19,6 +19,7 @@ namespace splines_avalonia
         public SmoothingSpline(Point[] controlPoints, double[] grid)
         {
             ControlPoints = controlPoints;
+            Name = $"{SplineType}";
             Grid = grid;
 
             var mesh = Grid;

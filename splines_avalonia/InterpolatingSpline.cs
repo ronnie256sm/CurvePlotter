@@ -13,11 +13,12 @@ namespace splines_avalonia
 
         public string SplineType => "Interpolating Cubic";
 
-        public string Name { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public string Name { get; set; }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
             ControlPoints = controlPoints;
+            Name = $"{SplineType}";
 
             int n = controlPoints.Length;
 

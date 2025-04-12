@@ -8,6 +8,7 @@ using Avalonia;
 using System;
 using splines_avalonia.Views;
 using Avalonia.Controls.ApplicationLifetimes;
+using System.Reactive.Concurrency;
 
 namespace splines_avalonia.ViewModels
 {
@@ -27,6 +28,7 @@ namespace splines_avalonia.ViewModels
         public MainWindowViewModel()
         {
             CurveList = new ObservableCollection<ICurve>();
+            CurveList.Add(new Function("sin(x)") { Name = "Test Function" });
         }
 
         public void ZoomIn()
@@ -80,7 +82,7 @@ namespace splines_avalonia.ViewModels
             CurveList.Add(_function);
             DrawCurves();
         }
-
+        
         public void DrawCurves()
         {
             if (GraphicCanvas == null)

@@ -29,10 +29,12 @@
             </Grid.RowDefinitions>
 
             <Border Margin="10" Background="White" CornerRadius="4" BorderBrush="DarkGray" BorderThickness="1">
-                <ListBox>
-                    <ListBoxItem>Функция 1</ListBoxItem>
-                    <ListBoxItem>Сплайн A</ListBoxItem>
-                    <ListBoxItem>Функция 2</ListBoxItem>
+                <ListBox ItemsSource="{Binding CurveList}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
                 </ListBox>
             </Border>
 
