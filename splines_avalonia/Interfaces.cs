@@ -23,11 +23,12 @@ namespace splines_avalonia
         Point[] ControlPoints { get; }
         Point[] OutputPoints { get; }
         bool IsVisible { get; set; }
+        string SmoothingCoefficient { get; set; }
         public double CalculateFunctionValue(string functionString, double x);
     }
 
     public interface ILogic
     {
-        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints);
+        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficient);
     }
 }

@@ -20,6 +20,9 @@ namespace splines_avalonia
             if (lines.Length - 1 > numPoints)
                 Console.WriteLine($"Имеются лишние точки в файле. Будут считаны только первые {numPoints} точек.");
 
+            if (numPoints <= 3)
+                throw new InvalidDataException("Требуется как минимум 3 точки.");
+
             Point[] controlPoints = new Point[numPoints];
             var format = CultureInfo.InvariantCulture;
 

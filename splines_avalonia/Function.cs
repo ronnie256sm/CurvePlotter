@@ -11,6 +11,7 @@ public class Function : ICurve
     public string FunctionString { get; }
     public Point[] OutputPoints { get; }
     public string Name { get ; set ; }
+    public string SmoothingCoefficient { get; set; }
 
     public string Type => "Function";
 
@@ -25,6 +26,7 @@ public class Function : ICurve
 
     public Function(string functionString)
     {
+        SmoothingCoefficient = null;
         FunctionString = functionString;
         Name = functionString; 
         IsVisible = true;

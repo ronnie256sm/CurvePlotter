@@ -9,7 +9,7 @@ namespace splines_avalonia.Views;
 
 public partial class AddCurveDialog : Window
 {
-    public enum CurveType { Function, InterpolatingSpline, SmoothingSpline }
+    public enum CurveType { InterpolatingSpline, SmoothingSpline }
 
     public CurveType? Result { get; private set; }
 

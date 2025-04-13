@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="splines_avalonia.Views.SmoothingSplineInputDialog"
+        Width="400" Height="450"
+        Title="Введите файлы для сглаживающего сплайна">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
+            <TextBlock Text="Файл точек:"/>
+            <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="Файл сетки:"/>
+            <TextBox Name="MeshFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл сетки" Click="OnSelectMeshFileClick" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="Коэффициент сглаживания (бета):"/>
+            <TextBox Name="SmoothingFactorValue" HorizontalAlignment="Stretch"/>
+        </StackPanel>
+
+        <!-- Панель для кнопок OK и Отмена внизу -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
+            <Button Content="OK" Click="OnOkClick"/>
+            <Button Content="Отмена" Click="OnCancelClick"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

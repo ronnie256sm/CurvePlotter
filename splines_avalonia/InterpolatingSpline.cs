@@ -15,9 +15,11 @@ namespace splines_avalonia
 
         public string Name { get; set; }
         public bool IsVisible { get; set; }
+        public string SmoothingCoefficient { get; set; }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
+            SmoothingCoefficient = null;
             ControlPoints = controlPoints;
             Name = SplineType;
             IsVisible = true;

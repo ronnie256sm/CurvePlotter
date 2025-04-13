@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="splines_avalonia.Views.InterpolatingSplineInputDialog"
+        Width="400" Height="200"
+        Title="Введите файл для интерполяционного сплайна">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
+            <TextBlock Text="Файл точек:"/>
+            <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch"/>
+        </StackPanel>
+
+        <!-- Панель для кнопок OK и Отмена внизу -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
+            <Button Content="OK" Click="OnOkClick"/>
+            <Button Content="Отмена" Click="OnCancelClick"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

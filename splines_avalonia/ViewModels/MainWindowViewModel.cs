@@ -11,6 +11,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Views;
 using System.Collections.Generic;
 using DynamicData;
+using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels
 {
@@ -97,7 +98,7 @@ namespace splines_avalonia.ViewModels
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var logic = new SplineLogic();
-                var curve = logic.CreateCurve("Function", null, result, null, null);
+                var curve = logic.CreateCurve("Function", null, result, null, null, null);
                 CurveList.Add(curve);
                 DrawCurves();
             }
@@ -106,26 +107,86 @@ namespace splines_avalonia.ViewModels
         private async void AddSpline()
         {
             var chooser = new AddCurveDialog();
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Преобразуем в Window
             var choice = await chooser.ShowDialog<AddCurveDialog.CurveType?>(mainWindow);
 
-            if (choice == null) return;
+            if (choice == null) return; // Если не выбран тип кривой, выходим
 
-            var inputDialog = new SplineInputDialog();
-            await inputDialog.ShowDialog(mainWindow);
-
-            var points = FileReader.ReadPoints(inputDialog.PointsFile);
-            double[] mesh = null;
-
-            if (choice == AddCurveDialog.CurveType.SmoothingSpline)
+            // Создаем диалог для ввода данных в зависимости от типа кривой
+            Window inputDialog;
+            if (choice == AddCurveDialog.CurveType.InterpolatingSpline)
             {
-                mesh = FileReader.ReadGrid(inputDialog.MeshFile);
+                inputDialog = new InterpolatingSplineInputDialog();
+            }
+            else
+            {
+                inputDialog = new SmoothingSplineInputDialog();
             }
 
-            string type = choice == AddCurveDialog.CurveType.InterpolatingSpline ? "Interpolating Cubic" : "Smoothing Cubic";
+            await inputDialog.ShowDialog(mainWindow); // Передаем правильный тип: window
+
+            // Проверяем, был ли выбран файл точек
+            string pointsFile = null;
+            string smoothingCoefficient = null;
+            string meshFile = null;
+
+            // Обрабатываем диалог в зависимости от типа
+            if (inputDialog is InterpolatingSplineInputDialog interpolatingDialog)
+            {
+                pointsFile = interpolatingDialog.PointsFile;
+            }
+            else if (inputDialog is SmoothingSplineInputDialog smoothingDialog)
+            {
+                pointsFile = smoothingDialog.PointsFile;
+                smoothingCoefficient = smoothingDialog.SmoothingFactor;  // Получаем коэффициент сглаживания как строку
+                meshFile = smoothingDialog.MeshFile;
+            }
+
+            // Проверка, был ли закрыт диалог без нажатия "ОК"
+            if (inputDialog is InterpolatingSplineInputDialog interpolating && !interpolating.IsOkClicked)
+            {
+                return; // Закрытие окна без ошибок
+            }
+            if (inputDialog is SmoothingSplineInputDialog smoothing && !smoothing.IsOkClicked)
+            {
+                return; // Закрытие окна без ошибок
+            }
+
+            // Если файл точек не выбран, выходим
+            if (string.IsNullOrWhiteSpace(pointsFile))
+            {
+                var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
+                await ErrorHelper.ShowError(MainWindow, "Пожалуйста, выберите файл с точками.");
+                return;
+            }
+
+            // Чтение точек из файла
+            var points = FileReader.ReadPoints(pointsFile);
+            double[] mesh = null;
+
+            // Проверка на наличие файла сетки для сглаживающего сплайна
+            if (!string.IsNullOrWhiteSpace(meshFile))
+            {
+                mesh = FileReader.ReadGrid(meshFile);
+            }
+            else if (choice == AddCurveDialog.CurveType.SmoothingSpline)
+            {
+                var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
+                await ErrorHelper.ShowError(MainWindow, "Для сглаживающего сплайна необходимо выбрать файл сетки.");
+                return;
+            }
+
+            // Определяем тип сплайна
+            string type = choice == AddCurveDialog.CurveType.SmoothingSpline ? "Smoothing Cubic" : "Interpolating Cubic";
+
+            // Логика создания кривой
             var logic = new SplineLogic();
-            var curve = logic.CreateCurve("Spline", type, null, mesh, points);
+            var curve = logic.CreateCurve("Spline", type, null, mesh, points, smoothingCoefficient);
+            
+            // Добавляем кривую в список
             CurveList.Add(curve);
+
+            // Перерисовываем кривые
             DrawCurves();
         }
 
