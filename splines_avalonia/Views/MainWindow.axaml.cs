@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using splines_avalonia.Helpers;
 using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views;
@@ -86,5 +87,25 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     private void OnMoveDown(object sender, RoutedEventArgs e)
     {
         ViewModel.MoveDown();
+    }
+
+    private async void OnZoomCustom(object sender, RoutedEventArgs e)
+    {
+        var dialog = new ZoomInputDialog
+        {
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        var result = await dialog.ShowDialog<bool>(this);
+        if (!result) return;
+
+        if (double.TryParse(dialog.ScaleText, out double scale) && scale > 0)
+        {
+            ViewModel?.Scale(scale);
+        }
+        else
+        {
+            await ErrorHelper.ShowError(this, "Некорректный значение. Введите положительное число.");
+        }
     }
 }
