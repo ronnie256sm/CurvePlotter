@@ -105,7 +105,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
         else
         {
-            await ErrorHelper.ShowError(this, "Некорректный значение. Введите положительное число.");
+            await ErrorHelper.ShowError(this, "Некорректное значение. Введите положительное число.");
         }
     }
 }
