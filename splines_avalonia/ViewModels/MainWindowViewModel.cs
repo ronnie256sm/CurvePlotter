@@ -5,12 +5,9 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Controls.Shapes;
 using ReactiveUI;
-using splines_avalonia;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Views;
-using System.Collections.Generic;
-using DynamicData;
 using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels

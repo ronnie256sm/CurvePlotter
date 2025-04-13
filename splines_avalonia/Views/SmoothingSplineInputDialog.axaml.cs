@@ -2,7 +2,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
-using System.Threading.Tasks;
 using splines_avalonia.Helpers;
 
 namespace splines_avalonia.Views

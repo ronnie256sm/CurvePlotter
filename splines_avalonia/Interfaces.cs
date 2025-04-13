@@ -1,5 +1,3 @@
-using NCalc;
-
 namespace splines_avalonia
 {
     public class Point

@@ -1,9 +1,5 @@
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.ReactiveUI;
-using ReactiveUI;
-using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views;
 
