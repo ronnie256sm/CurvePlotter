@@ -13,8 +13,10 @@ namespace splines_avalonia
         public bool IsVisible { get; set; }
         public string SmoothingCoefficient { get; set; }
         private Function BetaFunction { get; set; }
+        public string ControlPointsFile { get; set; }
+        public string GridFile { get; set; }
 
-        public string SplineType => "Smoothing Spline";
+        public string SplineType => "Smoothing Cubic";
 
         public string FunctionString { get; set; }
 

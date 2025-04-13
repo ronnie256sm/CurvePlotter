@@ -39,7 +39,7 @@
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
                 <Button Content="Добавить сплайн" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddSplineCommand}"/>
                 <Button Content="Добавить функцию" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddFunctionCommand}"/>
-                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding EditFunctionCommand}"/>
+                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding EditCurveCommand}"/>
                 <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding DeleteCurveCommand}"/>
             </StackPanel>
         </Grid>

@@ -19,6 +19,13 @@ namespace splines_avalonia.Views
             InitializeComponent();
         }
 
+        public void SetInitialValues(string pointsPath, string meshPath, string smoothing)
+        {
+            PointsFilePath.Text = pointsPath;
+            MeshFilePath.Text = meshPath;
+            SmoothingFactorValue.Text = smoothing;
+        }
+
         // Выбор файла с точками
         private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)
         {

@@ -40,7 +40,7 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<Unit, Unit> DeleteCurveCommand { get; }
-        public ReactiveCommand<Unit, Unit> EditFunctionCommand { get; }
+        public ReactiveCommand<Unit, Unit> EditCurveCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -48,7 +48,7 @@ namespace splines_avalonia.ViewModels
             AddSplineCommand = ReactiveCommand.Create(AddSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             DeleteCurveCommand = ReactiveCommand.Create(DeleteSelectedCurve);
-            EditFunctionCommand = ReactiveCommand.Create(EditFunction);
+            EditCurveCommand = ReactiveCommand.Create(EditCurve);
         }
 
         public void ZoomIn()
@@ -199,15 +199,128 @@ namespace splines_avalonia.ViewModels
             // Определяем тип сплайна
             string type = choice == AddCurveDialog.CurveType.SmoothingSpline ? "Smoothing Cubic" : "Interpolating Cubic";
 
-            // Логика создания кривой
+            // Логика создания кривой с сохранением путей файлов
             var logic = new SplineLogic();
             var curve = logic.CreateCurve("Spline", type, null, mesh, points, smoothingCoefficient);
+            curve.ControlPointsFile = pointsFile;
+            curve.GridFile = meshFile;
             
             // Добавляем кривую в список
             CurveList.Add(curve);
 
             // Перерисовываем кривые
             DrawCurves();
+        }
+
+        private async void EditSpline()
+        {
+            if (SelectedCurve == null)
+                return;
+
+            var type = SelectedCurve.SplineType;
+
+            string newPointsFile = null;
+            string newMeshFile = null;
+            string newSmoothingFactor = null;
+
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+
+            // Проверка типа сплайна
+            if (type == "Interpolating Cubic")
+            {
+                var dialog = new InterpolatingSplineInputDialog();
+                
+                // Передаем текущий путь к файлу точек
+                if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
+                    dialog.SetInitialValues(spline.ControlPointsFile);
+
+                await dialog.ShowDialog(mainWindow);
+
+                if (!dialog.IsOkClicked)
+                    return;
+
+                newPointsFile = dialog.PointsFile;
+            }
+            else if (type == "Smoothing Cubic")
+            {
+                var dialog = new SmoothingSplineInputDialog();
+                
+                // Передаем текущие значения для путей файлов и коэффициента сглаживания
+                if (SelectedCurve is ICurve spline)
+                {
+                    dialog.SetInitialValues(
+                        spline.ControlPointsFile ?? "", 
+                        spline.GridFile ?? "", 
+                        spline.SmoothingCoefficient ?? ""
+                    );
+                }
+
+                await dialog.ShowDialog(mainWindow);
+
+                if (!dialog.IsOkClicked)
+                    return;
+
+                newPointsFile = dialog.PointsFile;
+                newMeshFile = dialog.MeshFile;
+                newSmoothingFactor = dialog.SmoothingFactor;
+            }
+            else
+            {
+                await ErrorHelper.ShowError(mainWindow, "Редактирование доступно только для сплайнов.");
+                return;
+            }
+
+            // Читаем новые точки и сетку
+            if (string.IsNullOrWhiteSpace(newPointsFile))
+            {
+                await ErrorHelper.ShowError(mainWindow, "Не выбран файл точек.");
+                return;
+            }
+
+            var newPoints = FileReader.ReadPoints(newPointsFile);
+            double[] newMesh = null;
+
+            if (type == "Smoothing Cubic")
+            {
+                if (string.IsNullOrWhiteSpace(newMeshFile))
+                {
+                    await ErrorHelper.ShowError(mainWindow, "Не выбран файл сетки.");
+                    return;
+                }
+                newMesh = FileReader.ReadGrid(newMeshFile);
+            }
+
+            // Пересоздаем кривую
+            var logic = new SplineLogic();
+            var newCurve = logic.CreateCurve("Spline", type, null, newMesh, newPoints, newSmoothingFactor);
+            newCurve.ControlPointsFile = newPointsFile;
+            newCurve.GridFile = newMeshFile;
+
+            // Заменяем в списке
+            int index = CurveList.IndexOf(SelectedCurve);
+            if (index >= 0)
+            {
+                CurveList[index] = newCurve;
+                DrawCurves(); // Обновляем отрисовку
+            }
+        }
+
+        private async void EditCurve()
+        {
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            
+            if (SelectedCurve != null && SelectedCurve.Type == "Function")
+            {
+                EditFunction();
+            }
+            if (SelectedCurve != null && SelectedCurve.Type == "Spline")
+            {
+                EditSpline();
+            }
+            if (SelectedCurve == null)
+            {
+                await ErrorHelper.ShowError(mainWindow, "Выберите кривую для редактирования");
+            }
         }
 
         private void DeleteSelectedCurve()

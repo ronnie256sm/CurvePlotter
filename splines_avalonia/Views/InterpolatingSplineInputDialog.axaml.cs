@@ -16,6 +16,11 @@ namespace splines_avalonia.Views
             InitializeComponent();
         }
 
+        public void SetInitialValues(string pointsPath)
+        {
+            PointsFilePath.Text = pointsPath;
+        }
+
         private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)
         {
             var desktop = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;

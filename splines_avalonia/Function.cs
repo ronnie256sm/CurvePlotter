@@ -44,6 +44,8 @@ public class Function : ICurve, INotifyPropertyChanged
 
     private Expression _cachedExpr;
     private bool _hasError = false;
+    public string ControlPointsFile { get; set; }
+    public string GridFile { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string propertyName)

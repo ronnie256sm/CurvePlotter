@@ -8,6 +8,8 @@ namespace splines_avalonia
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
+        public string ControlPointsFile { get; set; }
+        public string GridFile { get; set; }
 
         public string FunctionString { get; set; }
 
