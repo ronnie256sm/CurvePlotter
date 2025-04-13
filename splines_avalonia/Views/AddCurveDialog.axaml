@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="splines_avalonia.Views.AddCurveDialog"
         Width="300" Height="200"
-        Title="Выбор типа кривой"
+        Title="Выбор типа сплайна"
         CanResize="false">
     
     <StackPanel Margin="20" Spacing="10">

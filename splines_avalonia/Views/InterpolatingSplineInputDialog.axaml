@@ -2,7 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="splines_avalonia.Views.InterpolatingSplineInputDialog"
         Width="500" Height="200"
-        Title="Введите файл для интерполяционного сплайна"
+        Title="Выберите файлы для интерполяционного сплайна"
         CanResize="false">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
