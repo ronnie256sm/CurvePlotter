@@ -94,13 +94,19 @@ namespace splines_avalonia
                 double x = mesh[i];
                 double step = (mesh[i + 1] - mesh[i]) / 100.0;
 
-                for (int j = 0; j <= 100; ++j)
+                for (int j = 0; j < 100; ++j)
                 {
                     double y = Interpolate(slae, mesh, x);
                     output.Add(new Point(x, y));
                     x += step;
                 }
             }
+
+            // явно добавляем самую последнюю точку
+            double lastX = mesh[mesh.Length - 1];
+            double lastY = Interpolate(slae, mesh, lastX - 1e-10); // чуть меньше, чтобы не выйти за диапазон
+            output.Add(new Point(lastX, lastY));
+
             return output.ToArray();
         }
 
@@ -157,7 +163,7 @@ namespace splines_avalonia
         private static double Interpolate(SLAE slae, double[] mesh, double x)
         {
             int elem = 0;
-            while (elem < mesh.Length - 1 && x >= mesh[elem + 1])
+            while (elem < mesh.Length - 2 && x >= mesh[elem + 1])
                 elem++;
 
             double h = mesh[elem + 1] - mesh[elem];
