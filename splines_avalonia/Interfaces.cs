@@ -15,7 +15,7 @@ namespace splines_avalonia
     {
         string Name { get; set; }
         string Type { get; }
-        string FunctionString { get; }
+        string FunctionString { get; set; }
         string SplineType { get; }
         double[] Grid { get; }
         Point[] ControlPoints { get; }

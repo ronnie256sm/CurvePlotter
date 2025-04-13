@@ -1,15 +1,37 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using NCalc;
 
 namespace splines_avalonia;
 
-public class Function : ICurve
+public class Function : ICurve, INotifyPropertyChanged
 {
-    public string FunctionString { get; }
+    private string _functionString;
+    public string FunctionString
+    {
+        get => _functionString;
+        set
+        {
+            _functionString = value;
+            Name = value; // обновляем отображаемое имя
+            OnPropertyChanged(nameof(FunctionString));
+            OnPropertyChanged(nameof(Name));
+            PrepareExpression(value);
+        }
+    }
     public Point[] OutputPoints { get; }
-    public string Name { get ; set ; }
+    private string _name;
+    public string Name
+    {
+        get => _name;
+        set
+        {
+            _name = value;
+            OnPropertyChanged(nameof(Name));
+        }
+    }
     public string SmoothingCoefficient { get; set; }
 
     public string Type => "Function";
@@ -22,6 +44,10 @@ public class Function : ICurve
 
     private Expression _cachedExpr;
     private bool _hasError = false;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected void OnPropertyChanged(string propertyName)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     public Function(string functionString)
     {

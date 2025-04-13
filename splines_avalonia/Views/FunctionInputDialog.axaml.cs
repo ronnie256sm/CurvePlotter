@@ -14,6 +14,11 @@ namespace splines_avalonia.Views
             InitializeComponent();
         }
 
+        public void SetInitialFunction(string function)
+        {
+            FunctionDisplay.Text = function;
+        }
+
         private void OnInputClick(object? sender, RoutedEventArgs e)
         {
             if (sender is Button btn && FunctionDisplay != null)

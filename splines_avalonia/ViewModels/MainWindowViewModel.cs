@@ -40,6 +40,7 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<Unit, Unit> DeleteCurveCommand { get; }
+        public ReactiveCommand<Unit, Unit> EditFunctionCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -47,6 +48,7 @@ namespace splines_avalonia.ViewModels
             AddSplineCommand = ReactiveCommand.Create(AddSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             DeleteCurveCommand = ReactiveCommand.Create(DeleteSelectedCurve);
+            EditFunctionCommand = ReactiveCommand.Create(EditFunction);
         }
 
         public void ZoomIn()
@@ -101,10 +103,31 @@ namespace splines_avalonia.ViewModels
             }
         }
 
+        private async void EditFunction()
+        {
+            if (SelectedCurve is not ICurve selectedFunction)
+            {
+                await ErrorHelper.ShowError(null, "Выберите функцию для редактирования.");
+                return;
+            }
+
+            var dialog = new FunctionInputDialog();
+            dialog.SetInitialFunction(selectedFunction.FunctionString);
+
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+            var result = await dialog.ShowDialog<string>(mainWindow);
+
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                selectedFunction.FunctionString = result;
+                DrawCurves();
+            }
+        }
+
         private async void AddSpline()
         {
             var chooser = new AddCurveDialog();
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Преобразуем в Window
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow; // Преобразуем в Window
             var choice = await chooser.ShowDialog<AddCurveDialog.CurveType?>(mainWindow);
 
             if (choice == null) return; // Если не выбран тип кривой, выходим

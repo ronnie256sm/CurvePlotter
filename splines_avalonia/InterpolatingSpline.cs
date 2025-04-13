@@ -9,7 +9,7 @@ namespace splines_avalonia
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
 
-        public string FunctionString => null;
+        public string FunctionString { get; set; }
 
         public string SplineType => "Interpolating Cubic";
 

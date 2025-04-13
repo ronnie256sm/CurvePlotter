@@ -12,10 +12,11 @@ namespace splines_avalonia
         public string Name { get; set; }
         public bool IsVisible { get; set; }
         public string SmoothingCoefficient { get; set; }
-        public string FunctionString => throw new NotImplementedException();
         private Function BetaFunction { get; set; }
 
         public string SplineType => "Smoothing Spline";
+
+        public string FunctionString { get; set; }
 
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficient)
         {
