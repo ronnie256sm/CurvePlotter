@@ -34,6 +34,7 @@ namespace splines_avalonia
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public string SmoothingCoefficient { get; set; }
+        public bool IsPossible { get; set; }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
@@ -41,6 +42,7 @@ namespace splines_avalonia
             ControlPoints = controlPoints;
             Name = SplineType;
             IsVisible = true;
+            IsPossible = true;
 
             int n = controlPoints.Length;
 

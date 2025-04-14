@@ -27,6 +27,7 @@ namespace splines_avalonia
         bool IsVisible { get; set; }
         string SmoothingCoefficient { get; set; }
         public double CalculateFunctionValue(string functionString, double x);
+        bool IsPossible { get; set; }
     }
 
     public interface ILogic

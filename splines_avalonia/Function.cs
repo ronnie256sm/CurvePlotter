@@ -22,6 +22,7 @@ public class Function : ICurve
         }
     }
     public Point[] OutputPoints { get; }
+    public bool IsPossible { get; set; }
     private string _name;
     public string Name
     {

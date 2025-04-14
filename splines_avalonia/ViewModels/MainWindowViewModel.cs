@@ -135,7 +135,8 @@ namespace splines_avalonia.ViewModels
             {
                 var logic = new SplineLogic();
                 var curve = logic.CreateCurve("Function", null, result, null, null, null);
-                CurveList.Add(curve);
+                if (curve.IsPossible)
+                    CurveList.Add(curve);
                 DrawCurves();
             }
         }
@@ -243,7 +244,8 @@ namespace splines_avalonia.ViewModels
             curve.GridFile = meshFile;
             
             // Добавляем кривую в список
-            CurveList.Add(curve);
+            if (curve.IsPossible)
+                CurveList.Add(curve);
 
             // Перерисовываем кривые
             DrawCurves();
@@ -335,10 +337,15 @@ namespace splines_avalonia.ViewModels
 
             // Заменяем в списке
             int index = CurveList.IndexOf(SelectedCurve);
-            if (index >= 0)
+            if (index >= 0 && newCurve.IsPossible)
             {
                 CurveList[index] = newCurve;
                 DrawCurves(); // Обновляем отрисовку
+            }
+            if (index >= 0 && !newCurve.IsPossible)
+            {
+                CurveList.Remove(SelectedCurve);
+                DrawCurves();
             }
         }
 
@@ -381,7 +388,7 @@ namespace splines_avalonia.ViewModels
             // Отрисовываем кривые
             foreach (var curve in CurveList)
             {
-                if (curve.Type == "Spline" && curve.IsVisible)
+                if (curve.Type == "Spline" && curve.IsVisible && curve.IsPossible)
                 {
                     var points = new Points();
 
@@ -405,7 +412,7 @@ namespace splines_avalonia.ViewModels
                         GraphicCanvas.Children.Add(polyline);
                     }
                 }
-                if (curve.Type == "Function" && curve.IsVisible)
+                if (curve.Type == "Function" && curve.IsVisible && curve.IsPossible)
                 {
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;

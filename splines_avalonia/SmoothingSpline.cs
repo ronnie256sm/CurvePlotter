@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using splines_avalonia.Helpers;
 
 namespace splines_avalonia
 {
@@ -31,6 +36,7 @@ namespace splines_avalonia
         private Function BetaFunction { get; set; }
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
+        public bool IsPossible { get; set; }
 
         public string SplineType => "Smoothing Cubic";
 
@@ -38,6 +44,7 @@ namespace splines_avalonia
 
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficient)
         {
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             SmoothingCoefficient = smoothingCoefficient;
             BetaFunction = new Function(SmoothingCoefficient);
             ControlPoints = controlPoints;
@@ -58,7 +65,7 @@ namespace splines_avalonia
             BuildSLAE(slae, points, mesh, n_points, n_mesh, BetaFunction);
 
             // Решение СЛАУ
-            SolveSLAE(slae);
+            IsPossible = SolveSLAE(slae, mainWindow);
 
             // Вычисление точек сплайна
             OutputPoints = CalculateSplinePoints(mesh, slae);
@@ -97,10 +104,15 @@ namespace splines_avalonia
             }
         }
 
-        private static void SolveSLAE(SLAE slae)
+        private static bool SolveSLAE(SLAE slae, Window mainWindow)
         {
+            bool IsPossible = true;
             if (!slae.Solve())
-                throw new InvalidOperationException("Не удалось решить СЛАУ.");
+            {
+                ErrorHelper.ShowError(mainWindow, "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                IsPossible = false;
+            }
+            return IsPossible;
         }
 
         private static Point[] CalculateSplinePoints(double[] mesh, SLAE slae)
