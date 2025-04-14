@@ -21,6 +21,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -46,6 +47,9 @@
                     <Button Content="0" Click="OnInputClick" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch"/>
                     <Button Content="." Click="OnInputClick" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch"/>
                     <Button Content="x" Click="OnInputClick" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Stretch"/>
+
+                    <!-- Ряд 3 -->
+                    <Button Content="π" Click="OnInputClick" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch"/>
                 </Grid>
 
                 <!-- Операции -->

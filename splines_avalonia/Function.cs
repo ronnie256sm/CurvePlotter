@@ -108,8 +108,7 @@ public class Function : ICurve
                    .Replace("pow", "Pow")
                    .Replace("sqrt", "Sqrt")
                    .Replace("exp", "Exp")
-                   .Replace("π", "3.1415926535897932")
-                   .Replace("e", Math.E.ToString());
+                   .Replace("π", "3.1415926535897932");
     }
 
     public double CalculateFunctionValue(string function, double x)
