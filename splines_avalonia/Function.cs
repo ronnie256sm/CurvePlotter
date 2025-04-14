@@ -6,7 +6,7 @@ using NCalc;
 
 namespace splines_avalonia;
 
-public class Function : ICurve, INotifyPropertyChanged
+public class Function : ICurve
 {
     private string _functionString;
     public string FunctionString
