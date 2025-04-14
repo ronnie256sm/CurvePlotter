@@ -39,7 +39,19 @@ public class Function : ICurve, INotifyPropertyChanged
     public string SplineType => null;
 
     public double[] Grid => null;
-    public bool IsVisible { get; set; }
+    private bool _isVisible = true;
+    public bool IsVisible
+    {
+        get => _isVisible;
+        set
+        {
+            if (_isVisible != value)
+            {
+                _isVisible = value;
+                OnPropertyChanged(nameof(IsVisible));
+            }
+        }
+    }
     public Point[] ControlPoints => null;
 
     private Expression _cachedExpr;

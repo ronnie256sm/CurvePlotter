@@ -9,6 +9,8 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Views;
 using splines_avalonia.Helpers;
+using System.ComponentModel;
+using System.Collections.Specialized;
 
 namespace splines_avalonia.ViewModels
 {
@@ -49,6 +51,41 @@ namespace splines_avalonia.ViewModels
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             DeleteCurveCommand = ReactiveCommand.Create(DeleteSelectedCurve);
             EditCurveCommand = ReactiveCommand.Create(EditCurve);
+
+            CurveList.CollectionChanged += CurveList_CollectionChanged;
+        }
+
+        private void CurveList_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.NewItems != null)
+            {
+                foreach (ICurve curve in e.NewItems)
+                {
+                    if (curve is INotifyPropertyChanged npc)
+                    {
+                        npc.PropertyChanged += Curve_PropertyChanged;
+                    }
+                }
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (ICurve curve in e.OldItems)
+                {
+                    if (curve is INotifyPropertyChanged npc)
+                    {
+                        npc.PropertyChanged -= Curve_PropertyChanged;
+                    }
+                }
+            }
+        }
+
+        private void Curve_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ICurve.IsVisible))
+            {
+                DrawCurves();
+            }
         }
 
         public void ZoomIn()
@@ -344,7 +381,7 @@ namespace splines_avalonia.ViewModels
             // Отрисовываем кривые
             foreach (var curve in CurveList)
             {
-                if (curve.Type == "Spline")
+                if (curve.Type == "Spline" && curve.IsVisible)
                 {
                     var points = new Points();
 
@@ -368,7 +405,7 @@ namespace splines_avalonia.ViewModels
                         GraphicCanvas.Children.Add(polyline);
                     }
                 }
-                if (curve.Type == "Function")
+                if (curve.Type == "Function" && curve.IsVisible)
                 {
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;

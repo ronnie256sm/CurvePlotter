@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace splines_avalonia
 {
@@ -10,7 +11,22 @@ namespace splines_avalonia
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
         public string Name { get; set; }
-        public bool IsVisible { get; set; }
+        private bool _isVisible = true;
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set
+            {
+                if (_isVisible != value)
+                {
+                    _isVisible = value;
+                    OnPropertyChanged(nameof(IsVisible));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public string SmoothingCoefficient { get; set; }
         private Function BetaFunction { get; set; }
         public string ControlPointsFile { get; set; }

@@ -30,7 +30,10 @@
                 <ListBox ItemsSource="{Binding CurveList}" SelectedItem="{Binding SelectedCurve}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Spacing="8">
+                                <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

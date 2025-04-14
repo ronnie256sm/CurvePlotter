@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace splines_avalonia
 {
     public class Point
@@ -11,7 +13,7 @@ namespace splines_avalonia
         }
     }
 
-    public interface ICurve
+    public interface ICurve : INotifyPropertyChanged
     {
         string Name { get; set; }
         string Type { get; }
