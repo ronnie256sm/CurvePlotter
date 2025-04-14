@@ -66,6 +66,7 @@ public class Function : ICurve
 
     public Function(string functionString)
     {
+        IsPossible = true;
         SmoothingCoefficient = null;
         FunctionString = functionString;
         Name = functionString; 
