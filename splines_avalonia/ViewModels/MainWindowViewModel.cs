@@ -135,8 +135,7 @@ namespace splines_avalonia.ViewModels
             {
                 var logic = new SplineLogic();
                 var curve = logic.CreateCurve("Function", null, result, null, null, null);
-                if (curve.IsPossible)
-                    CurveList.Add(curve);
+                CurveList.Add(curve);
                 DrawCurves();
             }
         }
@@ -412,7 +411,7 @@ namespace splines_avalonia.ViewModels
                         GraphicCanvas.Children.Add(polyline);
                     }
                 }
-                if (curve.Type == "Function" && curve.IsVisible && curve.IsPossible)
+                if (curve.Type == "Function" && curve.IsVisible)
                 {
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;
