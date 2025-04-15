@@ -101,7 +101,7 @@ public class Function : ICurve
         return func.Replace("sin", "Sin")
                    .Replace("cos", "Cos")
                    .Replace("tg", "Tan")
-                   .Replace("tan", "Tan")
+                   .Replace("tg", "Tan")
                    .Replace("log", "Log")
                    .Replace("lg", "Log10")
                    .Replace("pow", "Pow")
@@ -208,7 +208,7 @@ public class Function : ICurve
         Console.SetOut(TextWriter.Null);
 
         string lowerFunc = func.ToLower();
-        string[] singleArg = { "sin", "cos", "tan", "tg", "sqrt", "lg", "exp" };
+        string[] singleArg = { "sin", "cos", "tg", "sqrt", "lg", "exp" };
         string[] doubleArg = { "pow", "log" };
 
         if (Array.Exists(singleArg, f => f == lowerFunc) && args != 1)
