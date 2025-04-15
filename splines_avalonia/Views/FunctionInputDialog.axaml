@@ -81,8 +81,6 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <!-- Ряд 1 -->
@@ -90,13 +88,12 @@
                     <Button Content="sqrt(" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
                     <Button Content="sin(" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
                     <Button Content="cos(" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"/>
-                    <Button Content="tg(" Click="OnInputClick" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Stretch"/>
-                    <Button Content="lg(" Click="OnInputClick" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Stretch"/>
 
                     <!-- Ряд 2 -->
-                    <Button Content="ln(" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
-                    <Button Content="log(" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
-                    <Button Content="exp(" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="tg(" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="lg(" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="log(" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="exp(" Click="OnInputClick" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch"/>
                 </Grid>
 
                 <!-- Скобки -->
