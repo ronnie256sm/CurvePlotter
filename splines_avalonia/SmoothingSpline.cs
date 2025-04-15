@@ -48,7 +48,7 @@ namespace splines_avalonia
             SmoothingCoefficient = smoothingCoefficient;
             BetaFunction = new Function(SmoothingCoefficient);
             ControlPoints = controlPoints;
-            Name = SplineType;
+            Name = "Сглаживающий сплайн";
             Grid = grid;
             IsVisible = true;
 

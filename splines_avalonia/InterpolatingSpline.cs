@@ -40,7 +40,7 @@ namespace splines_avalonia
         {
             SmoothingCoefficient = null;
             ControlPoints = controlPoints;
-            Name = SplineType;
+            Name = "Интерполяционный сплайн";
             IsVisible = true;
             IsPossible = true;
 
