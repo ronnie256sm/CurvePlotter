@@ -123,7 +123,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Button Content="Стереть всё" Click="OnClearAllClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
-                    <Button Content="Стереть символ" Click="OnBackspaceClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="Стереть последний символ" Click="OnBackspaceClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
                 </Grid>
             </StackPanel>
         </ScrollViewer>
