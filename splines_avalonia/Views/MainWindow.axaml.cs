@@ -17,6 +17,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         this.AddHandler(LoadedEvent, InitializeWindow, handledEventsToo: true);
         this.SizeChanged += OnWindowLoaded;
 
+        GraphicHolder.PointerWheelChanged += OnMouseWheel;
         GraphicHolder.PointerPressed += OnMouseDown;
         GraphicHolder.PointerMoved += OnMouseMove;
     }
@@ -52,6 +53,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         {
             ViewModel.DoPan(pos);
         }
+    }
+
+    private void OnMouseWheel(object? sender, PointerWheelEventArgs e)
+    {
+        ViewModel.HandleZoom(e.Delta.Y);
     }
 
     private void OnZoomIn(object sender, RoutedEventArgs e)
