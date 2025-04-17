@@ -33,7 +33,8 @@ public class Function : ICurve
             OnPropertyChanged(nameof(Name));
         }
     }
-    public string SmoothingCoefficient { get; set; }
+    public string SmoothingCoefficientAlpha { get; set; }
+    public string SmoothingCoefficientBeta { get; set; }
 
     public string Type => "Function";
 
@@ -67,7 +68,8 @@ public class Function : ICurve
     public Function(string functionString)
     {
         IsPossible = true;
-        SmoothingCoefficient = null;
+        SmoothingCoefficientAlpha = null;
+        SmoothingCoefficientBeta = null;
         FunctionString = functionString;
         Name = functionString; 
         IsVisible = true;

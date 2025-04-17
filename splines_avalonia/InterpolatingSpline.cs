@@ -33,12 +33,14 @@ namespace splines_avalonia
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        public string SmoothingCoefficient { get; set; }
+        public string SmoothingCoefficientAlpha { get; set; }
+        public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
 
         public CubicSpline(Point[] controlPoints, double[] grid)
         {
-            SmoothingCoefficient = null;
+            SmoothingCoefficientAlpha = null;
+            SmoothingCoefficientBeta = null;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн";
             IsVisible = true;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -31,7 +32,9 @@ namespace splines_avalonia
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        public string SmoothingCoefficient { get; set; }
+        public string SmoothingCoefficientAlpha { get; set; }
+        public string SmoothingCoefficientBeta { get; set; }
+        private Function AlphaFunction { get; set; }
         private Function BetaFunction { get; set; }
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
@@ -41,11 +44,13 @@ namespace splines_avalonia
 
         public string FunctionString { get; set; }
 
-        public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficient)
+        public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            SmoothingCoefficient = smoothingCoefficient;
-            BetaFunction = new Function(SmoothingCoefficient);
+            SmoothingCoefficientAlpha = smoothingCoefficientAlpha;
+            SmoothingCoefficientBeta = smoothingCoefficientBeta;
+            AlphaFunction = new Function(smoothingCoefficientAlpha);
+            BetaFunction = new Function(SmoothingCoefficientBeta);
             ControlPoints = controlPoints;
             Name = "Сглаживающий сплайн";
             Grid = grid;
@@ -61,7 +66,7 @@ namespace splines_avalonia
             slae.Initialize();
 
             // Заполнение СЛАУ (поставить интегралы и уравнения)
-            BuildSLAE(slae, points, mesh, n_points, n_mesh, BetaFunction);
+            BuildSLAE(slae, points, mesh, n_points, n_mesh, AlphaFunction, BetaFunction);
 
             // Решение СЛАУ
             IsPossible = SolveSLAE(slae, mainWindow);
@@ -70,7 +75,7 @@ namespace splines_avalonia
             OutputPoints = CalculateSplinePoints(mesh, slae);
         }
 
-        private static void BuildSLAE(SLAE slae, Point[] points, double[] mesh, int n_points, int n_mesh, Function BetaFunction)
+        private static void BuildSLAE(SLAE slae, Point[] points, double[] mesh, int n_points, int n_mesh, Function AlphaFunction, Function BetaFunction)
         {
             int index = 0;
             for (int k = 0; k < n_mesh - 1; ++k)
@@ -99,7 +104,7 @@ namespace splines_avalonia
                 // Добавление интегральных членов для сглаживания
                 for (int i = 0; i < 4; i++)
                     for (int j = 0; j < 4; j++)
-                        slae.A[2 * k + i][2 * k + j] += SumPsiBeta(i, j, h, BetaFunction);
+                        slae.A[2 * k + i][2 * k + j] += (SumPsiAlpha(i, j, h, AlphaFunction) + SumPsiBeta(i, j, h, BetaFunction));
             }
         }
 
@@ -150,6 +155,27 @@ namespace splines_avalonia
             }
         }
 
+        private static double SumPsiAlpha(int i, int j, double h, Function AlphaFunction)
+        {
+            const double h_i = 0.01;
+            double sum = 0.0;
+            for (int k = 0; k < 100; ++k)
+            {
+                double x_k = k * h_i;
+                double x_k1 = (k + 1) * h_i;
+
+                double f_xk = Alpha(x_k, AlphaFunction) * D1Psi(i, x_k, h) * D1Psi(j, x_k, h);
+                double f_xk1 = Alpha(x_k1, AlphaFunction) * D1Psi(i, x_k1, h) * D1Psi(j, x_k1, h);
+
+                sum += (f_xk + f_xk1) * h_i / 2;
+            }
+
+            sum += Alpha(0, AlphaFunction) * D1Psi(i, 0, h) * D1Psi(j, 0, h) * h_i / 2;
+            sum += Alpha(1, AlphaFunction) * D1Psi(i, 1, h) * D1Psi(j, 1, h) * h_i / 2;
+
+            return sum;
+        }
+
         private static double SumPsiBeta(int i, int j, double h, Function BetaFunction)
         {
             const double h_i = 0.01;
@@ -171,9 +197,26 @@ namespace splines_avalonia
             return sum;
         }
 
+        private static double Alpha(double x, Function AlphaFunction)
+        {
+            return AlphaFunction.CalculateFunctionValue(AlphaFunction.FunctionString, x);
+        }
+
         private static double Beta(double x, Function BetaFunction)
         {
             return BetaFunction.CalculateFunctionValue(BetaFunction.FunctionString, x);
+        }
+
+        private static double D1Psi(int l, double t, double h)
+        {
+            switch (l)
+            {
+                case 0: return (-6 * t + 6 * Math.Pow(t, 2)) / h;
+                case 1: return (1 - 4 * t + 3 * Math.Pow(t, 2));
+                case 2: return (6 * t - 6 * Math.Pow(t, 2)) / h;
+                case 3: return (-2 * t + 3 * Math.Pow(t, 2));
+                default: return 0;
+            }
         }
 
         private static double D2Psi(int l, double t, double h)

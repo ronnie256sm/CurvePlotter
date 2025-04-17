@@ -14,8 +14,11 @@
             <TextBox Name="MeshFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
             <Button Content="Выбрать файл сетки" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectMeshFileClick" HorizontalAlignment="Stretch"/>
 
+            <TextBlock Text="Коэффициент сглаживания (альфа):"/>
+            <TextBox Name="SmoothingFactorAlphaValue" HorizontalAlignment="Stretch"/>
+
             <TextBlock Text="Коэффициент сглаживания (бета):"/>
-            <TextBox Name="SmoothingFactorValue" HorizontalAlignment="Stretch"/>
+            <TextBox Name="SmoothingFactorBetaValue" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <!-- Панель для кнопок OK и Отмена внизу -->

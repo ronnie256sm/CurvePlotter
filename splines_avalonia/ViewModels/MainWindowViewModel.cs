@@ -134,7 +134,7 @@ namespace splines_avalonia.ViewModels
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var logic = new SplineLogic();
-                var curve = logic.CreateCurve("Function", null, result, null, null, null);
+                var curve = logic.CreateCurve("Function", null, result, null, null, null, null);
                 if (curve.IsPossible)
                     CurveList.Add(curve);
                 DrawCurves();
@@ -189,7 +189,8 @@ namespace splines_avalonia.ViewModels
 
             // Проверяем, был ли выбран файл точек
             string pointsFile = null;
-            string smoothingCoefficient = null;
+            string smoothingCoefficientAlpha = null;
+            string smoothingCoefficientBeta = null;
             string meshFile = null;
 
             // Обрабатываем диалог в зависимости от типа
@@ -200,7 +201,8 @@ namespace splines_avalonia.ViewModels
             else if (inputDialog is SmoothingSplineInputDialog smoothingDialog)
             {
                 pointsFile = smoothingDialog.PointsFile;
-                smoothingCoefficient = smoothingDialog.SmoothingFactor;  // Получаем коэффициент сглаживания как строку
+                smoothingCoefficientAlpha = smoothingDialog.SmoothingFactorAlpha;
+                smoothingCoefficientBeta = smoothingDialog.SmoothingFactorBeta;  // Получаем коэффициент сглаживания как строку
                 meshFile = smoothingDialog.MeshFile;
             }
 
@@ -243,7 +245,7 @@ namespace splines_avalonia.ViewModels
 
             // Логика создания кривой с сохранением путей файлов
             var logic = new SplineLogic();
-            var curve = logic.CreateCurve("Spline", type, null, mesh, points, smoothingCoefficient);
+            var curve = logic.CreateCurve("Spline", type, null, mesh, points, smoothingCoefficientAlpha, smoothingCoefficientBeta);
             curve.ControlPointsFile = pointsFile;
             curve.GridFile = meshFile;
             
@@ -264,7 +266,8 @@ namespace splines_avalonia.ViewModels
 
             string newPointsFile = null;
             string newMeshFile = null;
-            string newSmoothingFactor = null;
+            string newSmoothingFactorAlpha = null;
+            string newSmoothingFactorBeta = null;
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
@@ -293,8 +296,9 @@ namespace splines_avalonia.ViewModels
                 {
                     dialog.SetInitialValues(
                         spline.ControlPointsFile ?? "", 
-                        spline.GridFile ?? "", 
-                        spline.SmoothingCoefficient ?? ""
+                        spline.GridFile ?? "",
+                        spline.SmoothingCoefficientAlpha ?? "",
+                        spline.SmoothingCoefficientBeta ?? ""
                     );
                 }
 
@@ -305,7 +309,8 @@ namespace splines_avalonia.ViewModels
 
                 newPointsFile = dialog.PointsFile;
                 newMeshFile = dialog.MeshFile;
-                newSmoothingFactor = dialog.SmoothingFactor;
+                newSmoothingFactorAlpha = dialog.SmoothingFactorAlpha;
+                newSmoothingFactorBeta = dialog.SmoothingFactorBeta;
             }
             else
             {
@@ -335,7 +340,7 @@ namespace splines_avalonia.ViewModels
 
             // Пересоздаем кривую
             var logic = new SplineLogic();
-            var newCurve = logic.CreateCurve("Spline", type, null, newMesh, newPoints, newSmoothingFactor);
+            var newCurve = logic.CreateCurve("Spline", type, null, newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
             newCurve.ControlPointsFile = newPointsFile;
             newCurve.GridFile = newMeshFile;
 

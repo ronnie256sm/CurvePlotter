@@ -4,7 +4,7 @@ namespace splines_avalonia
 {
     public class SplineLogic : ILogic
     {
-        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficient)
+        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
             if (type == "Function")
             {
@@ -15,7 +15,7 @@ namespace splines_avalonia
                 return splineType switch
                 {
                     "Interpolating Cubic" => new CubicSpline(controlPoints, grid),
-                    "Smoothing Cubic" => new SmoothingSpline(controlPoints, grid, smoothingCoefficient),
+                    "Smoothing Cubic" => new SmoothingSpline(controlPoints, grid, smoothingCoefficientAlpha, smoothingCoefficientBeta),
                     _ => throw new NotSupportedException($"Тип сплайна '{splineType}' не поддерживается.")
                 };
             }

@@ -11,7 +11,8 @@ namespace splines_avalonia.Views
         // Сохраняем строки для путей файлов и коэффициента сглаживания
         public string PointsFile { get; private set; }
         public string MeshFile { get; private set; }
-        public string SmoothingFactor { get; private set; } // Сохраняем строку коэффициента сглаживания
+        public string SmoothingFactorAlpha { get; private set; }
+        public string SmoothingFactorBeta { get; private set; } // Сохраняем строку коэффициента сглаживания
         public bool IsOkClicked { get; private set; } = false;
 
         public SmoothingSplineInputDialog()
@@ -19,11 +20,12 @@ namespace splines_avalonia.Views
             InitializeComponent();
         }
 
-        public void SetInitialValues(string pointsPath, string meshPath, string smoothing)
+        public void SetInitialValues(string pointsPath, string meshPath, string smoothingAlpha, string smoothingBeta)
         {
             PointsFilePath.Text = pointsPath;
             MeshFilePath.Text = meshPath;
-            SmoothingFactorValue.Text = smoothing;
+            SmoothingFactorAlphaValue.Text = smoothingAlpha;
+            SmoothingFactorBetaValue.Text = smoothingBeta;
         }
 
         // Выбор файла с точками
@@ -89,13 +91,21 @@ namespace splines_avalonia.Views
 
             MeshFile = MeshFilePath.Text;
 
+
             // Сохраняем введенную строку для коэффициента сглаживания (без парсинга)
-            SmoothingFactor = SmoothingFactorValue.Text; 
+            SmoothingFactorAlpha = SmoothingFactorAlphaValue.Text;
+            SmoothingFactorBeta = SmoothingFactorBetaValue.Text; 
 
             // Проверка, что строка для коэффициента не пустая
-            if (string.IsNullOrWhiteSpace(SmoothingFactor))
+            if (string.IsNullOrWhiteSpace(SmoothingFactorAlpha))
             {
-                await ErrorHelper.ShowError(this, "Пожалуйста, введите коэффициент сглаживания.");
+                await ErrorHelper.ShowError(this, "Пожалуйста, введите коэффициент сглаживания альфа.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(SmoothingFactorBeta))
+            {
+                await ErrorHelper.ShowError(this, "Пожалуйста, введите коэффициент сглаживания бета.");
                 return;
             }
             IsOkClicked = true;

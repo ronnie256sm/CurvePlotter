@@ -25,13 +25,14 @@ namespace splines_avalonia
         string GridFile { get; set; }
         Point[] OutputPoints { get; }
         bool IsVisible { get; set; }
-        string SmoothingCoefficient { get; set; }
+        string SmoothingCoefficientAlpha { get; set; }
+        string SmoothingCoefficientBeta { get; set; }
         public double CalculateFunctionValue(string functionString, double x);
         bool IsPossible { get; set; }
     }
 
     public interface ILogic
     {
-        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficient);
+        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
     }
 }
