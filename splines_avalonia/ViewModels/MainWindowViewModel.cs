@@ -427,7 +427,6 @@ namespace splines_avalonia.ViewModels
             GraphicCanvas.Children.Clear();
             DrawGrid();
 
-            // Отрисовываем кривые
             foreach (var curve in CurveList)
             {
                 if (curve.Type == "Spline" && curve.IsVisible && curve.IsPossible)
@@ -454,6 +453,7 @@ namespace splines_avalonia.ViewModels
                         GraphicCanvas.Children.Add(polyline);
                     }
                 }
+
                 if (curve.Type == "Function" && curve.IsVisible && curve.IsPossible)
                 {
                     double width = GraphicCanvas.Bounds.Width;
@@ -474,7 +474,6 @@ namespace splines_avalonia.ViewModels
 
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
-                            // Прерывание, если значение невалидно — начинаем новую полилинию
                             if (points.Count >= 2)
                             {
                                 var polyline = new Polyline
@@ -495,13 +494,12 @@ namespace splines_avalonia.ViewModels
                             (-y * _zoom) + CenterY() + _offsetY
                         );
 
-                        if (screenPoint.Y >= 0 && screenPoint.Y <= height)
+                        if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
                         {
                             points.Add(screenPoint);
                         }
                         else
                         {
-                            // точка вне экрана — отрисовываем то, что уже есть
                             if (points.Count >= 2)
                             {
                                 var polyline = new Polyline
@@ -517,7 +515,6 @@ namespace splines_avalonia.ViewModels
                         }
                     }
 
-                    // добавляем последнюю часть, если она есть
                     if (points.Count >= 2)
                     {
                         var polyline = new Polyline

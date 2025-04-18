@@ -12,9 +12,7 @@ namespace splines_avalonia
         public Point[] OutputPoints { get; }
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
-
         public string FunctionString { get; set; }
-
         public string SplineType => "Interpolating Cubic";
 
         public string Name { get; set; }
