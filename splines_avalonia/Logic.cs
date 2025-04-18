@@ -14,7 +14,7 @@ namespace splines_avalonia
 
         public ICurve CreateInterpolatingSpline(Point[] controlPoints)
         {
-            return new CubicSpline(controlPoints);
+            return new InterpolatingSpline(controlPoints);
         }
 
         public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)

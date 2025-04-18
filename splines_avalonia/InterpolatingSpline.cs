@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace splines_avalonia
 {
-    public class CubicSpline : ICurve
+    public class InterpolatingSpline : ICurve
     {
         #pragma warning disable CS8618, CS8625
         public string Type => "Spline";
@@ -36,7 +36,7 @@ namespace splines_avalonia
         public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
 
-        public CubicSpline(Point[] controlPoints)
+        public InterpolatingSpline(Point[] controlPoints)
         {
             SmoothingCoefficientAlpha = null;
             SmoothingCoefficientBeta = null;
