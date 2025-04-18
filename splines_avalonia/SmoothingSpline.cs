@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Helpers;
@@ -11,6 +13,7 @@ namespace splines_avalonia
 {
     public class SmoothingSpline : ICurve
     {
+        #pragma warning disable CS8618, CS8604, CS4014
         public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
@@ -46,7 +49,6 @@ namespace splines_avalonia
 
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             SmoothingCoefficientAlpha = smoothingCoefficientAlpha;
             SmoothingCoefficientBeta = smoothingCoefficientBeta;
             AlphaFunction = new Function(smoothingCoefficientAlpha);
@@ -69,7 +71,7 @@ namespace splines_avalonia
             BuildSLAE(slae, points, mesh, n_points, n_mesh, AlphaFunction, BetaFunction);
 
             // Решение СЛАУ
-            IsPossible = SolveSLAE(slae, mainWindow);
+            IsPossible = SolveSLAE(slae);
 
             // Вычисление точек сплайна
             OutputPoints = CalculateSplinePoints(mesh, slae);
@@ -108,12 +110,12 @@ namespace splines_avalonia
             }
         }
 
-        private static bool SolveSLAE(SLAE slae, Window mainWindow)
+        private static bool SolveSLAE(SLAE slae)
         {
             bool IsPossible = true;
             if (!slae.Solve())
             {
-                ErrorHelper.ShowError(mainWindow, "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                ErrorHelper.ShowError((Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow, "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
                 IsPossible = false;
             }
             return IsPossible;

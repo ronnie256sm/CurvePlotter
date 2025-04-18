@@ -8,6 +8,7 @@ namespace splines_avalonia;
 
 public class Function : ICurve
 {
+    #pragma warning disable CS8603, CS8618, CS8602
     private string _functionString;
     public string FunctionString
     {
@@ -68,8 +69,6 @@ public class Function : ICurve
     public Function(string functionString)
     {
         IsPossible = true;
-        SmoothingCoefficientAlpha = null;
-        SmoothingCoefficientBeta = null;
         FunctionString = functionString;
         Name = functionString; 
         IsVisible = true;
@@ -119,7 +118,9 @@ public class Function : ICurve
         try
         {
             if (_cachedExpr == null || function != FunctionString)
+            {
                 PrepareExpression(function);
+            }
 
             _cachedExpr.Parameters["x"] = x;
             var result = _cachedExpr.Evaluate();

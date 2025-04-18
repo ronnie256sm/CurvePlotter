@@ -7,6 +7,7 @@ namespace splines_avalonia.Views
 {
     public partial class FunctionInputDialog : Window
     {
+        #pragma warning disable CS8603
         public string FunctionString { get; private set; } = "";
 
         public FunctionInputDialog()

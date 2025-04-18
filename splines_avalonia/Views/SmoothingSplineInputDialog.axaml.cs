@@ -8,6 +8,7 @@ namespace splines_avalonia.Views
 {
     public partial class SmoothingSplineInputDialog : Window
     {
+        #pragma warning disable CS8618, CS8601
         // Сохраняем строки для путей файлов и коэффициента сглаживания
         public string PointsFile { get; private set; }
         public string MeshFile { get; private set; }

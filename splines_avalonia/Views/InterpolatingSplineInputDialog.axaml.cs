@@ -8,6 +8,7 @@ namespace splines_avalonia.Views
 {
     public partial class InterpolatingSplineInputDialog : Window
     {
+        #pragma warning disable CS8618
         public string PointsFile { get; private set; }
         public bool IsOkClicked { get; private set; } = false;
 

@@ -9,6 +9,7 @@ namespace splines_avalonia.Views;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
+    #pragma warning disable CS8602, CS8622, CS8625
     public MainWindow()
     {
         InitializeComponent();
@@ -114,4 +115,5 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
             await ErrorHelper.ShowError(this, "Некорректное значение. Введите положительное число.");
         }
     }
+    #pragma warning restore CS8602
 }

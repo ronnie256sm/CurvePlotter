@@ -33,6 +33,8 @@ namespace splines_avalonia
 
     public interface ILogic
     {
-        public ICurve CreateCurve(string type, string splineType, string functionString, double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
+        public ICurve CreateFunction(string functionString);
+        public ICurve CreateInterpolatingSpline(Point[] controlPoints);
+        public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
     }
 }

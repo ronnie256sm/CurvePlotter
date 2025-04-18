@@ -12,6 +12,8 @@ using splines_avalonia.Helpers;
 using System.ComponentModel;
 using System.Collections.Specialized;
 
+#pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602
+
 namespace splines_avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
@@ -43,7 +45,6 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<Unit, Unit> DeleteCurveCommand { get; }
         public ReactiveCommand<Unit, Unit> EditCurveCommand { get; }
-
         public MainWindowViewModel()
         {
             // Initialize commands
@@ -134,7 +135,7 @@ namespace splines_avalonia.ViewModels
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var logic = new SplineLogic();
-                var curve = logic.CreateCurve("Function", null, result, null, null, null, null);
+                var curve = logic.CreateFunction(result);
                 if (curve.IsPossible)
                     CurveList.Add(curve);
                 DrawCurves();
@@ -143,16 +144,15 @@ namespace splines_avalonia.ViewModels
 
         private async void EditFunction()
         {
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (SelectedCurve is not ICurve selectedFunction)
             {
-                await ErrorHelper.ShowError(null, "Выберите функцию для редактирования.");
+                await ErrorHelper.ShowError(mainWindow, "Выберите функцию для редактирования.");
                 return;
             }
 
             var dialog = new FunctionInputDialog();
             dialog.SetInitialFunction(selectedFunction.FunctionString);
-
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             var result = await dialog.ShowDialog<string>(mainWindow);
 
             if (!string.IsNullOrWhiteSpace(result))
@@ -220,6 +220,7 @@ namespace splines_avalonia.ViewModels
             if (string.IsNullOrWhiteSpace(pointsFile))
             {
                 var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
+
                 await ErrorHelper.ShowError(MainWindow, "Пожалуйста, выберите файл с точками.");
                 return;
             }
@@ -245,14 +246,25 @@ namespace splines_avalonia.ViewModels
 
             // Логика создания кривой с сохранением путей файлов
             var logic = new SplineLogic();
-            var curve = logic.CreateCurve("Spline", type, null, mesh, points, smoothingCoefficientAlpha, smoothingCoefficientBeta);
-            curve.ControlPointsFile = pointsFile;
-            curve.GridFile = meshFile;
-            
-            // Добавляем кривую в список
-            if (curve.IsPossible)
-                CurveList.Add(curve);
-
+            if (type == "Interpolating Cubic")
+            {
+                var curve = logic.CreateInterpolatingSpline(points);
+                curve.ControlPointsFile = pointsFile;
+                if (curve.IsPossible)
+                    CurveList.Add(curve);
+            }
+            else if (type == "Smoothing Cubic")
+            {
+                var curve = logic.CreateSmoothingSpline(mesh, points, smoothingCoefficientAlpha, smoothingCoefficientBeta);
+                curve.ControlPointsFile = pointsFile;
+                curve.GridFile = meshFile;
+                if (curve.IsPossible)
+                    CurveList.Add(curve);
+            }
+            else
+            {
+                await ErrorHelper.ShowError(mainWindow, "Не удалось добавить сплайн.");
+            }
             // Перерисовываем кривые
             DrawCurves();
         }
@@ -340,21 +352,42 @@ namespace splines_avalonia.ViewModels
 
             // Пересоздаем кривую
             var logic = new SplineLogic();
-            var newCurve = logic.CreateCurve("Spline", type, null, newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
-            newCurve.ControlPointsFile = newPointsFile;
-            newCurve.GridFile = newMeshFile;
-
-            // Заменяем в списке
-            int index = CurveList.IndexOf(SelectedCurve);
-            if (index >= 0 && newCurve.IsPossible)
+            if (type == "Interpolating Cubic")
             {
-                CurveList[index] = newCurve;
-                DrawCurves(); // Обновляем отрисовку
+                var newCurve = logic.CreateInterpolatingSpline(newPoints);
+                newCurve.ControlPointsFile = newPointsFile;
+                int index = CurveList.IndexOf(SelectedCurve);
+                if (index >= 0 && newCurve.IsPossible)
+                {
+                    CurveList[index] = newCurve;
+                    DrawCurves(); // Обновляем отрисовку
+                }
+                if (index >= 0 && !newCurve.IsPossible)
+                {
+                    CurveList.Remove(SelectedCurve);
+                    DrawCurves();
+                }
             }
-            if (index >= 0 && !newCurve.IsPossible)
+            else if (type == "Smoothing Cubic")
             {
-                CurveList.Remove(SelectedCurve);
-                DrawCurves();
+                var newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
+                newCurve.ControlPointsFile = newPointsFile;
+                newCurve.GridFile = newMeshFile;
+                int index = CurveList.IndexOf(SelectedCurve);
+                if (index >= 0 && newCurve.IsPossible)
+                {
+                    CurveList[index] = newCurve;
+                    DrawCurves(); // Обновляем отрисовку
+                }
+                if (index >= 0 && !newCurve.IsPossible)
+                {
+                    CurveList.Remove(SelectedCurve);
+                    DrawCurves();
+                }
+            }
+            else
+            {
+                await ErrorHelper.ShowError(mainWindow, "Не удалось изменить сплайн.");
             }
         }
 

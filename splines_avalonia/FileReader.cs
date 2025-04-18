@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 
+#pragma warning disable CS8604
+
 namespace splines_avalonia
 {
     public static class FileReader

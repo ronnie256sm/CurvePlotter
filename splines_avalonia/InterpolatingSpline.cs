@@ -5,6 +5,7 @@ namespace splines_avalonia
 {
     public class CubicSpline : ICurve
     {
+        #pragma warning disable CS8618, CS8625
         public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
@@ -37,7 +38,7 @@ namespace splines_avalonia
         public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
 
-        public CubicSpline(Point[] controlPoints, double[] grid)
+        public CubicSpline(Point[] controlPoints)
         {
             SmoothingCoefficientAlpha = null;
             SmoothingCoefficientBeta = null;
