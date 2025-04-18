@@ -15,6 +15,7 @@ public static class ErrorHelper
             Title = title,
             Width = 300,
             Height = 150,
+            CanResize = false,
             WindowStartupLocation = WindowStartupLocation.CenterOwner
         };
 
