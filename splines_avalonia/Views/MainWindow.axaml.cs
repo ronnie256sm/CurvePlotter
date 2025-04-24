@@ -112,7 +112,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
         else
         {
-            await ErrorHelper.ShowError(this, "Некорректное значение. Введите положительное число.");
+            await ErrorHelper.ShowError("Некорректное значение. Введите положительное число.");
         }
     }
     #pragma warning restore CS8602

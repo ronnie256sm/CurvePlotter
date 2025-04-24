@@ -147,7 +147,7 @@ namespace splines_avalonia.ViewModels
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
             if (SelectedCurve is not ICurve selectedFunction)
             {
-                await ErrorHelper.ShowError(mainWindow, "Выберите функцию для редактирования.");
+                await ErrorHelper.ShowError("Выберите функцию для редактирования.");
                 return;
             }
 
@@ -221,7 +221,7 @@ namespace splines_avalonia.ViewModels
             {
                 var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
 
-                await ErrorHelper.ShowError(MainWindow, "Пожалуйста, выберите файл с точками.");
+                await ErrorHelper.ShowError("Пожалуйста, выберите файл с точками.");
                 return;
             }
 
@@ -237,7 +237,7 @@ namespace splines_avalonia.ViewModels
             else if (choice == AddCurveDialog.CurveType.SmoothingSpline)
             {
                 var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
-                await ErrorHelper.ShowError(MainWindow, "Для сглаживающего сплайна необходимо выбрать файл сетки.");
+                await ErrorHelper.ShowError("Для сглаживающего сплайна необходимо выбрать файл сетки.");
                 return;
             }
 
@@ -263,7 +263,7 @@ namespace splines_avalonia.ViewModels
             }
             else
             {
-                await ErrorHelper.ShowError(mainWindow, "Не удалось добавить сплайн.");
+                await ErrorHelper.ShowError("Не удалось добавить сплайн.");
             }
             // Перерисовываем кривые
             DrawCurves();
@@ -326,14 +326,14 @@ namespace splines_avalonia.ViewModels
             }
             else
             {
-                await ErrorHelper.ShowError(mainWindow, "Редактирование доступно только для сплайнов.");
+                await ErrorHelper.ShowError("Редактирование доступно только для сплайнов.");
                 return;
             }
 
             // Читаем новые точки и сетку
             if (string.IsNullOrWhiteSpace(newPointsFile))
             {
-                await ErrorHelper.ShowError(mainWindow, "Не выбран файл точек.");
+                await ErrorHelper.ShowError("Не выбран файл точек.");
                 return;
             }
 
@@ -344,7 +344,7 @@ namespace splines_avalonia.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(newMeshFile))
                 {
-                    await ErrorHelper.ShowError(mainWindow, "Не выбран файл сетки.");
+                    await ErrorHelper.ShowError("Не выбран файл сетки.");
                     return;
                 }
                 newMesh = FileReader.ReadGrid(newMeshFile);
@@ -387,7 +387,7 @@ namespace splines_avalonia.ViewModels
             }
             else
             {
-                await ErrorHelper.ShowError(mainWindow, "Не удалось изменить сплайн.");
+                await ErrorHelper.ShowError("Не удалось изменить сплайн.");
             }
         }
 
@@ -405,7 +405,7 @@ namespace splines_avalonia.ViewModels
             }
             if (SelectedCurve == null)
             {
-                await ErrorHelper.ShowError(mainWindow, "Выберите кривую для редактирования");
+                await ErrorHelper.ShowError("Выберите кривую для редактирования");
             }
         }
 

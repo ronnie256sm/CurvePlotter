@@ -1,12 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Avalonia;
-using Avalonia.Animation.Easings;
-using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using splines_avalonia.Helpers;
 
 namespace splines_avalonia
@@ -115,7 +109,7 @@ namespace splines_avalonia
             bool IsPossible = true;
             if (!slae.Solve())
             {
-                ErrorHelper.ShowError((Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow, "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                ErrorHelper.ShowError("Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
                 IsPossible = false;
             }
             return IsPossible;

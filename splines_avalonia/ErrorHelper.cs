@@ -3,44 +3,33 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia;
 using Avalonia.Media;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Models;
 
 namespace splines_avalonia.Helpers;
 
 public static class ErrorHelper
 {
-    public static async Task ShowError(Window owner, string message, string title = "Ошибка")
+    public static async Task ShowError(string message)
     {
-        var dialog = new Window
+        var box = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
         {
-            Title = title,
-            Width = 300,
-            Height = 150,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var okButton = new Button
-        {
-            Content = "OK",
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(0, 10, 0, 0)
-        };
-        okButton.Click += (_, _) => dialog.Close();
-
-        dialog.Content = new StackPanel
-        {
-            Margin = new Thickness(10),
-            Children =
+            ContentTitle = "Ошибка",
+            ContentMessage = message,
+            ButtonDefinitions = new[]
             {
-                new TextBlock
-                {
-                    Text = message,
-                    TextWrapping = TextWrapping.Wrap
-                },
-                okButton
-            }
-        };
-
-        await dialog.ShowDialog(owner);
+                new ButtonDefinition { Name = "ОK"},
+            },
+            Icon = MsBox.Avalonia.Enums.Icon.Question,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            MaxWidth = 500,
+            MaxHeight = 800,
+            SizeToContent = SizeToContent.WidthAndHeight,
+            ShowInCenter = true,
+            Topmost = false,
+        });
+        await box.ShowAsync();
     }
 }

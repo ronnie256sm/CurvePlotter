@@ -48,26 +48,26 @@ namespace splines_avalonia.Views
 
             if (string.IsNullOrWhiteSpace(input))
             {
-                await ErrorHelper.ShowError(this, "Функция не может быть пустой.");
+                await ErrorHelper.ShowError("Функция не может быть пустой.");
                 return;
             }
 
             if (!AreBracketsBalanced(input))
             {
-                await ErrorHelper.ShowError(this, "Количество открывающих и закрывающих скобок не совпадает.");
+                await ErrorHelper.ShowError("Количество открывающих и закрывающих скобок не совпадает.");
                 return;
             }
 
             if (!ContainsOnlyValidCharacters(input))
             {
-                await ErrorHelper.ShowError(this, "Выражение содержит недопустимые символы.");
+                await ErrorHelper.ShowError("Выражение содержит недопустимые символы.");
                 return;
             }
 
             string validationError = ValidateFunctionArguments(input);
             if (validationError != null)
             {
-                await ErrorHelper.ShowError(this, validationError);
+                await ErrorHelper.ShowError(validationError);
                 return;
             }
 

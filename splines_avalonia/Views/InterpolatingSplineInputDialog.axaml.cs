@@ -46,7 +46,7 @@ namespace splines_avalonia.Views
         {
             if (string.IsNullOrWhiteSpace(PointsFilePath.Text))
             {
-                await ErrorHelper.ShowError(this, "Пожалуйста, выберите файл с точками.");
+                await ErrorHelper.ShowError("Пожалуйста, выберите файл с точками.");
                 return;
             }
 
