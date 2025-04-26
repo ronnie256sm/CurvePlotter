@@ -41,6 +41,15 @@
                                         <TextBlock Text="Цвет:" VerticalAlignment="Center"/>
                                         <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="100" />
                                     </StackPanel>
+
+                                    <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
+                                        <Button Content="✎" Width="30" 
+                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Content="✖" Width="30" 
+                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}"
+                                                CommandParameter="{Binding}"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
@@ -51,8 +60,6 @@
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
                 <Button Content="Добавить сплайн" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddSplineCommand}"/>
                 <Button Content="Добавить функцию" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddFunctionCommand}"/>
-                <Button Content="Редактировать" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding EditCurveCommand}"/>
-                <Button Content="Удалить" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding DeleteCurveCommand}"/>
             </StackPanel>
         </Grid>
 

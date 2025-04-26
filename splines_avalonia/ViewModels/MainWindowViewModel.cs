@@ -43,15 +43,25 @@ namespace splines_avalonia.ViewModels
 
         public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
-        public ReactiveCommand<Unit, Unit> DeleteCurveCommand { get; }
-        public ReactiveCommand<Unit, Unit> EditCurveCommand { get; }
+        public ReactiveCommand<ICurve, Unit> EditCurveCommand { get; }
+        public ReactiveCommand<ICurve, Unit> DeleteCurveCommand { get; }
         public MainWindowViewModel()
         {
             // Initialize commands
             AddSplineCommand = ReactiveCommand.Create(AddSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
-            DeleteCurveCommand = ReactiveCommand.Create(DeleteSelectedCurve);
-            EditCurveCommand = ReactiveCommand.Create(EditCurve);
+            // Изменяем команды для работы с параметром
+            EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
+            {
+                SelectedCurve = curve;
+                EditCurve();
+            });
+            
+            DeleteCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
+            {
+                SelectedCurve = curve;
+                DeleteSelectedCurve();
+            });
 
             CurveList.CollectionChanged += CurveList_CollectionChanged;
         }
