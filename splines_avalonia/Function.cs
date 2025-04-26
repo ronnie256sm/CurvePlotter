@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using NCalc;
+using Avalonia.Media;
 
 namespace splines_avalonia;
 
@@ -24,6 +25,16 @@ public class Function : ICurve
     }
     public Point[] OutputPoints { get; }
     public bool IsPossible { get; set; }
+    private Color _color;
+    public Color Color
+    {
+        get => _color;
+        set
+        {
+            _color = value;
+            OnPropertyChanged(nameof(Color));
+        }
+    }
     private string _name;
     public string Name
     {
@@ -68,6 +79,7 @@ public class Function : ICurve
 
     public Function(string functionString)
     {
+        Color = Colors.Black;
         IsPossible = true;
         FunctionString = functionString;
         Name = functionString; 

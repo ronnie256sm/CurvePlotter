@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Avalonia.Media;
 
 namespace splines_avalonia
 {
@@ -27,8 +28,9 @@ namespace splines_avalonia
         bool IsVisible { get; set; }
         string SmoothingCoefficientAlpha { get; set; }
         string SmoothingCoefficientBeta { get; set; }
-        public double CalculateFunctionValue(string functionString, double x);
+        double CalculateFunctionValue(string functionString, double x);
         bool IsPossible { get; set; }
+        Color Color { get; set; }
     }
 
     public interface ILogic

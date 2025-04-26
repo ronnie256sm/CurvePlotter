@@ -83,7 +83,7 @@ namespace splines_avalonia.ViewModels
 
         private void Curve_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ICurve.IsVisible))
+            if (e.PropertyName == nameof(ICurve.IsVisible) || e.PropertyName == nameof(ICurve.Color))
             {
                 DrawCurves();
             }
@@ -447,7 +447,7 @@ namespace splines_avalonia.ViewModels
                         var polyline = new Polyline
                         {
                             Points = points,
-                            Stroke = Brushes.Black,
+                            Stroke = new SolidColorBrush(curve.Color),
                             StrokeThickness = 2
                         };
                         GraphicCanvas.Children.Add(polyline);
@@ -479,7 +479,7 @@ namespace splines_avalonia.ViewModels
                                 var polyline = new Polyline
                                 {
                                     Points = new Points(points),
-                                    Stroke = Brushes.Black,
+                                    Stroke = new SolidColorBrush(curve.Color),
                                     StrokeThickness = 2
                                 };
                                 GraphicCanvas.Children.Add(polyline);
@@ -505,7 +505,7 @@ namespace splines_avalonia.ViewModels
                                 var polyline = new Polyline
                                 {
                                     Points = new Points(points),
-                                    Stroke = Brushes.Black,
+                                    Stroke = new SolidColorBrush(curve.Color),
                                     StrokeThickness = 2
                                 };
                                 GraphicCanvas.Children.Add(polyline);
@@ -520,7 +520,7 @@ namespace splines_avalonia.ViewModels
                         var polyline = new Polyline
                         {
                             Points = points,
-                            Stroke = Brushes.Black,
+                            Stroke = new SolidColorBrush(curve.Color),
                             StrokeThickness = 2
                         };
                         GraphicCanvas.Children.Add(polyline);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using Avalonia.Media;
 
 namespace splines_avalonia
 {
@@ -35,9 +36,11 @@ namespace splines_avalonia
         public string SmoothingCoefficientAlpha { get; set; }
         public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
+        public Color Color { get; set; }
 
         public InterpolatingSpline(Point[] controlPoints)
         {
+            Color = Colors.Black;
             SmoothingCoefficientAlpha = null;
             SmoothingCoefficientBeta = null;
             ControlPoints = controlPoints;

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using splines_avalonia.Helpers;
+using Avalonia.Media;
 
 namespace splines_avalonia
 {
@@ -13,6 +14,7 @@ namespace splines_avalonia
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
         public string Name { get; set; }
+        public Color Color { get; set; }
         private bool _isVisible = true;
         public bool IsVisible
         {
@@ -43,6 +45,7 @@ namespace splines_avalonia
 
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
+            Color = Colors.Black;
             SmoothingCoefficientAlpha = smoothingCoefficientAlpha;
             SmoothingCoefficientBeta = smoothingCoefficientBeta;
             AlphaFunction = new Function(smoothingCoefficientAlpha);
