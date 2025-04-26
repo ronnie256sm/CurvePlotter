@@ -14,7 +14,16 @@ namespace splines_avalonia
         public Point[] ControlPoints { get; }
         public Point[] OutputPoints { get; }
         public string Name { get; set; }
-        public Color Color { get; set; }
+        private Color _color;
+        public Color Color
+        {
+            get => _color;
+            set
+            {
+                _color = value;
+                OnPropertyChanged(nameof(Color));
+            }
+        }
         private bool _isVisible = true;
         public bool IsVisible
         {

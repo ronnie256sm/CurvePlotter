@@ -36,7 +36,16 @@ namespace splines_avalonia
         public string SmoothingCoefficientAlpha { get; set; }
         public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
-        public Color Color { get; set; }
+        private Color _color;
+        public Color Color
+        {
+            get => _color;
+            set
+            {
+                _color = value;
+                OnPropertyChanged(nameof(Color));
+            }
+        }
 
         public InterpolatingSpline(Point[] controlPoints)
         {
