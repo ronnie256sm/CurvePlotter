@@ -366,6 +366,7 @@ namespace splines_avalonia.ViewModels
             {
                 var newCurve = logic.CreateInterpolatingSpline(newPoints);
                 newCurve.ControlPointsFile = newPointsFile;
+                newCurve.Color = SelectedCurve.Color;
                 int index = CurveList.IndexOf(SelectedCurve);
                 if (index >= 0 && newCurve.IsPossible)
                 {
@@ -383,6 +384,7 @@ namespace splines_avalonia.ViewModels
                 var newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
                 newCurve.ControlPointsFile = newPointsFile;
                 newCurve.GridFile = newMeshFile;
+                newCurve.Color = SelectedCurve.Color;
                 int index = CurveList.IndexOf(SelectedCurve);
                 if (index >= 0 && newCurve.IsPossible)
                 {
