@@ -1,8 +1,3 @@
-using System;
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using splines_avalonia.Helpers;
-
 namespace splines_avalonia
 {
     public class SplineLogic : ILogic

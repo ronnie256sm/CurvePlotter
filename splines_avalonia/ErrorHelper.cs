@@ -1,8 +1,5 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia;
-using Avalonia.Media;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
