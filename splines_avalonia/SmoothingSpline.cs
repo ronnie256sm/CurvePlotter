@@ -121,7 +121,6 @@ namespace splines_avalonia
             bool IsPossible = true;
             if (!slae.Solve())
             {
-                ErrorHelper.ShowError("Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
                 IsPossible = false;
             }
             return IsPossible;

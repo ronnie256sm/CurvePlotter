@@ -39,16 +39,9 @@
 
                                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                         <TextBlock Text="Цвет:" VerticalAlignment="Center"/>
-                                        <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="100" />
-                                    </StackPanel>
-
-                                    <StackPanel Orientation="Horizontal" Spacing="5" HorizontalAlignment="Right">
-                                        <Button Content="✎" Width="30" 
-                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}"
-                                                CommandParameter="{Binding}"/>
-                                        <Button Content="✖" Width="30" 
-                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}"
-                                                CommandParameter="{Binding}"/>
+                                        <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="150" />
+                                        <Button Content="✎" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Content="✖" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>

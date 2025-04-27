@@ -8,7 +8,7 @@ namespace splines_avalonia.Views
 {
     public partial class SmoothingSplineInputDialog : Window
     {
-        #pragma warning disable CS8618, CS8601
+        #pragma warning disable CS8618, CS8601, CS8604
         // Сохраняем строки для путей файлов и коэффициента сглаживания
         public string PointsFile { get; private set; }
         public string MeshFile { get; private set; }
@@ -92,7 +92,6 @@ namespace splines_avalonia.Views
 
             MeshFile = MeshFilePath.Text;
 
-
             // Сохраняем введенную строку для коэффициента сглаживания (без парсинга)
             SmoothingFactorAlpha = SmoothingFactorAlphaValue.Text;
             SmoothingFactorBeta = SmoothingFactorBetaValue.Text; 
@@ -109,6 +108,15 @@ namespace splines_avalonia.Views
                 await ErrorHelper.ShowError("Пожалуйста, введите коэффициент сглаживания бета.");
                 return;
             }
+
+            SmoothingSpline TestSpline = new SmoothingSpline(FileReader.ReadPoints(PointsFile), FileReader.ReadGrid(MeshFile), SmoothingFactorAlpha, SmoothingFactorBeta);
+            if (!TestSpline.IsPossible)
+            {
+                await ErrorHelper.ShowError("Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                return;
+            }
+            TestSpline = null;
+            
             IsOkClicked = true;
             Close(); // Закрываем диалог
         }
