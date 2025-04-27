@@ -18,7 +18,7 @@ namespace splines_avalonia.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private Canvas _graphicCanvas;
+        public Canvas _graphicCanvas;
         private TextBlock _statusBar;
         private double _offsetX;
         private double _offsetY;
@@ -27,7 +27,7 @@ namespace splines_avalonia.ViewModels
         private double _fixedCenterY = 300;
         private Avalonia.Point _lastPanPosition;
 
-        public ObservableCollection<ICurve> CurveList { get; } = new();
+        public static ObservableCollection<ICurve> CurveList { get; } = new();
         private ICurve? _selectedCurve;
         public ICurve? SelectedCurve
         {
@@ -45,6 +45,9 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<ICurve, Unit> EditCurveCommand { get; }
         public ReactiveCommand<ICurve, Unit> DeleteCurveCommand { get; }
+        public ReactiveCommand<Unit, Unit> SaveJsonCommand { get; }
+        public ReactiveCommand<Unit, Unit> LoadJsonCommand { get; }
+        public ReactiveCommand<Unit, Unit> SavePngCommand { get; }
         public MainWindowViewModel()
         {
             // Initialize commands
@@ -62,6 +65,10 @@ namespace splines_avalonia.ViewModels
                 SelectedCurve = curve;
                 DeleteSelectedCurve();
             });
+
+            SaveJsonCommand = ReactiveCommand.CreateFromTask(() => IO.SaveJSON(CurveList));
+            LoadJsonCommand = ReactiveCommand.CreateFromTask(() => IO.LoadJSON());
+            SavePngCommand = ReactiveCommand.CreateFromTask(() => IO.SavePNG());
 
             CurveList.CollectionChanged += CurveList_CollectionChanged;
         }
@@ -89,8 +96,9 @@ namespace splines_avalonia.ViewModels
                     }
                 }
             }
+            DrawCurves();
         }
-
+        
         private void Curve_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ICurve.IsVisible) || e.PropertyName == nameof(ICurve.Color))
@@ -404,9 +412,7 @@ namespace splines_avalonia.ViewModels
         }
 
         private async void EditCurve()
-        {
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-            
+        {            
             if (SelectedCurve != null && SelectedCurve.Type == "Function")
             {
                 EditFunction();
