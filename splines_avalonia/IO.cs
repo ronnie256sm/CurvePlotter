@@ -16,6 +16,8 @@ using splines_avalonia.Views;
 
 namespace splines_avalonia.ViewModels;
 
+#pragma warning disable CS8602, CS8600, CS8604
+
 public static  class IO
 {
     public static async Task SaveJSON(ObservableCollection<ICurve> curves)
