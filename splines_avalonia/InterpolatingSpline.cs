@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia.Media;
+using DynamicData.Kernel;
 
 namespace splines_avalonia
 {

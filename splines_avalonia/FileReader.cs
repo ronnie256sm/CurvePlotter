@@ -2,28 +2,46 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using splines_avalonia.Helpers;
 
-#pragma warning disable CS8604
+#pragma warning disable CS8604, CS8603
 
 namespace splines_avalonia
 {
     public static class FileReader
     {
-        public static Point[] ReadPoints(string pointsFile)
+        public static async Task<Point[]> ReadPoints(string pointsFile)
         {
-            string[] lines = File.ReadAllLines(pointsFile);
+            var rawLines = File.ReadAllLines(pointsFile);
+            var lines = rawLines
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToArray();
+
             if (lines.Length == 0)
-                throw new InvalidDataException("Файл пустой.");
+            {
+                await ErrorHelper.ShowError("Ошибка", "Файл с точками пустой.");
+                return null;
+            }
 
             int numPoints = int.Parse(lines[0].Trim());
-            if (lines.Length - 1 < numPoints)
-                throw new InvalidDataException("Недостаточно точек в файле.");
+            int actualDataLines = lines.Length - 1;
 
-            if (lines.Length - 1 > numPoints)
-                Console.WriteLine($"Имеются лишние точки в файле. Будут считаны только первые {numPoints} точек.");
+            if (actualDataLines < numPoints)
+            {
+                await ErrorHelper.ShowError("Ошибка", "Недостаточно точек в файле.");
+                return null;
+            }
+
+            if (actualDataLines > numPoints)
+                await ErrorHelper.ShowError("Предупреждение", $"Имеются лишние точки в файле. Будут считаны только первые {numPoints} точек.");
 
             if (numPoints <= 3)
-                throw new InvalidDataException("Требуется как минимум 3 точки.");
+            {
+                await ErrorHelper.ShowError("Ошибка", "Требуется как минимум 3 точки.");
+                return null;
+            }
 
             Point[] controlPoints = new Point[numPoints];
             var format = CultureInfo.InvariantCulture;
@@ -32,7 +50,10 @@ namespace splines_avalonia
             {
                 string[] parts = lines[i + 1].Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length < 2)
-                    throw new InvalidDataException($"Ошибка в строке {i + 2}: недостаточно координат");
+                {
+                    await ErrorHelper.ShowError("Ошибка", $"Ошибка в строке {i + 2}: недостаточно координат");
+                    return null;
+                }
 
                 double x = double.Parse(parts[0], format);
                 double y = double.Parse(parts[1], format);
@@ -42,28 +63,38 @@ namespace splines_avalonia
             return controlPoints;
         }
 
-        public static double[] ReadGrid(string gridFile)
+        public static async Task<double[]> ReadGrid(string gridFile)
         {
-            string[] lines = File.ReadAllLines(gridFile);
+            var rawLines = File.ReadAllLines(gridFile);
+            var lines = rawLines
+                .Where(line => !string.IsNullOrWhiteSpace(line))
+                .ToArray();
+
             if (lines.Length == 0)
-                throw new InvalidDataException("Файл пустой.");
-            
-            var reader = new StreamReader(gridFile);
-            int gridSize = int.Parse(reader.ReadLine());
+            {
+                await ErrorHelper.ShowError("Ошибка", "Файл с сеткой пустой.");
+                return null;
+            }
 
-            if (lines.Length - 1 < gridSize)
-                throw new InvalidDataException("Недостаточно элементов в файле.");
+            int gridSize = int.Parse(lines[0].Trim());
+            int actualDataLines = lines.Length - 1;
 
-            if (lines.Length - 1 > gridSize)
-                Console.WriteLine($"Имеются лишние элементы. Будут прочитаны только первые {gridSize} элементов.");
+            if (actualDataLines < gridSize)
+            {
+                await ErrorHelper.ShowError("Ошибка", "Недостаточно элементов в файле.");
+                return null;
+            }
 
-            var mesh = new List<double>();
+            if (actualDataLines > gridSize)
+                await ErrorHelper.ShowError("Предупреждение", $"Имеются лишние элементы. Будут прочитаны только первые {gridSize} элементов.");
+
+            var mesh = new double[gridSize];
             for (int i = 0; i < gridSize; i++)
             {
-                var line = reader.ReadLine();
-                mesh.Add(double.Parse(line));
+                mesh[i] = double.Parse(lines[i + 1], CultureInfo.InvariantCulture);
             }
-            return mesh.ToArray();
+
+            return mesh;
         }
     }
 }

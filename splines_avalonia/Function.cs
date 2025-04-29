@@ -72,7 +72,6 @@ public class Function : ICurve
     private bool _hasError = false;
     public string ControlPointsFile { get; set; }
     public string GridFile { get; set; }
-
     public event PropertyChangedEventHandler? PropertyChanged;
     protected void OnPropertyChanged(string propertyName)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

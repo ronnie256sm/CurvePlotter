@@ -77,7 +77,7 @@ namespace splines_avalonia.Views
             // Проверка на выбор файла с точками
             if (string.IsNullOrWhiteSpace(PointsFilePath.Text))
             {
-                await ErrorHelper.ShowError("Пожалуйста, выберите файл с точками.");
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
                 return;
             }
 
@@ -86,7 +86,7 @@ namespace splines_avalonia.Views
             // Проверка на выбор файла сетки
             if (string.IsNullOrWhiteSpace(MeshFilePath.Text))
             {
-                await ErrorHelper.ShowError("Пожалуйста, выберите файл сетки.");
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл сетки.");
                 return;
             }
 
@@ -99,23 +99,15 @@ namespace splines_avalonia.Views
             // Проверка, что строка для коэффициента не пустая
             if (string.IsNullOrWhiteSpace(SmoothingFactorAlpha))
             {
-                await ErrorHelper.ShowError("Пожалуйста, введите коэффициент сглаживания альфа.");
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, введите коэффициент сглаживания альфа.");
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(SmoothingFactorBeta))
             {
-                await ErrorHelper.ShowError("Пожалуйста, введите коэффициент сглаживания бета.");
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, введите коэффициент сглаживания бета.");
                 return;
             }
-
-            SmoothingSpline TestSpline = new SmoothingSpline(FileReader.ReadPoints(PointsFile), FileReader.ReadGrid(MeshFile), SmoothingFactorAlpha, SmoothingFactorBeta);
-            if (!TestSpline.IsPossible)
-            {
-                await ErrorHelper.ShowError("Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
-                return;
-            }
-            TestSpline = null;
             
             IsOkClicked = true;
             Close(); // Закрываем диалог

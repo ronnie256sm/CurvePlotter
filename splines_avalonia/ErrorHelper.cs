@@ -11,13 +11,13 @@ namespace splines_avalonia.Helpers;
 
 public static class ErrorHelper
 {
-    public static async Task ShowError(string message)
+    public static async Task ShowError(string contentTitle, string message)
     {
         var owner = GetActiveWindow();
 
         var box = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
         {
-            ContentTitle = "Ошибка",
+            ContentTitle = contentTitle,
             ContentMessage = message,
             ButtonDefinitions = new[]
             {
