@@ -18,7 +18,7 @@ namespace splines_avalonia.ViewModels;
 
 #pragma warning disable CS8602, CS8600, CS8604
 
-public static  class IO
+public static class IO
 {
     public static async Task SaveJSON(ObservableCollection<ICurve> curves)
     {
@@ -71,7 +71,11 @@ public static  class IO
                             }
                         }).ToList();
 
-                        var jsonString = JsonConvert.SerializeObject(curvesInfo, Formatting.Indented);
+                        var jsonString = JsonConvert.SerializeObject(curvesInfo, new JsonSerializerSettings 
+                        { 
+                            Formatting = Formatting.Indented,
+                            NullValueHandling = NullValueHandling.Ignore
+                        });
                         File.WriteAllText(filePath, jsonString);
                         break;
                     default:
