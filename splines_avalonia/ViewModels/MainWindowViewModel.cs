@@ -489,6 +489,32 @@ namespace splines_avalonia.ViewModels
                         };
                         GraphicCanvas.Children.Add(polyline);
                     }
+
+                    // контрольные точки
+                    if (curve.ControlPoints != null)
+                    {
+                        foreach (var p in curve.ControlPoints)
+                        {
+                            var screenPoint = new Avalonia.Point(
+                                (p.X * _zoom) + CenterX() + _offsetX,
+                                (-p.Y * _zoom) + CenterY() + _offsetY
+                            );
+
+                            var ellipse = new Ellipse
+                            {
+                                Width = 6,
+                                Height = 6,
+                                Fill = new SolidColorBrush(curve.Color),
+                                Stroke = new SolidColorBrush(curve.Color),
+                                StrokeThickness = 1
+                            };
+
+                            Canvas.SetLeft(ellipse, screenPoint.X - 3); // центрируем круг
+                            Canvas.SetTop(ellipse, screenPoint.Y - 3);
+
+                            GraphicCanvas.Children.Add(ellipse);
+                        }
+                    }
                 }
 
                 if (curve.Type == "Function" && curve.IsVisible && curve.IsPossible)
