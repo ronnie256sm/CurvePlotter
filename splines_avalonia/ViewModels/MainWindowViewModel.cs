@@ -41,7 +41,8 @@ namespace splines_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
         }
 
-        public ReactiveCommand<Unit, Unit> AddSplineCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddInterpolatingSplineCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddSmoothingSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<ICurve, Unit> EditCurveCommand { get; }
         public ReactiveCommand<ICurve, Unit> DeleteCurveCommand { get; }
@@ -51,7 +52,8 @@ namespace splines_avalonia.ViewModels
         public MainWindowViewModel()
         {
             // Initialize commands
-            AddSplineCommand = ReactiveCommand.Create(AddSpline);
+            AddInterpolatingSplineCommand = ReactiveCommand.Create(AddInterpolatingSpline);
+            AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             // Изменяем команды для работы с параметром
             EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
@@ -184,118 +186,86 @@ namespace splines_avalonia.ViewModels
             }
         }
 
-        private async void AddSpline()
+        private async void AddInterpolatingSpline()
         {
-            var chooser = new AddCurveDialog();
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow; // Преобразуем в Window
-            var choice = await chooser.ShowDialog<AddCurveDialog.CurveType?>(mainWindow);
+            var inputDialog = new InterpolatingSplineInputDialog();
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            if (choice == null) return; // Если не выбран тип кривой, выходим
+            await inputDialog.ShowDialog(mainWindow);
 
-            // Создаем диалог для ввода данных в зависимости от типа кривой
-            Window inputDialog;
-            if (choice == AddCurveDialog.CurveType.InterpolatingSpline)
-            {
-                inputDialog = new InterpolatingSplineInputDialog();
-            }
-            else
-            {
-                inputDialog = new SmoothingSplineInputDialog();
-            }
+            if (!inputDialog.IsOkClicked)
+                return;
 
-            await inputDialog.ShowDialog(mainWindow); // Передаем правильный тип: window
+            string pointsFile = inputDialog.PointsFile;
 
-            // Проверяем, был ли выбран файл точек
-            string pointsFile = null;
-            string smoothingCoefficientAlpha = null;
-            string smoothingCoefficientBeta = null;
-            string meshFile = null;
-
-            // Обрабатываем диалог в зависимости от типа
-            if (inputDialog is InterpolatingSplineInputDialog interpolatingDialog)
-            {
-                pointsFile = interpolatingDialog.PointsFile;
-            }
-            else if (inputDialog is SmoothingSplineInputDialog smoothingDialog)
-            {
-                pointsFile = smoothingDialog.PointsFile;
-                smoothingCoefficientAlpha = smoothingDialog.SmoothingFactorAlpha;
-                smoothingCoefficientBeta = smoothingDialog.SmoothingFactorBeta;  // Получаем коэффициент сглаживания как строку
-                meshFile = smoothingDialog.MeshFile;
-            }
-
-            // Проверка, был ли закрыт диалог без нажатия "ОК"
-            if (inputDialog is InterpolatingSplineInputDialog interpolating && !interpolating.IsOkClicked)
-            {
-                return; // Закрытие окна без ошибок
-            }
-            if (inputDialog is SmoothingSplineInputDialog smoothing && !smoothing.IsOkClicked)
-            {
-                return; // Закрытие окна без ошибок
-            }
-
-            // Если файл точек не выбран, выходим
             if (string.IsNullOrWhiteSpace(pointsFile))
             {
-                var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
-
                 await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
                 return;
             }
 
-            // Чтение точек из файла
-            var points = FileReader.ReadPoints(pointsFile);
-            double[] mesh = null;
+            var points = await FileReader.ReadPoints(pointsFile);
 
-            // Проверка на наличие файла сетки для сглаживающего сплайна
-            if (!string.IsNullOrWhiteSpace(meshFile))
-            {
-                mesh = await FileReader.ReadGrid(meshFile);
-            }
-            else if (choice == AddCurveDialog.CurveType.SmoothingSpline)
-            {
-                var MainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow as Avalonia.Controls.Window; // Получаем главное окно
-                await ErrorHelper.ShowError("Ошибка", "Для сглаживающего сплайна необходимо выбрать файл сетки.");
-                return;
-            }
-
-            // Определяем тип сплайна
-            string type = choice == AddCurveDialog.CurveType.SmoothingSpline ? "Smoothing Cubic" : "Interpolating Cubic";
-
-            // Логика создания кривой с сохранением путей файлов
             var logic = new SplineLogic();
-            if (type == "Interpolating Cubic")
+            var curve = logic.CreateInterpolatingSpline(points);
+
+            if (curve != null && curve.IsPossible)
             {
-                var curve = logic.CreateInterpolatingSpline(await points);
-                if (curve != null)
-                {
-                    if (curve.IsPossible)
-                    {
-                        curve.ControlPointsFile = pointsFile;
-                        CurveList.Add(curve);
-                    }
-                }
-            }
-            else if (type == "Smoothing Cubic")
-            {
-                var curve = logic.CreateSmoothingSpline(mesh, await points, smoothingCoefficientAlpha, smoothingCoefficientBeta);
-                if (curve != null)
-                {
-                    if (curve.IsPossible && curve != null)
-                    {
-                        curve.ControlPointsFile = pointsFile;
-                        curve.GridFile = meshFile;
-                        CurveList.Add(curve);
-                    }
-                }
-                else
-                    await ErrorHelper.ShowError("Ошибка", "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                curve.ControlPointsFile = pointsFile;
+                CurveList.Add(curve);
             }
             else
             {
-                await ErrorHelper.ShowError("Ошибка", "Не удалось добавить сплайн.");
+                await ErrorHelper.ShowError("Ошибка", "Не удалось построить интерполяционный сплайн.");
             }
-            // Перерисовываем кривые
+
+            DrawCurves();
+        }
+
+        private async void AddSmoothingSpline()
+        {
+            var inputDialog = new SmoothingSplineInputDialog();
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+
+            await inputDialog.ShowDialog(mainWindow);
+
+            if (!inputDialog.IsOkClicked)
+                return;
+
+            string pointsFile = inputDialog.PointsFile;
+            string meshFile = inputDialog.MeshFile;
+            string smoothingAlpha = inputDialog.SmoothingFactorAlpha;
+            string smoothingBeta = inputDialog.SmoothingFactorBeta;
+
+            if (string.IsNullOrWhiteSpace(pointsFile))
+            {
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(meshFile))
+            {
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл сетки.");
+                return;
+            }
+
+            var points = await FileReader.ReadPoints(pointsFile);
+            var mesh = await FileReader.ReadGrid(meshFile);
+
+            var logic = new SplineLogic();
+            var curve = logic.CreateSmoothingSpline(mesh, points, smoothingAlpha, smoothingBeta);
+
+            if (curve != null && curve.IsPossible)
+            {
+                curve.ControlPointsFile = pointsFile;
+                curve.GridFile = meshFile;
+                CurveList.Add(curve);
+            }
+            else
+            {
+                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+            }
+
             DrawCurves();
         }
 
