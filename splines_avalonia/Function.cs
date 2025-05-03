@@ -103,7 +103,7 @@ namespace splines_avalonia
                             args.Result = 1.0 / Math.Tan(Convert.ToDouble(args.Parameters[0].Evaluate()));
                             break;
                         case "arccot":
-                            args.Result = Math.Atan(1.0 / Convert.ToDouble(args.Parameters[0].Evaluate()));
+                            args.Result = Math.Atan(-Convert.ToDouble(args.Parameters[0].Evaluate())) + (Math.PI / 2);
                             break;
                         case "sgn":
                             args.Result = Math.Sign(Convert.ToDouble(args.Parameters[0].Evaluate()));
