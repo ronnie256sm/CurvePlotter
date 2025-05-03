@@ -180,7 +180,11 @@ namespace splines_avalonia.Views
         private string ValidateFunction(string func, int args)
         {
             string lowerFunc = func.ToLower();
-            string[] singleArg = { "sin", "cos", "tg", "sqrt", "lg", "exp" };
+            string[] singleArg = {
+                "sin", "cos", "tg", "ctg",
+                "arcsin", "arccos", "arctg", "arcctg",
+                "sqrt", "lg", "exp", "sgn", "ln"
+            };
             string[] doubleArg = { "pow", "log" };
 
             if (Array.Exists(singleArg, f => f == lowerFunc) && args != 1)
