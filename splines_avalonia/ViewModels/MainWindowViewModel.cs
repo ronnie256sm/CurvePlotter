@@ -602,25 +602,18 @@ namespace splines_avalonia.ViewModels
 
         private const double MinZoom = 0.00001;
         private const double MaxZoom = 10000;
-        private const double MaxOffset = 1000000000; // можно изменить при необходимости
 
         public void HandleZoom(double delta)
         {
-            // Центр канваса (куда обычно масштабируется)
             double centerX = CenterX();
             double centerY = CenterY();
 
-            // Мировые координаты центра до изменения зума
             double worldX = (centerX - _offsetX - centerX) / _zoom;
             double worldY = (centerY - _offsetY - centerY) / _zoom;
 
-            // Меняем зум
             _zoom *= delta > 0 ? 1.1 : 0.9;
-
-            // Ограничение зума
             _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom));
 
-            // Пересчитываем смещения так, чтобы та же мировая точка снова оказалась в центре
             _offsetX = -(worldX * _zoom);
             _offsetY = -(worldY * _zoom);
 
@@ -632,6 +625,7 @@ namespace splines_avalonia.ViewModels
             if (times > 0)
             {
                 _zoom *= times;
+                _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom));
                 DrawCurves();
             }
         }
@@ -648,8 +642,8 @@ namespace splines_avalonia.ViewModels
 
             _offsetX += dx;
             _offsetY += dy;
-            _lastPanPosition = current;
 
+            _lastPanPosition = current;
             DrawCurves();
         }
 
