@@ -717,7 +717,7 @@ namespace splines_avalonia.ViewModels
                 if (labelY < 0 || labelY > height)
                 {
                     // Размещаем внизу или вверху в зависимости от четверти
-                    labelY = (_offsetY >= 0) ? height - 15 : 2;
+                    labelY = (_offsetY >= 0) ? height - 20 : 10;
                 }
 
                 Canvas.SetLeft(text, screenX + 2);
@@ -750,10 +750,7 @@ namespace splines_avalonia.ViewModels
                 double labelX = CenterX() + _offsetX + 2;
                 if (labelX < 0 || labelX > width)
                 {
-                    // !! Поменяли стороны местами !!
-                    // Теперь если offsetX >= 0 (центр справа) -> текст СПРАВА,
-                    // если offsetX < 0 (центр слева) -> текст СЛЕВА.
-                    labelX = (_offsetX >= 0) ? width - 30 : 2;
+                    labelX = (_offsetX >= 0) ? width - 20 : 10;
                 }
 
                 Canvas.SetLeft(text, labelX);

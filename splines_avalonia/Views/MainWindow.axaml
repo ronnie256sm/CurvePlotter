@@ -63,9 +63,15 @@
         <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
-                    <Button Content="S" Width="30" Height="30" Command="{Binding SaveJsonCommand}"/>
-                    <Button Content="P" Width="30" Height="30" Command="{Binding SavePngCommand}"/>
-                    <Button Content="L" Width="30" Height="30" Command="{Binding LoadJsonCommand}"/>
+                    <Button Content="🖫" HorizontalAlignment="Center">
+                    <Button.Flyout>
+                        <MenuFlyout>
+                        <MenuItem Header="Сохранить" Command="{Binding SaveJsonCommand}"/>
+                        <MenuItem Header="Открыть" Command="{Binding LoadJsonCommand}"/>
+                        <MenuItem Header="Экспортировать в PNG" Command="{Binding SavePngCommand}"/>
+                        </MenuFlyout>
+                    </Button.Flyout>
+                    </Button>
                     <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition"/>
                     <RepeatButton Content="←" Width="30" Height="30" Click="OnMoveLeft"/>
                     <RepeatButton Content="↓" Width="30" Height="30" Click="OnMoveDown"/>
