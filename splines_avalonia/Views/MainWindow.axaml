@@ -22,11 +22,15 @@
 
         <Grid Grid.Row="0" Grid.Column="1" Background="#1E1E1E">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Border Margin="10" Background="White" CornerRadius="4" BorderBrush="DarkGray" BorderThickness="1">
+            <!-- Надпись для списка кривых -->
+            <TextBlock Text="Список кривых" FontSize="16" FontWeight="Bold" Margin="10" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" />
+
+            <Border Margin="10" Background="White" CornerRadius="4" BorderBrush="DarkGray" BorderThickness="1" Grid.Row="1">
                 <ListBox ItemsSource="{Binding CurveList}" SelectedItem="{Binding SelectedCurve}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
@@ -50,7 +54,7 @@
                 </ListBox>
             </Border>
 
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10" Spacing="10">
+            <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10" Spacing="10">
                 <Button Content="Добавить сплайн" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddSplineCommand}"/>
                 <Button Content="Добавить функцию" Height="40" FontSize="16" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Command="{Binding AddFunctionCommand}"/>
             </StackPanel>
