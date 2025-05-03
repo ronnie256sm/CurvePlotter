@@ -620,16 +620,6 @@ namespace splines_avalonia.ViewModels
             DrawCurves();
         }
 
-        public void Scale(double times)
-        {
-            if (times > 0)
-            {
-                _zoom *= times;
-                _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom));
-                DrawCurves();
-            }
-        }
-
         public void StartPan(Avalonia.Point point)
         {
             _lastPanPosition = point;

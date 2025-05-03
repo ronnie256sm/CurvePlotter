@@ -95,25 +95,5 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         ViewModel.MoveDown();
     }
-
-    private async void OnZoomCustom(object sender, RoutedEventArgs e)
-    {
-        var dialog = new ZoomInputDialog
-        {
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
-        };
-
-        var result = await dialog.ShowDialog<bool>(this);
-        if (!result) return;
-
-        if (double.TryParse(dialog.ScaleText, out double scale) && scale > 0)
-        {
-            ViewModel?.Scale(scale);
-        }
-        else
-        {
-            await ErrorHelper.ShowError("Ошибка", "Некорректное значение. Введите положительное число.");
-        }
-    }
     #pragma warning restore CS8602
 }

@@ -69,7 +69,6 @@
                     <RepeatButton Content="→" Width="30" Height="30" Click="OnMoveRight"/>
                     <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn"/>
                     <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut"/>
-                    <Button Content="🔍" Width="30" Height="30" Click="OnZoomCustom"/>
                 </StackPanel>
                 <TextBlock x:Name="StatusBar" FontSize="14" Foreground="White" VerticalAlignment="Center" />
             </DockPanel>
