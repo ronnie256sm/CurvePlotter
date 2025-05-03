@@ -531,10 +531,13 @@ namespace splines_avalonia.ViewModels
 
                     var points = new Points();
 
+                    double lastY = double.NaN; // Для отслеживания разрывов
+
                     for (double x = startX; x <= endX; x += step)
                     {
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
 
+                        // Если значение функции бесконечно или неопределено, разрываем отрисовку
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
                             if (points.Count >= 2)
@@ -549,7 +552,26 @@ namespace splines_avalonia.ViewModels
                             }
 
                             points.Clear();
+                            lastY = double.NaN;
                             continue;
+                        }
+
+                        // Увеличиваем шаг для функций с резкими изменениями (например, сигнум)
+                        if (Math.Abs(y - lastY) > 10) // Порог для резких изменений
+                        {
+                            if (points.Count >= 2)
+                            {
+                                var polyline = new Polyline
+                                {
+                                    Points = new Points(points),
+                                    Stroke = new SolidColorBrush(curve.Color),
+                                    StrokeThickness = 2
+                                };
+                                GraphicCanvas.Children.Add(polyline);
+                            }
+
+                            points.Clear();
+                            lastY = y;
                         }
 
                         var screenPoint = new Avalonia.Point(
@@ -560,6 +582,7 @@ namespace splines_avalonia.ViewModels
                         if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
                         {
                             points.Add(screenPoint);
+                            lastY = y;
                         }
                         else
                         {
