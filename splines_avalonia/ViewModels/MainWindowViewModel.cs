@@ -527,22 +527,22 @@ namespace splines_avalonia.ViewModels
                         }
 
                         // Увеличиваем шаг для функций с резкими изменениями (например, сигнум)
-                        if (Math.Abs(y - lastY) > 10) // Порог для резких изменений
-                        {
-                            if (points.Count >= 2)
-                            {
-                                var polyline = new Polyline
-                                {
-                                    Points = new Points(points),
-                                    Stroke = new SolidColorBrush(curve.Color),
-                                    StrokeThickness = 2
-                                };
-                                GraphicCanvas.Children.Add(polyline);
-                            }
+                        // if (Math.Abs(y - lastY) > 10) // Порог для резких изменений
+                        // {
+                        //     if (points.Count >= 2)
+                        //     {
+                        //         var polyline = new Polyline
+                        //         {
+                        //             Points = new Points(points),
+                        //             Stroke = new SolidColorBrush(curve.Color),
+                        //             StrokeThickness = 2
+                        //         };
+                        //         GraphicCanvas.Children.Add(polyline);
+                        //     }
 
-                            points.Clear();
-                            lastY = y;
-                        }
+                        //     points.Clear();
+                        //     lastY = y;
+                        // }
 
                         var screenPoint = new Avalonia.Point(
                             (x * _zoom) + CenterX() + _offsetX,
@@ -679,7 +679,7 @@ namespace splines_avalonia.ViewModels
                 {
                     Text = labelText,
                     Foreground = Brushes.Gray,
-                    FontSize = 12
+                    FontSize = 10
                 };
 
                 // Определяем, где разместить подпись по оси X
@@ -713,7 +713,7 @@ namespace splines_avalonia.ViewModels
                 {
                     Text = labelText,
                     Foreground = Brushes.Gray,
-                    FontSize = 12
+                    FontSize = 10
                 };
 
                 // Определяем, где разместить подпись по оси Y
