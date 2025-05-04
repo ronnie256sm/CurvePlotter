@@ -91,7 +91,6 @@ namespace splines_avalonia
             try
             {
                 string processed = PreprocessFunctionString(function);
-                ValidateFunctionArguments(processed);
                 _cachedExpr = new Expression(processed, EvaluateOptions.IgnoreCase);
 
                 // Добавляем обработчик ДЛЯ ЭТОГО экземпляра Expression
@@ -177,88 +176,6 @@ namespace splines_avalonia
                 _cachedExpr = new Expression("0");
                 return double.NaN;
             }
-        }
-
-        private int CountArgumentsInFunctionCall(string argsSubstring)
-        {
-            int level = 0;
-            int argCount = 1; // по умолчанию 1 аргумент
-            for (int i = 0; i < argsSubstring.Length; i++)
-            {
-                char c = argsSubstring[i];
-                if (c == '(') level++;
-                else if (c == ')') level--;
-                else if (c == ',' && level == 0)
-                    argCount++;
-            }
-
-            // если аргументов нет (например, пустые скобки), то возвращаем 0
-            if (string.IsNullOrWhiteSpace(argsSubstring))
-                return 0;
-
-            return argCount;
-        }
-
-        private void ValidateFunctionArguments(string expression)
-        {
-            for (int i = 0; i < expression.Length; i++)
-            {
-                if (char.IsLetter(expression[i]))
-                {
-                    int funcStart = i;
-                    while (i < expression.Length && char.IsLetter(expression[i]))
-                        i++;
-
-                    string funcName = expression.Substring(funcStart, i - funcStart);
-
-                    // Пропускаем пробелы
-                    while (i < expression.Length && char.IsWhiteSpace(expression[i])) i++;
-
-                    if (i < expression.Length && expression[i] == '(')
-                    {
-                        int start = i + 1;
-                        int level = 1;
-
-                        while (i + 1 < expression.Length && level > 0)
-                        {
-                            i++;
-                            if (expression[i] == '(') level++;
-                            else if (expression[i] == ')') level--;
-                        }
-
-                        if (level == 0)
-                        {
-                            string args = expression.Substring(start, i - start);
-                            int argCount = CountArgumentsInFunctionCall(args);
-
-                            ValidateFunction(funcName, argCount);
-                        }
-                        else
-                        {
-                            throw new Exception($"Невалидная скобочная структура в функции '{funcName}'.");
-                        }
-                    }
-                }
-            }
-        }
-
-        private void ValidateFunction(string func, int args)
-        {
-            Console.SetOut(TextWriter.Null);
-
-            string lowerFunc = func.ToLower();
-            string[] singleArg = {
-                "sin", "cos", "tg", "ctg",
-                "arcsin", "arccos", "arctg", "arcctg",
-                "sqrt", "lg", "exp", "sgn", "ln"
-            };
-            string[] doubleArg = { "pow", "log" };
-
-            if (Array.Exists(singleArg, f => f == lowerFunc) && args != 1)
-                throw new Exception($"Функция '{func}' должна иметь 1 аргумент, но получено {args}.");
-
-            if (Array.Exists(doubleArg, f => f == lowerFunc) && args != 2)
-                throw new Exception($"Функция '{func}' должна иметь 2 аргумента, но получено {args}.");
         }
     }
 }
