@@ -8,7 +8,13 @@
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
             <TextBlock Text="Файл точек:"/>
             <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch">
+                <ToolTip.Tip>
+                    <TextBlock Width="300"
+                            TextWrapping="Wrap"
+                            Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
+                </ToolTip.Tip>
+            </Button>
         </StackPanel>
 
         <!-- Панель для кнопок OK и Отмена внизу -->

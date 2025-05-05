@@ -8,11 +8,23 @@
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
             <TextBlock Text="Файл точек:"/>
             <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch">
+                <ToolTip.Tip>
+                    <TextBlock Width="300"
+                            TextWrapping="Wrap"
+                            Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
+                </ToolTip.Tip>
+            </Button>
 
             <TextBlock Text="Файл сетки:"/>
             <TextBox Name="MeshFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл сетки" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectMeshFileClick" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл сетки" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectMeshFileClick" HorizontalAlignment="Stretch">
+                <ToolTip.Tip>
+                    <TextBlock Width="300"
+                            TextWrapping="Wrap"
+                            Text="Формат файла: первая строка — количество узлов сетки; каждая последующая строка содержит координату узла по оси X; все значения задаются в отдельных строках"/>
+                </ToolTip.Tip>
+            </Button>
 
             <TextBlock Text="Коэффициент сглаживания (альфа):"/>
             <TextBox Name="SmoothingFactorAlphaValue" HorizontalAlignment="Stretch"/>
