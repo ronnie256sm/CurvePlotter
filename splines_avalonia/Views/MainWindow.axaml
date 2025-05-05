@@ -60,10 +60,21 @@
                                     </StackPanel>
 
                                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                        <TextBlock Text="Цвет:" VerticalAlignment="Center"/>
-                                        <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="150" />
-                                        <Button Content="✎" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                        <Button Content="✖" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="150">
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="Выбор цвета"/>
+                                            </ToolTip.Tip>
+                                        </ColorPicker>
+                                        <Button Content="✎" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="Редактировать"/>
+                                            </ToolTip.Tip>
+                                        </Button>
+                                        <Button Content="✕" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                <ToolTip.Tip>
+                                                <TextBlock Text="Удалить"/>
+                                            </ToolTip.Tip>
+                                        </Button>
                                     </StackPanel>
                                 </StackPanel>
                             </Border>
@@ -84,14 +95,45 @@
                                 <MenuItem Header="Экспортировать в PNG" Command="{Binding SavePngCommand}"/>
                             </MenuFlyout>
                         </Button.Flyout>
+                        <ToolTip.Tip>
+                            <TextBlock Text="Файл"/>
+                        </ToolTip.Tip>
                     </Button>
-                    <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition"/>
-                    <RepeatButton Content="←" Width="30" Height="30" Click="OnMoveLeft"/>
-                    <RepeatButton Content="↓" Width="30" Height="30" Click="OnMoveDown"/>
-                    <RepeatButton Content="↑" Width="30" Height="30" Click="OnMoveUp"/>
-                    <RepeatButton Content="→" Width="30" Height="30" Click="OnMoveRight"/>
-                    <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn"/>
-                    <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut"/>
+                    <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Возврат в исходное положение"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <RepeatButton Content="←" Width="30" Height="30" Click="OnMoveLeft">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Сдвиг влево"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
+                    <RepeatButton Content="↓" Width="30" Height="30" Click="OnMoveDown">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Сдвиг вниз"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
+                    <RepeatButton Content="↑" Width="30" Height="30" Click="OnMoveUp">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Сдвиг вверх"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
+                    <RepeatButton Content="→" Width="30" Height="30" Click="OnMoveRight">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Сдвиг вправо"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
+                    <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Приблизить"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
+                    <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Отдалить"/>
+                        </ToolTip.Tip>
+                    </RepeatButton>
                 </StackPanel>
                 <TextBlock x:Name="StatusBar" FontSize="14" Foreground="White" VerticalAlignment="Center" />
             </DockPanel>
