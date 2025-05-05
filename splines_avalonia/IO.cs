@@ -12,6 +12,7 @@ using Avalonia.Platform.Storage;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using splines_avalonia.Views;
+using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels;
 
@@ -134,9 +135,20 @@ public static class IO
                             {
                                 var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
                                 var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                curve = logic.CreateInterpolatingSpline(points);
-                                curve.Name = name;
-                                Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
+                                if (points.Length < 3 && points.Length > 0)
+                                {
+                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                }
+                                if (points.Length == 0)
+                                {
+                                    await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                }
+                                if (points.Length >= 3)
+                                {
+                                    curve = logic.CreateInterpolatingSpline(points);
+                                    curve.Name = name;
+                                    Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
+                                }
                             }
                             else if (splineType == "Smoothing Cubic" && curveData.TryGetValue("Grid", out var gridObj) && curveData.TryGetValue("ControlPoints", out var controlPointsObj2))
                             {
@@ -147,16 +159,49 @@ public static class IO
                                 {
                                     var alpha = alphaObj?.ToString();
                                     var beta = betaObj?.ToString();
-                                    curve = logic.CreateSmoothingSpline(grid, points, alpha, beta);
-                                    curve.Name = name;
-                                    Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
+                                    bool incorrect = false;
+                                    if (alpha == null || alpha == "")
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Коэффициент альфа не может быть пустым.");
+                                        incorrect = true;
+                                    }
+                                    if (beta == null || beta == "")
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Коэффициент бета не может быть пустым.");
+                                        incorrect = true;
+                                    }
+                                    if (grid.Length < 2)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Сетка должна содержать хотя бы один конечный элемент.");
+                                        incorrect = true;
+                                    }
+                                    if (points.Length < 3 && points.Length > 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                        incorrect = true;
+                                    }
+                                    if (points.Length == 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                        incorrect = true;
+                                    }
+                                    if (!incorrect)
+                                    {
+                                        curve = logic.CreateSmoothingSpline(grid, points, alpha, beta);
+                                        if (!curve.IsPossible)
+                                        {
+                                            await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+                                        }
+                                        curve.Name = name;
+                                        Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                if (curve != null)
+                if (curve != null && curve.IsPossible)
                 {
                     // Обработка видимости
                     if (curveData.TryGetValue("IsVisible", out var isVisibleObj) && isVisibleObj is bool isVisible)
