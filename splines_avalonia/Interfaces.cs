@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Avalonia.Media;
 
 namespace splines_avalonia
@@ -35,7 +36,7 @@ namespace splines_avalonia
 
     public interface ILogic
     {
-        public ICurve CreateFunction(string functionString);
+        public Task<ICurve> CreateFunction(string functionString);
         public ICurve CreateInterpolatingSpline(Point[] controlPoints);
         public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
     }

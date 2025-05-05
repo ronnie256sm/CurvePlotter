@@ -1,12 +1,18 @@
+using System.Threading.Tasks;
+using splines_avalonia.Helpers;
+
 #pragma warning disable CS8603
 
 namespace splines_avalonia
 {
     public class SplineLogic : ILogic
     {
-        public ICurve CreateFunction(string functionString)
+        public async Task<ICurve> CreateFunction(string functionString)
         {
-            return new Function(functionString);
+            if (await FunctionChecker.TryValidateFunctionInput(functionString))
+                return new Function(functionString);
+            else
+                return null;
         }
 
         public ICurve CreateInterpolatingSpline(Point[] controlPoints)

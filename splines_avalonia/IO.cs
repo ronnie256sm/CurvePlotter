@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -120,9 +119,12 @@ public static class IO
                 {
                     if (type == "Function" && curveData.TryGetValue("FunctionString", out var funcStrObj) && funcStrObj is string funcStr)
                     {
-                        curve = logic.CreateFunction(funcStr);
-                        curve.Name = name;
-                        Console.WriteLine($"Загружена функция: {name}");
+                        curve = await logic.CreateFunction(funcStr);
+                        if (curve != null)
+                        {
+                            curve.Name = name;
+                            Console.WriteLine($"Загружена функция: {name}");
+                        }
                     }
                     else if (type == "Spline")
                     {

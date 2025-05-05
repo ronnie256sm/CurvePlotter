@@ -155,8 +155,8 @@ namespace splines_avalonia.ViewModels
             if (!string.IsNullOrWhiteSpace(result))
             {
                 var logic = new SplineLogic();
-                var curve = logic.CreateFunction(result);
-                if (curve.IsPossible)
+                var curve = await logic.CreateFunction(result);
+                if (curve != null && curve.IsPossible)
                     CurveList.Add(curve);
                 DrawCurves();
             }
