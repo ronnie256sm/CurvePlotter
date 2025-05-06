@@ -1,6 +1,8 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.FunctionInputDialog"
+        x:DataType="vm:FunctionInputDialogViewModel"
         Width="600" Height="600"
         Title="Ввод функции"
         CanResize="false">
@@ -10,7 +12,7 @@
         <!-- Верхняя часть для отображения выражения -->
         <StackPanel DockPanel.Dock="Top" Spacing="10">
             <TextBlock Text="Выражение:" FontWeight="Bold" FontSize="16"/>
-            <TextBox Name="FunctionDisplay" IsReadOnly="True" FontSize="18" Height="40" HorizontalAlignment="Stretch"/>
+            <TextBox Text="{Binding FunctionText}" IsReadOnly="True" FontSize="18" Height="40" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <!-- Панель кнопок с ScrollViewer -->

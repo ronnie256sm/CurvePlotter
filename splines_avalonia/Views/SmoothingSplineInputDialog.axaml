@@ -1,42 +1,51 @@
-<Window xmlns="https://github.com/avaloniaui"
+<Window
+        xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.SmoothingSplineInputDialog"
-        Width="500" Height="450"
+        x:DataType="vm:SmoothingSplineInputDialogViewModel"
+        Width="500"
+        Height="450"
         Title="Выберите файлы для сглаживающего сплайна"
-        CanResize="false">
+        CanResize="False">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
             <TextBlock Text="Файл точек:"/>
-            <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch">
+            <TextBox Text="{Binding PointsFile}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек"
+                    Command="{Binding SelectPointsFileCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
                 <ToolTip.Tip>
                     <TextBlock Width="300"
-                            TextWrapping="Wrap"
-                            Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
+                               TextWrapping="Wrap"
+                               Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
                 </ToolTip.Tip>
             </Button>
 
             <TextBlock Text="Файл сетки:"/>
-            <TextBox Name="MeshFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл сетки" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectMeshFileClick" HorizontalAlignment="Stretch">
+            <TextBox Text="{Binding MeshFile}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл сетки"
+                    Command="{Binding SelectMeshFileCommand}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center">
                 <ToolTip.Tip>
                     <TextBlock Width="300"
-                            TextWrapping="Wrap"
-                            Text="Формат файла: первая строка — количество узлов сетки; каждая последующая строка содержит координату узла по оси X; все значения задаются в отдельных строках"/>
+                               TextWrapping="Wrap"
+                               Text="Формат файла: первая строка — количество узлов сетки; каждая последующая строка содержит координату узла по оси X; все значения задаются в отдельных строках"/>
                 </ToolTip.Tip>
             </Button>
 
             <TextBlock Text="Коэффициент сглаживания (альфа):"/>
-            <TextBox Name="SmoothingFactorAlphaValue" HorizontalAlignment="Stretch"/>
+            <TextBox Text="{Binding SmoothingFactorAlpha}" HorizontalAlignment="Stretch"/>
 
             <TextBlock Text="Коэффициент сглаживания (бета):"/>
-            <TextBox Name="SmoothingFactorBetaValue" HorizontalAlignment="Stretch"/>
+            <TextBox Text="{Binding SmoothingFactorBeta}" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <!-- Панель для кнопок OK и Отмена внизу -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
-            <Button Content="OK" Click="OnOkClick"/>
-            <Button Content="Отмена" Click="OnCancelClick"/>
+            <Button Content="OK" Command="{Binding OkCommand}"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}"/>
         </StackPanel>
     </DockPanel>
 </Window>

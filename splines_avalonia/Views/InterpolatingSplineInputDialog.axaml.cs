@@ -1,56 +1,36 @@
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
-using splines_avalonia.Helpers;
+using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views
 {
     public partial class InterpolatingSplineInputDialog : Window
     {
-        #pragma warning disable CS8618
-        public string PointsFile { get; private set; }
-        public bool IsOkClicked { get; private set; } = false;
+        public bool IsOkClicked { get; private set; }
+        public string PointsFile { get; private set; } = string.Empty;
+        public InterpolatingSplineInputDialogViewModel ViewModel { get; }
 
         public InterpolatingSplineInputDialog()
         {
             InitializeComponent();
-        }
-
-        public void SetInitialValues(string pointsPath)
-        {
-            PointsFilePath.Text = pointsPath;
+            ViewModel = new InterpolatingSplineInputDialogViewModel();
+            DataContext = ViewModel;
         }
 
         private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)
         {
-            var desktop = Avalonia.Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime;
-            if (desktop?.MainWindow is null)
-                return;
-
-            var filePickerOptions = new FilePickerOpenOptions
-            {
-                Title = "Выберите файл с точками",
-                AllowMultiple = false,
-                FileTypeFilter = new[] { new FilePickerFileType("Text files") { Patterns = new[] { "*.txt" } } }
-            };
-
-            var fileResult = await desktop.MainWindow.StorageProvider.OpenFilePickerAsync(filePickerOptions);
-            if (fileResult.Count > 0)
-            {
-                PointsFilePath.Text = fileResult[0].Path.LocalPath;
-            }
+            await ViewModel.SelectPointsFile(this);
         }
 
         private async void OnOkClick(object? sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(PointsFilePath.Text))
+            if (string.IsNullOrWhiteSpace(ViewModel.PointsFilePath))
             {
-                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
+                await Helpers.ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
                 return;
             }
 
-            PointsFile = PointsFilePath.Text;
+            PointsFile = ViewModel.PointsFilePath!;
             IsOkClicked = true;
             Close();
         }
@@ -58,6 +38,11 @@ namespace splines_avalonia.Views
         private void OnCancelClick(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        public void SetInitialValues(string pointsPath)
+        {
+            ViewModel.PointsFilePath = pointsPath;
         }
     }
 }

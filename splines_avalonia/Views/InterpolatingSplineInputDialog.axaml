@@ -1,14 +1,20 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.InterpolatingSplineInputDialog"
+        x:DataType="vm:InterpolatingSplineInputDialogViewModel"
         Width="500" Height="200"
         Title="Выберите файлы для интерполяционного сплайна"
         CanResize="false">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
             <TextBlock Text="Файл точек:"/>
-            <TextBox Name="PointsFilePath" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл точек" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="OnSelectPointsFileClick" HorizontalAlignment="Stretch">
+            <TextBox Text="{Binding PointsFilePath}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <Button Content="Выбрать файл точек"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Click="OnSelectPointsFileClick"
+                    HorizontalAlignment="Stretch">
                 <ToolTip.Tip>
                     <TextBlock Width="300"
                             TextWrapping="Wrap"

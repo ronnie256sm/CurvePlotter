@@ -1,53 +1,49 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using splines_avalonia.Helpers;
+using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views
 {
     public partial class FunctionInputDialog : Window
     {
-        public string FunctionString { get; private set; } = "";
+        public FunctionInputDialogViewModel ViewModel { get; }
 
         public FunctionInputDialog()
         {
             InitializeComponent();
+            ViewModel = new FunctionInputDialogViewModel();
+            DataContext = ViewModel;
         }
 
         public void SetInitialFunction(string function)
         {
-            FunctionDisplay.Text = function;
+            ViewModel.FunctionText = function;
         }
 
         private void OnInputClick(object? sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && FunctionDisplay != null)
+            if (sender is Button btn)
             {
-                FunctionDisplay.Text += btn.Content?.ToString();
+                ViewModel.AddToFunction(btn.Content?.ToString() ?? "");
             }
         }
 
         private void OnClearAllClick(object? sender, RoutedEventArgs e)
         {
-            if (FunctionDisplay != null)
-                FunctionDisplay.Text = "";
+            ViewModel.ClearFunction();
         }
 
         private void OnBackspaceClick(object? sender, RoutedEventArgs e)
         {
-            if (!string.IsNullOrEmpty(FunctionDisplay?.Text))
-            {
-                FunctionDisplay.Text = FunctionDisplay.Text[..^1];
-            }
+            ViewModel.Backspace();
         }
 
         private async void OnOkClick(object? sender, RoutedEventArgs e)
         {
-            var input = FunctionDisplay?.Text ?? "";
-
-            if (await FunctionChecker.TryValidateFunctionInput(input))
+            var success = await ViewModel.ValidateAndSetResultAsync();
+            if (success)
             {
-                FunctionString = input;
-                Close(FunctionString);
+                Close(ViewModel.FunctionString);
             }
         }
 
