@@ -22,7 +22,7 @@
 		</Grid.ColumnDefinitions>
 
 		<TreeView Name="HelpTreeView" Grid.Column="0" 
-				  Background="Gray" Margin="0"
+				  Background="Black" Margin="0"
                   SelectionChanged="HelpTreeView_SelectionChanged">
 			<TreeViewItem Header="Работа с сеткой" Margin="0 10 0 0">
 				<TreeViewItem Header="Перемещение" Tag="moving"/>
@@ -48,7 +48,7 @@
 			</TreeViewItem>
 		</TreeView>
 
-		<Grid Grid.Column="1" Background="#c1c1c1">
+		<Grid Grid.Column="1" Background="LightGray">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="3*"/>
@@ -62,13 +62,13 @@
 						   Text="{Binding Content}"
                            FontSize="25"
 						   FontWeight="500"
-                           Foreground="#606060"
+                           Foreground="#000000"
                            HorizontalAlignment="Center"
 						   VerticalAlignment="Top"
 						   Margin="0 20 0 0"/>
 			<Border Grid.Column="0"
 				  Grid.Row="1"
-				  Background="Gray"
+				  Background="Black"
 				  HorizontalAlignment="Center"
 				  Margin="20 0 10 0"
 				  CornerRadius="5">
