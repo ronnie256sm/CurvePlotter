@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Reactive;
 
+#pragma warning disable CS8618, CS8625
+
 namespace splines_avalonia
 {
     public class HelpWindowViewModel : ReactiveObject
