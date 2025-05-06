@@ -94,5 +94,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
         ViewModel.MoveDown();
     }
+
+    private void OpenHelpWindow(object sender, RoutedEventArgs e)
+    {
+        var helpWindow = new HelpWindow();
+        helpWindow.Show();
+    }
     #pragma warning restore CS8602
 }

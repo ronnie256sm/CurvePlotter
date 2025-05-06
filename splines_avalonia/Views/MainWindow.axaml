@@ -99,6 +99,11 @@
                             <TextBlock Text="Файл"/>
                         </ToolTip.Tip>
                     </Button>
+                    <Button Content="?" Width="30" Height="30" Click="OpenHelpWindow">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Справка"/>
+                        </ToolTip.Tip>
+                    </Button>
                     <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition">
                         <ToolTip.Tip>
                             <TextBlock Text="Возврат в исходное положение"/>
