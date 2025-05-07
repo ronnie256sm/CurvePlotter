@@ -236,28 +236,28 @@
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический синус. Пример: sh(x), где x - аргумент гиперболического синуса."/>
                         </ToolTip.Tip>
                     </Button>
                     <Button Content="ch(" Click="OnInputClick" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический косинус. Пример: ch(x), где x - аргумент гиперболического косинуса."/>
                         </ToolTip.Tip>
                     </Button>
                     <Button Content="th(" Click="OnInputClick" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический тангенс. Пример: th(x), где x - аргумент гиперболического тангенса."/>
                         </ToolTip.Tip>
                     </Button>
                     <Button Content="cth(" Click="OnInputClick" Grid.Row="4" Grid.Column="3" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический котангенс. Пример: cth(x), где x - аргумент гиперболического котангенса."/>
                         </ToolTip.Tip>
                     </Button>
 
@@ -266,14 +266,14 @@
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический секанс. Пример: sch(x), где x - аргумент гиперболического секанса."/>
                         </ToolTip.Tip>
                     </Button>
                     <Button Content="csch(" Click="OnInputClick" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text=" "/>
+                                    Text="Гиперболический косеканс. Пример: csch(x), где x - аргумент гиперболического косеканса."/>
                         </ToolTip.Tip>
                     </Button>
                 </Grid>
