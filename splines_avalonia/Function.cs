@@ -128,6 +128,12 @@ namespace splines_avalonia
                         case "csch":
                             args.Result = 2 / (Math.Exp(Convert.ToDouble(args.Parameters[0].Evaluate())) - Math.Exp(-Convert.ToDouble(args.Parameters[0].Evaluate())));
                             break;
+                        case "sec":
+                            args.Result = 1 / Math.Cos(Convert.ToDouble(args.Parameters[0].Evaluate()));
+                            break;
+                        case "cosec":
+                            args.Result = 1 / Math.Sin(Convert.ToDouble(args.Parameters[0].Evaluate()));
+                            break;
                     }
                 };
 
