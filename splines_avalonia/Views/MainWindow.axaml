@@ -37,6 +37,7 @@
                     <Button.Flyout>
                         <MenuFlyout>
                             <MenuItem Header="Добавить функцию" Command="{Binding AddFunctionCommand}" />
+                            <MenuItem Header="Добавить ломаную" Command="{Binding AddLinearSplineCommand}"/>
                             <MenuItem Header="Добавить сплайн">
                                 <MenuItem.Items>
                                     <MenuItem Header="Интерполяционный сплайн" Command="{Binding AddInterpolatingSplineCommand}"/>

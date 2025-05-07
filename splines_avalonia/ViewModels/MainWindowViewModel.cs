@@ -43,6 +43,7 @@ namespace splines_avalonia.ViewModels
 
         public ReactiveCommand<Unit, Unit> AddInterpolatingSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddSmoothingSplineCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddLinearSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
         public ReactiveCommand<ICurve, Unit> EditCurveCommand { get; }
         public ReactiveCommand<ICurve, Unit> DeleteCurveCommand { get; }
@@ -53,6 +54,7 @@ namespace splines_avalonia.ViewModels
         {
             AddInterpolatingSplineCommand = ReactiveCommand.Create(AddInterpolatingSpline);
             AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
+            AddLinearSplineCommand = ReactiveCommand.Create(AddLinearSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
             {
@@ -205,16 +207,14 @@ namespace splines_avalonia.ViewModels
             var points = await FileReader.ReadPoints(pointsFile);
 
             var logic = new SplineLogic();
+            if (points.Length < 4)
+                await ErrorHelper.ShowError("Ошибка", "Сплайн можно построить минимум по 4 точкам");
             var curve = logic.CreateInterpolatingSpline(points);
 
             if (curve != null && curve.IsPossible)
             {
                 curve.ControlPointsFile = pointsFile;
                 CurveList.Add(curve);
-            }
-            else
-            {
-                await ErrorHelper.ShowError("Ошибка", "Не удалось построить интерполяционный сплайн.");
             }
 
             DrawCurves();
@@ -267,6 +267,42 @@ namespace splines_avalonia.ViewModels
             DrawCurves();
         }
 
+        private async void AddLinearSpline()
+        {
+            var inputDialog = new InterpolatingSplineInputDialog();
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+
+            await inputDialog.ShowDialog(mainWindow);
+
+            if (!inputDialog.IsOkClicked)
+                return;
+
+            string pointsFile = inputDialog.PointsFile;
+
+            if (string.IsNullOrWhiteSpace(pointsFile))
+            {
+                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
+                return;
+            }
+
+            var points = await FileReader.ReadPoints(pointsFile);
+
+            var logic = new SplineLogic();
+            var curve = logic.CreateLinearSpline(points);
+
+            if (curve != null && curve.IsPossible)
+            {
+                curve.ControlPointsFile = pointsFile;
+                CurveList.Add(curve);
+            }
+            else
+            {
+                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сплайн.");
+            }
+
+            DrawCurves();
+        }
+
         private async void EditSpline()
         {
             if (SelectedCurve == null)
@@ -281,11 +317,10 @@ namespace splines_avalonia.ViewModels
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            if (type == "Interpolating Cubic")
+            if (type == "Linear" || type == "Interpolating Cubic")
             {
                 var dialog = new InterpolatingSplineInputDialog();
-                
-                // передаем текущий путь к файлу точек
+
                 if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
                     dialog.SetInitialValues(spline.ControlPointsFile);
 
@@ -299,12 +334,11 @@ namespace splines_avalonia.ViewModels
             else if (type == "Smoothing Cubic")
             {
                 var dialog = new SmoothingSplineInputDialog();
-                
-                // передаем текущие значения для путей файлов и коэффициента сглаживания
+
                 if (SelectedCurve is ICurve spline)
                 {
                     dialog.SetInitialValues(
-                        spline.ControlPointsFile ?? "", 
+                        spline.ControlPointsFile ?? "",
                         spline.GridFile ?? "",
                         spline.SmoothingCoefficientAlpha ?? "",
                         spline.SmoothingCoefficientBeta ?? ""
@@ -327,14 +361,13 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            // читаем новые точки и сетку
             if (string.IsNullOrWhiteSpace(newPointsFile))
             {
                 await ErrorHelper.ShowError("Ошибка", "Не выбран файл точек.");
                 return;
             }
 
-            var newPoints = FileReader.ReadPoints(newPointsFile);
+            var newPoints = await FileReader.ReadPoints(newPointsFile);
             double[] newMesh = null;
 
             if (type == "Smoothing Cubic")
@@ -344,56 +377,53 @@ namespace splines_avalonia.ViewModels
                     await ErrorHelper.ShowError("Ошибка", "Не выбран файл сетки.");
                     return;
                 }
+
                 newMesh = await FileReader.ReadGrid(newMeshFile);
             }
 
-            // пересоздаем кривую
             var logic = new SplineLogic();
-            if (type == "Interpolating Cubic")
+            ICurve newCurve = null;
+
+            if (type == "Linear")
             {
-                var newCurve = logic.CreateInterpolatingSpline(await newPoints);
-                int index = CurveList.IndexOf(SelectedCurve);
-                if (newCurve != null)
-                {
-                    if (index >= 0 && newCurve.IsPossible)
-                    {
-                        newCurve.ControlPointsFile = newPointsFile;
-                        newCurve.Color = SelectedCurve.Color;
-                        CurveList[index] = newCurve;
-                        DrawCurves(); // перерисовываем
-                    }
-                    if (index >= 0 && !newCurve.IsPossible)
-                    {
-                        CurveList.Remove(SelectedCurve);
-                        DrawCurves();
-                    }
-                }
+                newCurve = logic.CreateLinearSpline(newPoints);
+            }
+            else if (type == "Interpolating Cubic")
+            {
+                newCurve = logic.CreateInterpolatingSpline(newPoints);
             }
             else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null)
             {
-                var newCurve = logic.CreateSmoothingSpline(newMesh, await newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
-                int index = CurveList.IndexOf(SelectedCurve);
-                if (newCurve != null)
-                {
-                    if (index >= 0 && newCurve.IsPossible)
-                    {
-                        newCurve.ControlPointsFile = newPointsFile;
-                        newCurve.GridFile = newMeshFile;
-                        newCurve.Color = SelectedCurve.Color;
-                        CurveList[index] = newCurve;
-                        DrawCurves();
-                    }
-                    if (index >= 0 && !newCurve.IsPossible)
-                    {
-                        await ErrorHelper.ShowError("Ошибка", "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
-                        CurveList.Remove(SelectedCurve);
-                        DrawCurves();
-                    }
-                }
+                newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
             }
-            else
+
+            if (newCurve == null)
             {
                 await ErrorHelper.ShowError("Ошибка", "Не удалось изменить сплайн.");
+                return;
+            }
+
+            int index = CurveList.IndexOf(SelectedCurve);
+            if (index >= 0 && newCurve.IsPossible)
+            {
+                newCurve.ControlPointsFile = newPointsFile;
+                newCurve.GridFile = newMeshFile;
+                newCurve.SmoothingCoefficientAlpha = newSmoothingFactorAlpha;
+                newCurve.SmoothingCoefficientBeta = newSmoothingFactorBeta;
+                newCurve.Color = SelectedCurve.Color;
+
+                CurveList[index] = newCurve;
+                DrawCurves();
+            }
+            else if (index >= 0 && !newCurve.IsPossible)
+            {
+                if (type == "Smoothing Cubic")
+                {
+                    await ErrorHelper.ShowError("Ошибка", "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
+                }
+
+                CurveList.Remove(SelectedCurve);
+                DrawCurves();
             }
         }
 
@@ -437,24 +467,49 @@ namespace splines_avalonia.ViewModels
                 {
                     var points = new Points();
 
-                    foreach (var p in curve.OutputPoints)
+                    if (curve.SplineType != "Linear")
                     {
-                        var screenPoint = new Avalonia.Point(
-                            (p.X * _zoom) + CenterX() + _offsetX,
-                            (-p.Y * _zoom) + CenterY() + _offsetY
-                        );
-                        points.Add(screenPoint);
-                    }
-
-                    if (points.Count >= 2)
-                    {
-                        var polyline = new Polyline
+                        foreach (var p in curve.OutputPoints)
                         {
-                            Points = points,
-                            Stroke = new SolidColorBrush(curve.Color),
-                            StrokeThickness = 2
-                        };
-                        GraphicCanvas.Children.Add(polyline);
+                            var screenPoint = new Avalonia.Point(
+                                (p.X * _zoom) + CenterX() + _offsetX,
+                                (-p.Y * _zoom) + CenterY() + _offsetY
+                            );
+                            points.Add(screenPoint);
+                        }
+
+                        if (points.Count >= 2)
+                        {
+                            var polyline = new Polyline
+                            {
+                                Points = points,
+                                Stroke = new SolidColorBrush(curve.Color),
+                                StrokeThickness = 2
+                            };
+                            GraphicCanvas.Children.Add(polyline);
+                        }
+                    }
+                    if (curve.SplineType == "Linear")
+                    {
+                        foreach (var p in curve.ControlPoints)
+                        {
+                            var screenPoint = new Avalonia.Point(
+                                (p.X * _zoom) + CenterX() + _offsetX,
+                                (-p.Y * _zoom) + CenterY() + _offsetY
+                            );
+                            points.Add(screenPoint);
+                        }
+
+                        if (points.Count >= 2)
+                        {
+                            var polyline = new Polyline
+                            {
+                                Points = points,
+                                Stroke = new SolidColorBrush(curve.Color),
+                                StrokeThickness = 2
+                            };
+                            GraphicCanvas.Children.Add(polyline);
+                        }
                     }
 
                     // контрольные точки

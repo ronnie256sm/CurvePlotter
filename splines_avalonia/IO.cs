@@ -135,15 +135,15 @@ public static class IO
                             {
                                 var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
                                 var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points.Length < 3 && points.Length > 0)
+                                if (points.Length < 4 && points.Length > 0)
                                 {
-                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
                                 }
                                 if (points.Length == 0)
                                 {
                                     await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
                                 }
-                                if (points.Length >= 3)
+                                if (points.Length >= 4)
                                 {
                                     curve = logic.CreateInterpolatingSpline(points);
                                     curve.Name = name;
@@ -175,9 +175,9 @@ public static class IO
                                         await ErrorHelper.ShowError("Ошибка", "Сетка должна содержать хотя бы один конечный элемент.");
                                         incorrect = true;
                                     }
-                                    if (points.Length < 3 && points.Length > 0)
+                                    if (points.Length < 4 && points.Length > 0)
                                     {
-                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
                                         incorrect = true;
                                     }
                                     if (points.Length == 0)

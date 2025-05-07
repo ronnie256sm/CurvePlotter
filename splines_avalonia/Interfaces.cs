@@ -39,5 +39,6 @@ namespace splines_avalonia
         public Task<ICurve> CreateFunction(string functionString);
         public ICurve CreateInterpolatingSpline(Point[] controlPoints);
         public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
+        public ICurve CreateLinearSpline(Point[] controlPoints);
     }
 }
