@@ -138,10 +138,12 @@ public static class IO
                                 if (points.Length < 4 && points.Length > 0)
                                 {
                                     await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
+                                    curve = null;
                                 }
                                 if (points.Length == 0)
                                 {
                                     await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                    curve = null;
                                 }
                                 if (points.Length >= 4)
                                 {
@@ -195,6 +197,27 @@ public static class IO
                                         curve.Name = name;
                                         Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
                                     }
+                                }
+                            }
+                            if (splineType == "Linear" && curveData.TryGetValue("ControlPoints", out var controlPointsObj3))
+                            {
+                                var controlPoints = ((JArray)controlPointsObj3).ToObject<List<Dictionary<string, double>>>();
+                                var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
+                                if (points.Length < 4 && points.Length > 0)
+                                {
+                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
+                                    curve = null;
+                                }
+                                if (points.Length == 0)
+                                {
+                                    await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                    curve = null;
+                                }
+                                if (points.Length >= 4)
+                                {
+                                    curve = logic.CreateLinearSpline(points);
+                                    curve.Name = name;
+                                    Console.WriteLine($"Загружена ломаная: {name}");
                                 }
                             }
                         }
