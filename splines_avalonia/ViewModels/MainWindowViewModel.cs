@@ -51,11 +51,9 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> SavePngCommand { get; }
         public MainWindowViewModel()
         {
-            // Initialize commands
             AddInterpolatingSplineCommand = ReactiveCommand.Create(AddInterpolatingSpline);
             AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
-            // Изменяем команды для работы с параметром
             EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
             {
                 SelectedCurve = curve;
@@ -283,12 +281,11 @@ namespace splines_avalonia.ViewModels
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            // Проверка типа сплайна
             if (type == "Interpolating Cubic")
             {
                 var dialog = new InterpolatingSplineInputDialog();
                 
-                // Передаем текущий путь к файлу точек
+                // передаем текущий путь к файлу точек
                 if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
                     dialog.SetInitialValues(spline.ControlPointsFile);
 
@@ -303,7 +300,7 @@ namespace splines_avalonia.ViewModels
             {
                 var dialog = new SmoothingSplineInputDialog();
                 
-                // Передаем текущие значения для путей файлов и коэффициента сглаживания
+                // передаем текущие значения для путей файлов и коэффициента сглаживания
                 if (SelectedCurve is ICurve spline)
                 {
                     dialog.SetInitialValues(
@@ -330,7 +327,7 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            // Читаем новые точки и сетку
+            // читаем новые точки и сетку
             if (string.IsNullOrWhiteSpace(newPointsFile))
             {
                 await ErrorHelper.ShowError("Ошибка", "Не выбран файл точек.");
@@ -350,7 +347,7 @@ namespace splines_avalonia.ViewModels
                 newMesh = await FileReader.ReadGrid(newMeshFile);
             }
 
-            // Пересоздаем кривую
+            // пересоздаем кривую
             var logic = new SplineLogic();
             if (type == "Interpolating Cubic")
             {
@@ -363,7 +360,7 @@ namespace splines_avalonia.ViewModels
                         newCurve.ControlPointsFile = newPointsFile;
                         newCurve.Color = SelectedCurve.Color;
                         CurveList[index] = newCurve;
-                        DrawCurves(); // Обновляем отрисовку
+                        DrawCurves(); // перерисовываем
                     }
                     if (index >= 0 && !newCurve.IsPossible)
                     {
@@ -384,7 +381,7 @@ namespace splines_avalonia.ViewModels
                         newCurve.GridFile = newMeshFile;
                         newCurve.Color = SelectedCurve.Color;
                         CurveList[index] = newCurve;
-                        DrawCurves(); // Обновляем отрисовку
+                        DrawCurves();
                     }
                     if (index >= 0 && !newCurve.IsPossible)
                     {
@@ -501,13 +498,13 @@ namespace splines_avalonia.ViewModels
 
                     var points = new Points();
 
-                    double lastY = double.NaN; // Для отслеживания разрывов
+                    double lastY = double.NaN; // для отслеживания разрывов
 
                     for (double x = startX; x <= endX; x += step)
                     {
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
 
-                        // Если значение функции бесконечно или неопределено, разрываем отрисовку
+                        // если значение функции бесконечно или неопределено, разрываем отрисовку
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
                             if (points.Count >= 2)
@@ -525,24 +522,6 @@ namespace splines_avalonia.ViewModels
                             lastY = double.NaN;
                             continue;
                         }
-
-                        // Увеличиваем шаг для функций с резкими изменениями (например, сигнум)
-                        // if (Math.Abs(y - lastY) > 10) // Порог для резких изменений
-                        // {
-                        //     if (points.Count >= 2)
-                        //     {
-                        //         var polyline = new Polyline
-                        //         {
-                        //             Points = new Points(points),
-                        //             Stroke = new SolidColorBrush(curve.Color),
-                        //             StrokeThickness = 2
-                        //         };
-                        //         GraphicCanvas.Children.Add(polyline);
-                        //     }
-
-                        //     points.Clear();
-                        //     lastY = y;
-                        // }
 
                         var screenPoint = new Avalonia.Point(
                             (x * _zoom) + CenterX() + _offsetX,
@@ -635,7 +614,6 @@ namespace splines_avalonia.ViewModels
             double minPixelStep = 40;
             double targetStep = minPixelStep / _zoom;
 
-            // Получаем порядок величины, например для 0.123 → 0.1
             double exponent = Math.Pow(10, Math.Floor(Math.Log10(targetStep)));
             double[] mantissas = { 1, 2, 5 };
 
@@ -646,7 +624,7 @@ namespace splines_avalonia.ViewModels
                     return s;
             }
 
-            return 10 * exponent; // fallback
+            return 10 * exponent;
         }
 
         private void DrawGrid()
@@ -682,11 +660,11 @@ namespace splines_avalonia.ViewModels
                     FontSize = 10
                 };
 
-                // Определяем, где разместить подпись по оси X
+                // определяем, где разместить подпись по оси X
                 double labelY = CenterY() + _offsetY + 2;
                 if (labelY < 0 || labelY > height)
                 {
-                    // Размещаем внизу или вверху в зависимости от четверти
+                    // размещаем внизу или вверху в зависимости от четверти
                     labelY = (_offsetY >= 0) ? height - 20 : 10;
                 }
 
@@ -716,7 +694,7 @@ namespace splines_avalonia.ViewModels
                     FontSize = 10
                 };
 
-                // Определяем, где разместить подпись по оси Y
+                // определяем, где разместить подпись по оси Y
                 double labelX = CenterX() + _offsetX + 2;
                 if (labelX < 0 || labelX > width)
                 {
@@ -728,7 +706,7 @@ namespace splines_avalonia.ViewModels
                 GraphicCanvas.Children.Add(text);
             }
 
-            // Логика для размещения осей по четвертям
+            // логика для размещения осей по четвертям
             double axisXScreen = CenterY() + _offsetY;
             double axisYScreen = CenterX() + _offsetX;
 
@@ -737,15 +715,15 @@ namespace splines_avalonia.ViewModels
 
             if (!isXAxisVisible)
             {
-                // Если Y >= 0 (центр выше), значит мы в 1 или 2 четверти -> ось X внизу
-                // Если Y < 0 (центр ниже), значит мы в 3 или 4 четверти -> ось X вверху
+                // если Y >= 0 (центр выше) -> 1 или 2 четверть -> ось X внизу
+                // если Y < 0 (центр ниже) -> 3 или 4 четверть -> ось X сверху
                 axisXScreen = (_offsetY >= 0) ? height - 1 : 0;
             }
 
             if (!isYAxisVisible)
             {
-                // Если X >= 0 (центр справа), значит 1 или 4 четверть -> ось Y СПРАВА (изменилась логика)
-                // Если X < 0 (центр слева), значит 2 или 3 четверть -> ось Y СЛЕВА
+                // если X >= 0 (центр справа) -> 1 или 4 четверть -> ось Y справа
+                // если X < 0 (центр слева) -> 2 или 3 четверть -> ось Y слева
                 axisYScreen = (_offsetX >= 0) ? width - 1 : 0;
             }
 
