@@ -247,7 +247,7 @@
                         <ToolTip.Tip>
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
-                                    Text="Логарифм. Пример: log(x,y), где x - основание логарифма, y - логарифмируемое число."/>
+                                    Text="Логарифм. Пример: log(x,y), где x - логарифмируемое число, y - основание логарифма."/>
                         </ToolTip.Tip>
                     </Button>
                     <Button Content="ln(" Click="OnInputClick" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch">
