@@ -97,7 +97,7 @@ public static class IO
         {
             Title = "Открыть файл",
             AllowMultiple = false, // только один файл
-            FileTypeFilter = new[] { new FilePickerFileType("Файл") { Patterns = new[] { "*.json" } } }
+            FileTypeFilter = new[] { new FilePickerFileType("Файл JSON") { Patterns = new[] { "*.json" } } }
         };
 
         var res = await storageProvider.OpenFilePickerAsync(filePickerOptions);
