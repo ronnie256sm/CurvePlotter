@@ -12,7 +12,18 @@
         <!-- Верхняя часть для отображения выражения -->
         <StackPanel DockPanel.Dock="Top" Spacing="10">
             <TextBlock Text="Выражение:" FontWeight="Bold" FontSize="16"/>
-            <TextBox Text="{Binding FunctionText}" IsReadOnly="True" FontSize="18" Height="40" HorizontalAlignment="Stretch"/>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Disabled"
+                        Height="50"> <!-- увеличенная высота -->
+                <TextBox Text="{Binding FunctionText}"
+                        IsReadOnly="True"
+                        FontSize="18"
+                        TextWrapping="NoWrap"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Padding="0,0,0,10"/> <!-- отступ снизу под скролл -->
+            </ScrollViewer>
         </StackPanel>
 
         <!-- Панель кнопок с ScrollViewer -->

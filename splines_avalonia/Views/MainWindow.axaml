@@ -54,24 +54,44 @@
                         <DataTemplate>
                             <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="5" Margin="5">
                                 <StackPanel Orientation="Vertical" Spacing="5">
-                                    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                                        <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center"/>
-                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" FontWeight="Bold"/>
-                                    </StackPanel>
+                                    
+                                    <!-- Адаптивный переносимый Name без лишнего отступа -->
+                                    <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+                                        <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center" Margin="0"/>
+                                        <TextBlock Grid.Column="1"
+                                                Text="{Binding Name}"
+                                                TextWrapping="Wrap"
+                                                VerticalAlignment="Center"
+                                                FontWeight="Bold"
+                                                Margin="5,0,0,0"/>
+                                    </Grid>
 
+                                    <!-- ColorPicker и кнопки -->
                                     <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                                         <ColorPicker Color="{Binding Color, Mode=TwoWay}" Width="150">
                                             <ToolTip.Tip>
                                                 <TextBlock Text="Выбор цвета"/>
                                             </ToolTip.Tip>
                                         </ColorPicker>
-                                        <Button Content="✎" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right">
+
+                                        <Button Content="✎"
+                                                Width="30"
+                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}"
+                                                CommandParameter="{Binding}"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right">
                                             <ToolTip.Tip>
                                                 <TextBlock Text="Редактировать"/>
                                             </ToolTip.Tip>
                                         </Button>
-                                        <Button Content="✕" Width="30" Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}" CommandParameter="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Right">
-                                                <ToolTip.Tip>
+
+                                        <Button Content="✕"
+                                                Width="30"
+                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}"
+                                                CommandParameter="{Binding}"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right">
+                                            <ToolTip.Tip>
                                                 <TextBlock Text="Удалить"/>
                                             </ToolTip.Tip>
                                         </Button>
