@@ -134,6 +134,12 @@ namespace splines_avalonia
                         case "cosec":
                             args.Result = 1 / Math.Sin(Convert.ToDouble(args.Parameters[0].Evaluate()));
                             break;
+                        case "arcsec":
+                            args.Result = Math.Acos(1 / Convert.ToDouble(args.Parameters[0].Evaluate()));
+                            break;
+                        // case "arccosec":
+                        //     args.Result = Math.Asin(1 / Convert.ToDouble(args.Parameters[0].Evaluate()));
+                        //     break;
                     }
                 };
 
