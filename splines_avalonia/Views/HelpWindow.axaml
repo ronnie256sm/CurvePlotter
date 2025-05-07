@@ -17,7 +17,7 @@
 
 	<Grid Background="WhiteSmoke">
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="2.2*"/>
+			<ColumnDefinition Width="2.3*"/>
 			<ColumnDefinition Width="5.5*"/>
 		</Grid.ColumnDefinitions>
 
@@ -34,7 +34,7 @@
 				<TreeViewItem Header="Добавление функции" Tag="addfunc"/>
 				<TreeViewItem Header="Редактирование функции" Tag="editfunc"/>
 				<TreeViewItem Header="Добавление интерполяционного сплайна" Tag="addispline"/>
-				<TreeViewItem Header="Редактирование интерполяционног сплайна" Tag="editispline"/>
+				<TreeViewItem Header="Редактирование интерполяционного сплайна" Tag="editispline"/>
 				<TreeViewItem Header="Добавление сглаживающего сплайна" Tag="addsspline"/>
 				<TreeViewItem Header="Редактирование сглаживающего сплайна" Tag="editsspline"/>
 				<TreeViewItem Header="Скрытие" Tag="hide"/>
