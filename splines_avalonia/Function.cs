@@ -110,6 +110,24 @@ namespace splines_avalonia
                         case "ln":
                             args.Result = Math.Log(Convert.ToDouble(args.Parameters[0].Evaluate()));
                             break;
+                        case "sh":
+                            args.Result = (Math.Exp(Convert.ToDouble(args.Parameters[0].Evaluate())) - Math.Exp(-Convert.ToDouble(args.Parameters[0].Evaluate()))) / 2;
+                            break;
+                        case "ch":
+                            args.Result = (Math.Exp(Convert.ToDouble(args.Parameters[0].Evaluate())) + Math.Exp(-Convert.ToDouble(args.Parameters[0].Evaluate()))) / 2;
+                            break;
+                        case "th":
+                            args.Result = (Math.Exp(2 * Convert.ToDouble(args.Parameters[0].Evaluate())) - 1) / (Math.Exp(2 * Convert.ToDouble(args.Parameters[0].Evaluate())) + 1);
+                            break;
+                        case "cth":
+                            args.Result = (Math.Exp(2 * Convert.ToDouble(args.Parameters[0].Evaluate())) + 1) / (Math.Exp(2 * Convert.ToDouble(args.Parameters[0].Evaluate())) - 1);
+                            break;
+                        case "sch":
+                            args.Result = 2 / (Math.Exp(Convert.ToDouble(args.Parameters[0].Evaluate())) + Math.Exp(-Convert.ToDouble(args.Parameters[0].Evaluate())));
+                            break;
+                        case "csch":
+                            args.Result = 2 / (Math.Exp(Convert.ToDouble(args.Parameters[0].Evaluate())) - Math.Exp(-Convert.ToDouble(args.Parameters[0].Evaluate())));
+                            break;
                     }
                 };
 

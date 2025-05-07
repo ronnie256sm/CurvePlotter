@@ -76,6 +76,7 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
                     <Button Content="+" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
@@ -103,6 +104,8 @@
                 <!-- Функции (в два ряда) -->
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
@@ -225,6 +228,52 @@
                             <TextBlock Width="200"
                                     TextWrapping="Wrap"
                                     Text="Логарифм с основанием 10. Пример: lg(x), где x - логарифмируемое число."/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- Ряд 5 -->
+                    <Button Content="sh(" Click="OnInputClick" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="ch(" Click="OnInputClick" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="th(" Click="OnInputClick" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="cth(" Click="OnInputClick" Grid.Row="4" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- Ряд 6 -->
+                    <Button Content="sch(" Click="OnInputClick" Grid.Row="5" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="csch(" Click="OnInputClick" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text=" "/>
                         </ToolTip.Tip>
                     </Button>
                 </Grid>
