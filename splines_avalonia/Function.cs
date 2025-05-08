@@ -137,7 +137,7 @@ namespace splines_avalonia
                         case "arcsec":
                             args.Result = Math.Acos(1 / Convert.ToDouble(args.Parameters[0].Evaluate()));
                             break;
-                        case "arccsc":
+                        case "arccsec":
                             args.Result = Math.Asin(1 / Convert.ToDouble(args.Parameters[0].Evaluate()));
                             break;
                     }
