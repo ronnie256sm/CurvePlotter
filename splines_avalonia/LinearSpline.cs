@@ -55,10 +55,10 @@ public class LinearSpline : ICurve
         Name = "Ломаная";
         IsVisible = true;
         IsPossible = true;
-        if (ControlPoints.Length < 4)
-        {
-            IsPossible = false;
-        }
+        // if (ControlPoints.Length < 4)
+        // {
+        //     IsPossible = false;
+        // }
     }
     public double CalculateFunctionValue(string functionString, double x)
     {

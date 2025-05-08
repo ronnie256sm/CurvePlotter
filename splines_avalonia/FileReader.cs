@@ -36,7 +36,7 @@ namespace splines_avalonia
             if (actualDataLines > numPoints)
                 await ErrorHelper.ShowError("Предупреждение", $"Имеются лишние точки в файле. Будут считаны только первые {numPoints} точек.");
 
-            if (numPoints <= 3)
+            if (numPoints < 3)
             {
                 await ErrorHelper.ShowError("Ошибка", "Требуется как минимум 3 точки.");
                 return null;

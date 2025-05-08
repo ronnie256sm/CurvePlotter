@@ -207,8 +207,11 @@ namespace splines_avalonia.ViewModels
             var points = await FileReader.ReadPoints(pointsFile);
 
             var logic = new SplineLogic();
-            if (points.Length < 4)
-                await ErrorHelper.ShowError("Ошибка", "Сплайн можно построить минимум по 4 точкам");
+            if (points.Length < 3)
+            {
+                await ErrorHelper.ShowError("Ошибка", "Сплайн можно построить минимум по 3 точкам");
+                return;
+            }
             var curve = logic.CreateInterpolatingSpline(points);
 
             if (curve != null && curve.IsPossible)
