@@ -4,7 +4,6 @@
         x:Class="splines_avalonia.Views.InterpolatingSplineInputDialog"
         x:DataType="vm:InterpolatingSplineInputDialogViewModel"
         Width="500" Height="200"
-        Title="Выберите файлы для сплайна"
         CanResize="false">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">

@@ -52,9 +52,9 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> SavePngCommand { get; }
         public MainWindowViewModel()
         {
-            AddInterpolatingSplineCommand = ReactiveCommand.Create(AddInterpolatingSpline);
+            AddInterpolatingSplineCommand = ReactiveCommand.Create(() => AddSpline("Interpolating Cubic"));
             AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
-            AddLinearSplineCommand = ReactiveCommand.Create(AddLinearSpline);
+            AddLinearSplineCommand = ReactiveCommand.Create(() => AddSpline("Linear"));
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
             EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
             {
@@ -186,9 +186,9 @@ namespace splines_avalonia.ViewModels
             }
         }
 
-        private async void AddInterpolatingSpline()
+        private async void AddSpline(string type)
         {
-            var inputDialog = new InterpolatingSplineInputDialog();
+            var inputDialog = new InterpolatingSplineInputDialog(type);
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             await inputDialog.ShowDialog(mainWindow);
@@ -206,13 +206,12 @@ namespace splines_avalonia.ViewModels
 
             var points = await FileReader.ReadPoints(pointsFile);
 
+            ICurve curve = null;
             var logic = new SplineLogic();
-            if (points.Length < 3)
-            {
-                await ErrorHelper.ShowError("Ошибка", "Сплайн можно построить минимум по 3 точкам");
-                return;
-            }
-            var curve = logic.CreateInterpolatingSpline(points);
+            if (type == "Interpolating Cubic")
+                curve = logic.CreateInterpolatingSpline(points);
+            else if (type == "Linear")
+                curve = logic.CreateLinearSpline(points);
 
             if (curve != null && curve.IsPossible)
             {
@@ -270,42 +269,6 @@ namespace splines_avalonia.ViewModels
             DrawCurves();
         }
 
-        private async void AddLinearSpline()
-        {
-            var inputDialog = new InterpolatingSplineInputDialog();
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-
-            await inputDialog.ShowDialog(mainWindow);
-
-            if (!inputDialog.IsOkClicked)
-                return;
-
-            string pointsFile = inputDialog.PointsFile;
-
-            if (string.IsNullOrWhiteSpace(pointsFile))
-            {
-                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, выберите файл с точками.");
-                return;
-            }
-
-            var points = await FileReader.ReadPoints(pointsFile);
-
-            var logic = new SplineLogic();
-            var curve = logic.CreateLinearSpline(points);
-
-            if (curve != null && curve.IsPossible)
-            {
-                curve.ControlPointsFile = pointsFile;
-                CurveList.Add(curve);
-            }
-            else
-            {
-                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сплайн.");
-            }
-
-            DrawCurves();
-        }
-
         private async void EditSpline()
         {
             if (SelectedCurve == null)
@@ -322,7 +285,7 @@ namespace splines_avalonia.ViewModels
 
             if (type == "Linear" || type == "Interpolating Cubic")
             {
-                var dialog = new InterpolatingSplineInputDialog();
+                var dialog = new InterpolatingSplineInputDialog(type);
 
                 if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
                     dialog.SetInitialValues(spline.ControlPointsFile);

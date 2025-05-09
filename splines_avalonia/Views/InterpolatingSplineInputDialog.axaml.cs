@@ -10,11 +10,15 @@ namespace splines_avalonia.Views
         public string PointsFile { get; private set; } = string.Empty;
         public InterpolatingSplineInputDialogViewModel ViewModel { get; }
 
-        public InterpolatingSplineInputDialog()
+        public InterpolatingSplineInputDialog(string type)
         {
             InitializeComponent();
             ViewModel = new InterpolatingSplineInputDialogViewModel();
             DataContext = ViewModel;
+            if (type == "Interpolating Cubic")
+                Title = "Выберите файлы для сплайна";
+            if (type == "Linear")
+                Title = "Выберите файлы для ломаной";
         }
 
         private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)

@@ -17,7 +17,7 @@ namespace splines_avalonia
 
         public ICurve CreateInterpolatingSpline(Point[] controlPoints)
         {
-            if (controlPoints != null || controlPoints.Length < 4)
+            if (controlPoints != null && controlPoints.Length >= 3)
                 return new InterpolatingSpline(controlPoints);
             else
                 return null;
@@ -25,7 +25,7 @@ namespace splines_avalonia
 
         public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
-            if (controlPoints != null || grid != null || controlPoints.Length < 4)
+            if (controlPoints != null && grid != null && controlPoints.Length >= 4)
                 return new SmoothingSpline(controlPoints, grid, smoothingCoefficientAlpha, smoothingCoefficientBeta);
             else
                 return null;
