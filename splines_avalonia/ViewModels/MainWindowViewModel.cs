@@ -533,107 +533,101 @@ namespace splines_avalonia.ViewModels
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;
 
-                    // Базовые значения для начала и конца области видимости
-                    double startX = -(CenterX() + _offsetX) / _zoom;
-                    double endX = (width - CenterX() - _offsetX) / _zoom;
+                    // Область видимости на экране
+                    double visibleStartX = -(CenterX() + _offsetX) / _zoom;
+                    double visibleEndX = (width - CenterX() - _offsetX) / _zoom;
 
-                    // Проверяем и корректируем область определения функции, если заданы значения start и end
-                    double functionStartX = startX; // Значение по умолчанию, если нет заданного ограничения
-                    double functionEndX = endX;     // Значение по умолчанию, если нет заданного ограничения
+                    // Границы функции (по умолчанию - вся видимая область)
+                    double functionStartX = visibleStartX;
+                    double functionEndX = visibleEndX;
 
-                    // Если у функции есть начальная и конечная область, пробуем парсить их
+                    // Парсим пользовательские ограничения если они есть
                     if (!string.IsNullOrEmpty(curve.Start))
                     {
-                        var startResult = await NumberParser.ParseNumber(curve.Start);
+                        var startResult = await NumberParser.ParseNumber(curve.Start).ConfigureAwait(false);
                         if (startResult.HasValue)
-                        {
-                            functionStartX = startResult.Value;
-                        }
+                            functionStartX = startResult.Value; // Не ограничиваем слева видимой областью!
                     }
 
                     if (!string.IsNullOrEmpty(curve.End))
                     {
-                        var endResult = await NumberParser.ParseNumber(curve.End);
+                        var endResult = await NumberParser.ParseNumber(curve.End).ConfigureAwait(false);
                         if (endResult.HasValue)
-                        {
-                            functionEndX = endResult.Value;
-                        }
+                            functionEndX = endResult.Value; // Не ограничиваем справа видимой областью!
                     }
 
-                    // Проверка на пересечение области видимости с областью функции
-                    if (functionEndX < startX || functionStartX > endX)
-                    {
-                        // Если область функции не пересекается с видимой областью, пропускаем отрисовку
+                    // Проверяем пересечение области функции с видимой областью
+                    bool isVisibleOnScreen = 
+                        functionEndX > visibleStartX && 
+                        functionStartX < visibleEndX;
+
+                    if (!isVisibleOnScreen)
                         return;
-                    }
 
-                    // Теперь всегда используем startX и endX, даже если curve.Start и curve.End равны null или некорректны
-                    double visibleWidth = Math.Min(functionEndX, endX) - Math.Max(functionStartX, startX);
-                    double step = visibleWidth / 1000; // 1000 точек для плавной отрисовки
+                    // Вычисляем реальную область отрисовки (пересечение границ функции и видимой области)
+                    double renderStartX = Math.Max(functionStartX, visibleStartX);
+                    double renderEndX = Math.Min(functionEndX, visibleEndX);
+                    double visibleWidth = renderEndX - renderStartX;
+
+                    // Оптимизация количества точек
+                    int pointCount = Math.Min(1000, (int)(visibleWidth * 10));
+                    double step = visibleWidth / pointCount;
 
                     var points = new Points();
-                    double lastY = double.NaN;
 
-                    // Отрисовка функции
-                    for (double x = Math.Max(functionStartX, startX); x <= Math.Min(functionEndX, endX); x += step)
+                    for (int i = 0; i <= pointCount; i++)
                     {
+                        double x = renderStartX + i * step;
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
 
+                        // Обработка разрывов функции
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
                             if (points.Count >= 2)
                             {
-                                var polyline = new Polyline
+                                GraphicCanvas.Children.Add(new Polyline
                                 {
                                     Points = new Points(points),
                                     Stroke = new SolidColorBrush(curve.Color),
                                     StrokeThickness = 2
-                                };
-                                GraphicCanvas.Children.Add(polyline);
+                                });
                             }
-
                             points.Clear();
-                            lastY = double.NaN;
                             continue;
                         }
 
+                        // Преобразование в экранные координаты
                         var screenPoint = new Avalonia.Point(
                             (x * _zoom) + CenterX() + _offsetX,
                             (-y * _zoom) + CenterY() + _offsetY
                         );
 
+                        // Проверка вертикальной видимости
                         if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
                         {
                             points.Add(screenPoint);
-                            lastY = y;
                         }
-                        else
+                        else if (points.Count >= 2)
                         {
-                            if (points.Count >= 2)
+                            GraphicCanvas.Children.Add(new Polyline
                             {
-                                var polyline = new Polyline
-                                {
-                                    Points = new Points(points),
-                                    Stroke = new SolidColorBrush(curve.Color),
-                                    StrokeThickness = 2
-                                };
-                                GraphicCanvas.Children.Add(polyline);
-                            }
-
+                                Points = new Points(points),
+                                Stroke = new SolidColorBrush(curve.Color),
+                                StrokeThickness = 2
+                            });
                             points.Clear();
                         }
                     }
 
-                    // Добавление последнего сегмента (если он есть)
+                    // Отрисовка последнего сегмента
                     if (points.Count >= 2)
                     {
-                        var polyline = new Polyline
+                        GraphicCanvas.Children.Add(new Polyline
                         {
                             Points = points,
                             Stroke = new SolidColorBrush(curve.Color),
                             StrokeThickness = 2
-                        };
-                        GraphicCanvas.Children.Add(polyline);
+                        });
                     }
                 }
             }
