@@ -46,6 +46,9 @@ namespace splines_avalonia
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
         public bool IsPossible { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
+        public bool ShowControlPoints { get; set; }
 
         public string SplineType => "Smoothing Cubic";
 

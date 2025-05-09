@@ -11,6 +11,7 @@ using splines_avalonia.Views;
 using splines_avalonia.Helpers;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using DynamicData.Kernel;
 
 #pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602
 
@@ -150,12 +151,14 @@ namespace splines_avalonia.ViewModels
             var dialog = new FunctionInputDialog();
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            var result = await dialog.ShowDialog<string>(mainWindow);
+            var result = await dialog.ShowDialog<(string FunctionString, string Start, string End)>(mainWindow);
 
-            if (!string.IsNullOrWhiteSpace(result))
+            if (!string.IsNullOrWhiteSpace(result.FunctionString))
             {
                 var logic = new SplineLogic();
-                var curve = await logic.CreateFunction(result);
+                var curve = await logic.CreateFunction(result.FunctionString);
+                curve.Start = result.Start;
+                curve.End = result.End;
                 if (curve != null && curve.IsPossible)
                     CurveList.Add(curve);
                 DrawCurves();

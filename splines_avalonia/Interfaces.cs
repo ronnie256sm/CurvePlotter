@@ -32,9 +32,9 @@ namespace splines_avalonia
         double CalculateFunctionValue(string functionString, double x);
         bool IsPossible { get; set; }
         Color Color { get; set; }
-        // double Start { get; set; }
-        // double End { get; set; }
-        // bool ShowControlPoints { get; set; }
+        string Start { get; set; }
+        string End { get; set; }
+        bool ShowControlPoints { get; set; }
     }
 
     public interface ILogic

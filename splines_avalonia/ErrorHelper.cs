@@ -7,6 +7,9 @@ using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
+using NCalc;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace splines_avalonia.Helpers;
 #pragma warning disable CS8603
@@ -197,5 +200,52 @@ public static class FunctionChecker
             return $"Функция '{func}' должна иметь 2 аргумента, но получено {args}.";
 
         return null;
+    }
+}
+
+public static class NumberParser
+{
+    public static async Task<double?> ParseNumber(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            await ErrorHelper.ShowError("Ошибка ввода", "Пустое выражение недопустимо.");
+            return null;
+        }
+
+        // Заменяем pi на значение числа Пи
+        input = Regex.Replace(input, @"\bpi\b", Math.PI.ToString(CultureInfo.InvariantCulture), RegexOptions.IgnoreCase);
+
+        // Проверка на допустимые символы
+        if (!Regex.IsMatch(input, @"^[0-9+\-*/().\s]+$"))
+        {
+            await ErrorHelper.ShowError("Ошибка ввода", "Разрешены только числа, операции (+ - * /), скобки и 'pi'.");
+            return null;
+        }
+
+        try
+        {
+            var expr = new Expression(input);
+            var result = expr.Evaluate();
+
+            return result switch
+            {
+                double d => d,
+                int i => i,
+                decimal m => (double)m,
+                _ => await ReturnError()
+            };
+        }
+        catch (Exception ex)
+        {
+            await ErrorHelper.ShowError("Ошибка разбора", $"Невозможно обработать выражение: {ex.Message}");
+            return null;
+        }
+
+        async Task<double?> ReturnError()
+        {
+            await ErrorHelper.ShowError("Ошибка", "Выражение не является числом.");
+            return null;
+        }
     }
 }

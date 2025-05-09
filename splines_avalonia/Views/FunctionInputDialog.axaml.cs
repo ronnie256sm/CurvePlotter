@@ -43,7 +43,8 @@ namespace splines_avalonia.Views
             var success = await ViewModel.ValidateAndSetResultAsync();
             if (success)
             {
-                Close(ViewModel.FunctionString);
+                var result = ViewModel.GetFunctionDetails();
+                Close(result);
             }
         }
 

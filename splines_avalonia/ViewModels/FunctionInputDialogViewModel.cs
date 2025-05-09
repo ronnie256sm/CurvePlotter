@@ -1,11 +1,13 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using ReactiveUI;
 using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels
 {
-    public class FunctionInputDialogViewModel : INotifyPropertyChanged
+    public class FunctionInputDialogViewModel : ReactiveObject, INotifyPropertyChanged
     {
         private string _functionText = "";
 
@@ -20,6 +22,20 @@ namespace splines_avalonia.ViewModels
                     OnPropertyChanged();
                 }
             }
+        }
+
+        private string _start;
+        public string Start
+        {
+            get => _start;
+            set => this.RaiseAndSetIfChanged(ref _start, value);
+        }
+
+        private string _end;
+        public string End
+        {
+            get => _end;
+            set => this.RaiseAndSetIfChanged(ref _end, value);
         }
 
         public string FunctionString { get; private set; } = "";
@@ -52,6 +68,12 @@ namespace splines_avalonia.ViewModels
                 return true;
             }
             return false;
+        }
+
+        // Метод для получения всех данных
+        public (string FunctionString, string Start, string End) GetFunctionDetails()
+        {
+            return (FunctionString, Start, End);
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

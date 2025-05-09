@@ -36,6 +36,9 @@ namespace splines_avalonia
         public string SmoothingCoefficientAlpha { get; set; }
         public string SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
+        public bool ShowControlPoints { get; set; }
         private Color _color;
         public Color Color
         {

@@ -18,6 +18,9 @@ public class LinearSpline : ICurve
     public Point[] OutputPoints { get; }
     public string SmoothingCoefficientAlpha { get; set; }
     public string SmoothingCoefficientBeta { get; set; }
+    public string Start { get; set; }
+    public string End { get; set; }
+    public bool ShowControlPoints { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

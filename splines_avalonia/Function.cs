@@ -70,6 +70,9 @@ namespace splines_avalonia
         private bool _hasError = false;
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
+        public string Start { get; set; }
+        public string End { get; set; }
+        public bool ShowControlPoints { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

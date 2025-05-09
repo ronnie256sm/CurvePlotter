@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.FunctionInputDialog"
         x:DataType="vm:FunctionInputDialogViewModel"
-        Width="600" Height="550"
+        Width="600" Height="650"
         Title="Ввод функции"
         CanResize="false">
 
@@ -27,7 +27,7 @@
         </StackPanel>
 
         <!-- Панель кнопок с ScrollViewer -->
-        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="400">
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="360">
             <StackPanel Spacing="5">
                 <!-- Цифры и переменные (в два ряда) -->
                 <Grid>
@@ -368,6 +368,23 @@
             <Button Content="OK" Width="120" Click="OnOkClick"/>
             <Button Content="Отмена" Width="120" Click="OnCancelClick"/>
         </StackPanel>
+
+        <!-- Область определения функции -->
+        <Border DockPanel.Dock="Bottom" Margin="0,0,0,0" Padding="10" BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
+            <StackPanel>
+                <!-- Заголовок -->
+                <TextBlock Text="Область определения функции" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <!-- Сетка с полями -->
+                <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock Text="Начало:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Margin="0,0,20,5"/>
+                    <TextBox Width="120" Text="{Binding Start, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
+
+                    <TextBlock Text="Конец:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="0,0,20,5"/>
+                    <TextBox Width="120" Text="{Binding End, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+                </Grid>
+            </StackPanel>
+        </Border>
 
     </DockPanel>
 </Window>
