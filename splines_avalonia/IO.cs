@@ -59,6 +59,9 @@ public static class IO
                             SplineType = curve.SplineType,
                             Grid = curve.Grid,
                             ControlPoints = curve.ControlPoints,
+                            ShowControlPoints = curve.ShowControlPoints,
+                            Start = curve.Start,
+                            End = curve.End,
                             IsVisible = curve.IsVisible,
                             SmoothingCoefficientAlpha = curve.SmoothingCoefficientAlpha,
                             SmoothingCoefficientBeta = curve.SmoothingCoefficientBeta,
@@ -126,6 +129,10 @@ public static class IO
                             curve.Name = name;
                             Console.WriteLine($"Загружена функция: {name}");
                         }
+                        if (curveData.TryGetValue("Start", out var StartObj) && StartObj is string Start)
+                            curve.Start = Start;
+                        if (curveData.TryGetValue("End", out var EndObj) && StartObj is string End)
+                            curve.End = End;
                     }
                     else if (type == "Spline")
                     {
@@ -221,6 +228,8 @@ public static class IO
                                 }
                             }
                         }
+                        if (curveData.TryGetValue("ShowControlPoints", out var ShowControlPointsObj) && ShowControlPointsObj is bool ShowControlPoints)
+                            curve.ShowControlPoints = ShowControlPoints;
                     }
                 }
 

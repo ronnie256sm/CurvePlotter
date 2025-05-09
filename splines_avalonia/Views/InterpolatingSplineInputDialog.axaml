@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.InterpolatingSplineInputDialog"
         x:DataType="vm:InterpolatingSplineInputDialogViewModel"
-        Width="500" Height="200"
+        Width="500" Height="240"
         CanResize="false">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
@@ -20,6 +20,12 @@
                             Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
                 </ToolTip.Tip>
             </Button>
+
+            <!-- Добавляем CheckBox для "Отображать контрольные точки" -->
+            <CheckBox Content="Отображать контрольные точки"
+                      IsChecked="{Binding ShowControlPoints, Mode=TwoWay}"
+                      HorizontalAlignment="Stretch"
+                      Margin="0,0,0,0"/>
         </StackPanel>
 
         <!-- Панель для кнопок OK и Отмена внизу -->

@@ -8,9 +8,10 @@ namespace splines_avalonia.Views
     {
         public bool IsOkClicked { get; private set; }
         public string PointsFile { get; private set; } = string.Empty;
+        public bool ShowControlPoints { get; private set; } = true;
         public InterpolatingSplineInputDialogViewModel ViewModel { get; }
 
-        public InterpolatingSplineInputDialog(string type)
+        public InterpolatingSplineInputDialog(string type, bool showControlPoints)
         {
             InitializeComponent();
             ViewModel = new InterpolatingSplineInputDialogViewModel();
@@ -19,6 +20,7 @@ namespace splines_avalonia.Views
                 Title = "Выберите файлы для сплайна";
             if (type == "Linear")
                 Title = "Выберите файлы для ломаной";
+            ViewModel.ShowControlPoints = showControlPoints;
         }
 
         private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)
@@ -35,6 +37,7 @@ namespace splines_avalonia.Views
             }
 
             PointsFile = ViewModel.PointsFilePath!;
+            ShowControlPoints = ViewModel.ShowControlPoints;
             IsOkClicked = true;
             Close();
         }
@@ -44,9 +47,10 @@ namespace splines_avalonia.Views
             Close();
         }
 
-        public void SetInitialValues(string pointsPath)
+        public void SetInitialValues(string pointsPath, bool showControlPoints)
         {
             ViewModel.PointsFilePath = pointsPath;
+            ViewModel.ShowControlPoints = showControlPoints;
         }
     }
 }

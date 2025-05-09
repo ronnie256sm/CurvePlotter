@@ -17,6 +17,12 @@ namespace splines_avalonia.ViewModels
         private string? _meshFile;
         private string? _smoothingFactorAlpha;
         private string? _smoothingFactorBeta;
+        private bool _showControlPoints;
+        public bool ShowControlPoints
+        {
+            get => _showControlPoints;
+            set => this.RaiseAndSetIfChanged(ref _showControlPoints, value);
+        }
 
         public string? PointsFile
         {
@@ -119,6 +125,7 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
+            ShowControlPoints = _showControlPoints;
             IsOkClicked = true;
             _parentWindow.Close();
         }

@@ -193,7 +193,7 @@ namespace splines_avalonia.ViewModels
 
         private async void AddSpline(string type)
         {
-            var inputDialog = new InterpolatingSplineInputDialog(type);
+            var inputDialog = new InterpolatingSplineInputDialog(type, true);
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             await inputDialog.ShowDialog(mainWindow);
@@ -214,9 +214,15 @@ namespace splines_avalonia.ViewModels
             ICurve curve = null;
             var logic = new SplineLogic();
             if (type == "Interpolating Cubic")
+            {
                 curve = logic.CreateInterpolatingSpline(points);
+                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+            }
             else if (type == "Linear")
+            {
                 curve = logic.CreateLinearSpline(points);
+                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+            }
 
             if (curve != null && curve.IsPossible)
             {
@@ -229,7 +235,7 @@ namespace splines_avalonia.ViewModels
 
         private async void AddSmoothingSpline()
         {
-            var inputDialog = new SmoothingSplineInputDialog();
+            var inputDialog = new SmoothingSplineInputDialog(true);
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             await inputDialog.ShowDialog(mainWindow);
@@ -241,6 +247,7 @@ namespace splines_avalonia.ViewModels
             string meshFile = inputDialog.MeshFile;
             string smoothingAlpha = inputDialog.SmoothingFactorAlpha;
             string smoothingBeta = inputDialog.SmoothingFactorBeta;
+            bool showControlPoints = inputDialog.ShowControlPoints;
 
             if (string.IsNullOrWhiteSpace(pointsFile))
             {
@@ -264,6 +271,7 @@ namespace splines_avalonia.ViewModels
             {
                 curve.ControlPointsFile = pointsFile;
                 curve.GridFile = meshFile;
+                curve.ShowControlPoints = showControlPoints;
                 CurveList.Add(curve);
             }
             else
@@ -285,15 +293,18 @@ namespace splines_avalonia.ViewModels
             string newMeshFile = null;
             string newSmoothingFactorAlpha = null;
             string newSmoothingFactorBeta = null;
+            bool newShowControlPoints = true;
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             if (type == "Linear" || type == "Interpolating Cubic")
             {
-                var dialog = new InterpolatingSplineInputDialog(type);
+                var dialog = new InterpolatingSplineInputDialog(type, SelectedCurve.ShowControlPoints);
 
                 if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
-                    dialog.SetInitialValues(spline.ControlPointsFile);
+                {
+                    dialog.SetInitialValues(spline.ControlPointsFile, spline.ShowControlPoints);
+                }
 
                 await dialog.ShowDialog(mainWindow);
 
@@ -301,10 +312,11 @@ namespace splines_avalonia.ViewModels
                     return;
 
                 newPointsFile = dialog.PointsFile;
+                newShowControlPoints = dialog.ShowControlPoints;
             }
             else if (type == "Smoothing Cubic")
             {
-                var dialog = new SmoothingSplineInputDialog();
+                var dialog = new SmoothingSplineInputDialog(SelectedCurve.ShowControlPoints);
 
                 if (SelectedCurve is ICurve spline)
                 {
@@ -312,7 +324,8 @@ namespace splines_avalonia.ViewModels
                         spline.ControlPointsFile ?? "",
                         spline.GridFile ?? "",
                         spline.SmoothingCoefficientAlpha ?? "",
-                        spline.SmoothingCoefficientBeta ?? ""
+                        spline.SmoothingCoefficientBeta ?? "",
+                        spline.ShowControlPoints
                     );
                 }
 
@@ -325,6 +338,7 @@ namespace splines_avalonia.ViewModels
                 newMeshFile = dialog.MeshFile;
                 newSmoothingFactorAlpha = dialog.SmoothingFactorAlpha;
                 newSmoothingFactorBeta = dialog.SmoothingFactorBeta;
+                newShowControlPoints = dialog.ShowControlPoints;
             }
             else
             {
@@ -358,14 +372,17 @@ namespace splines_avalonia.ViewModels
             if (type == "Linear")
             {
                 newCurve = logic.CreateLinearSpline(newPoints);
+                newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Interpolating Cubic")
             {
                 newCurve = logic.CreateInterpolatingSpline(newPoints);
+                newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null)
             {
                 newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
+                newCurve.ShowControlPoints = newShowControlPoints;
             }
 
             if (newCurve == null)
@@ -381,6 +398,7 @@ namespace splines_avalonia.ViewModels
                 newCurve.GridFile = newMeshFile;
                 newCurve.SmoothingCoefficientAlpha = newSmoothingFactorAlpha;
                 newCurve.SmoothingCoefficientBeta = newSmoothingFactorBeta;
+                newCurve.ShowControlPoints = newShowControlPoints;
                 newCurve.Color = SelectedCurve.Color;
 
                 CurveList[index] = newCurve;
@@ -484,7 +502,7 @@ namespace splines_avalonia.ViewModels
                     }
 
                     // контрольные точки
-                    if (curve.ControlPoints != null)
+                    if (curve.ControlPoints != null && curve.ShowControlPoints)
                     {
                         foreach (var p in curve.ControlPoints)
                         {

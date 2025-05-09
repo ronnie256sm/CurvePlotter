@@ -7,7 +7,7 @@ using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels
 {
-    public class FunctionInputDialogViewModel : ReactiveObject, INotifyPropertyChanged
+    public class FunctionInputDialogViewModel : INotifyPropertyChanged
     {
         private string _functionText = "";
 
