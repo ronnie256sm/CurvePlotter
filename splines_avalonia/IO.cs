@@ -130,9 +130,22 @@ public static class IO
                             Console.WriteLine($"Загружена функция: {name}");
                         }
                         if (curveData.TryGetValue("Start", out var StartObj) && StartObj is string Start)
-                            curve.Start = Start;
-                        if (curveData.TryGetValue("End", out var EndObj) && StartObj is string End)
-                            curve.End = End;
+                        {
+                            if (Start == "")
+                                curve.Start = null;
+                            else
+                                curve.Start = Start;
+                        }
+                            
+                        if (curveData.TryGetValue("End", out var EndObj) && EndObj is string End)
+                        {
+                            if (End == "")
+                                curve.End = null;
+                            else
+                                curve.End = End;
+                        }
+                            
+                        curve.GetLimits();
                     }
                     else if (type == "Spline")
                     {
@@ -142,9 +155,9 @@ public static class IO
                             {
                                 var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
                                 var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points.Length < 4 && points.Length > 0)
+                                if (points.Length < 3 && points.Length > 0)
                                 {
-                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
+                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
                                     curve = null;
                                 }
                                 if (points.Length == 0)
@@ -152,7 +165,7 @@ public static class IO
                                     await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
                                     curve = null;
                                 }
-                                if (points.Length >= 4)
+                                if (points.Length >= 3)
                                 {
                                     curve = logic.CreateInterpolatingSpline(points);
                                     curve.Name = name;
@@ -184,9 +197,9 @@ public static class IO
                                         await ErrorHelper.ShowError("Ошибка", "Сетка должна содержать хотя бы один конечный элемент.");
                                         incorrect = true;
                                     }
-                                    if (points.Length < 4 && points.Length > 0)
+                                    if (points.Length < 3 && points.Length > 0)
                                     {
-                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
+                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
                                         incorrect = true;
                                     }
                                     if (points.Length == 0)
@@ -210,9 +223,9 @@ public static class IO
                             {
                                 var controlPoints = ((JArray)controlPointsObj3).ToObject<List<Dictionary<string, double>>>();
                                 var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points.Length < 4 && points.Length > 0)
+                                if (points.Length < 3 && points.Length > 0)
                                 {
-                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 4 контрольные точки");
+                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
                                     curve = null;
                                 }
                                 if (points.Length == 0)
@@ -220,7 +233,7 @@ public static class IO
                                     await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
                                     curve = null;
                                 }
-                                if (points.Length >= 4)
+                                if (points.Length >= 3)
                                 {
                                     curve = logic.CreateLinearSpline(points);
                                     curve.Name = name;
