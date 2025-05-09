@@ -209,7 +209,6 @@ public static class NumberParser
     {
         if (string.IsNullOrWhiteSpace(input))
         {
-            await ErrorHelper.ShowError("Ошибка ввода", "Пустое выражение недопустимо.");
             return null;
         }
 

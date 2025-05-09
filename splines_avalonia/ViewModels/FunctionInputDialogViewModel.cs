@@ -24,18 +24,32 @@ namespace splines_avalonia.ViewModels
             }
         }
 
-        private string _start;
+        private string _start = "";
         public string Start
         {
             get => _start;
-            set => this.RaiseAndSetIfChanged(ref _start, value);
+            set
+            {
+                if (_start != value)
+                {
+                    _start = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
-        private string _end;
+        private string _end = "";
         public string End
         {
             get => _end;
-            set => this.RaiseAndSetIfChanged(ref _end, value);
+            set
+            {
+                if (_end != value)
+                {
+                    _end = value;
+                    OnPropertyChanged();
+                }
+            }
         }
 
         public string FunctionString { get; private set; } = "";

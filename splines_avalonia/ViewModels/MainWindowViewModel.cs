@@ -175,12 +175,14 @@ namespace splines_avalonia.ViewModels
             }
 
             var dialog = new FunctionInputDialog();
-            dialog.SetInitialFunction(selectedFunction.FunctionString);
-            var result = await dialog.ShowDialog<string>(mainWindow);
+            dialog.SetInitialFunction(selectedFunction.FunctionString, selectedFunction.Start, selectedFunction.End);
+            var result = await dialog.ShowDialog<(string FunctionString, string Start, string End)>(mainWindow);
 
-            if (!string.IsNullOrWhiteSpace(result))
+            if (!string.IsNullOrWhiteSpace(result.FunctionString))
             {
-                selectedFunction.FunctionString = result;
+                selectedFunction.FunctionString = result.FunctionString;
+                selectedFunction.Start = result.Start;
+                selectedFunction.End = result.End;
                 if (!SelectedCurve.IsPossible)
                 {
                     CurveList.Remove(SelectedCurve);
@@ -422,7 +424,7 @@ namespace splines_avalonia.ViewModels
             }
         }
         
-        public void DrawCurves()
+        public async void DrawCurves()
         {
             if (GraphicCanvas == null)
                 return;
@@ -513,22 +515,52 @@ namespace splines_avalonia.ViewModels
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;
 
+                    // Базовые значения для начала и конца области видимости
                     double startX = -(CenterX() + _offsetX) / _zoom;
                     double endX = (width - CenterX() - _offsetX) / _zoom;
 
-                    int maxPoints = 1000;
-                    double visibleWidth = endX - startX;
-                    double step = visibleWidth / maxPoints;
+                    // Проверяем и корректируем область определения функции, если заданы значения start и end
+                    double functionStartX = startX; // Значение по умолчанию, если нет заданного ограничения
+                    double functionEndX = endX;     // Значение по умолчанию, если нет заданного ограничения
+
+                    // Если у функции есть начальная и конечная область, пробуем парсить их
+                    if (!string.IsNullOrEmpty(curve.Start))
+                    {
+                        var startResult = await NumberParser.ParseNumber(curve.Start);
+                        if (startResult.HasValue)
+                        {
+                            functionStartX = startResult.Value;
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(curve.End))
+                    {
+                        var endResult = await NumberParser.ParseNumber(curve.End);
+                        if (endResult.HasValue)
+                        {
+                            functionEndX = endResult.Value;
+                        }
+                    }
+
+                    // Проверка на пересечение области видимости с областью функции
+                    if (functionEndX < startX || functionStartX > endX)
+                    {
+                        // Если область функции не пересекается с видимой областью, пропускаем отрисовку
+                        return;
+                    }
+
+                    // Теперь всегда используем startX и endX, даже если curve.Start и curve.End равны null или некорректны
+                    double visibleWidth = Math.Min(functionEndX, endX) - Math.Max(functionStartX, startX);
+                    double step = visibleWidth / 1000; // 1000 точек для плавной отрисовки
 
                     var points = new Points();
+                    double lastY = double.NaN;
 
-                    double lastY = double.NaN; // для отслеживания разрывов
-
-                    for (double x = startX; x <= endX; x += step)
+                    // Отрисовка функции
+                    for (double x = Math.Max(functionStartX, startX); x <= Math.Min(functionEndX, endX); x += step)
                     {
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
 
-                        // если значение функции бесконечно или неопределено, разрываем отрисовку
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
                             if (points.Count >= 2)
@@ -574,6 +606,7 @@ namespace splines_avalonia.ViewModels
                         }
                     }
 
+                    // Добавление последнего сегмента (если он есть)
                     if (points.Count >= 2)
                     {
                         var polyline = new Polyline

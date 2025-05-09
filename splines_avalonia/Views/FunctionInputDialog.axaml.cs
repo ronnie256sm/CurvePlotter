@@ -15,9 +15,11 @@ namespace splines_avalonia.Views
             DataContext = ViewModel;
         }
 
-        public void SetInitialFunction(string function)
+        public void SetInitialFunction(string function, string start, string end)
         {
             ViewModel.FunctionText = function;
+            ViewModel.Start = start;
+            ViewModel.End = end;
         }
 
         private void OnInputClick(object? sender, RoutedEventArgs e)
