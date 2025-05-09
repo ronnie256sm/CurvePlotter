@@ -20,6 +20,8 @@ public class LinearSpline : ICurve
     public string SmoothingCoefficientBeta { get; set; }
     public string Start { get; set; }
     public string End { get; set; }
+    public double ParsedStart { get; set; }
+    public double ParsedEnd { get; set; }
     public bool ShowControlPoints { get; set; }
 
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -52,18 +54,17 @@ public class LinearSpline : ICurve
     public LinearSpline(Point[] controlPoints)
     {
         Color = Colors.Black;
-        SmoothingCoefficientAlpha = null;
-        SmoothingCoefficientBeta = null;
         ControlPoints = controlPoints;
         Name = "Ломаная";
         IsVisible = true;
         IsPossible = true;
-        // if (ControlPoints.Length < 4)
-        // {
-        //     IsPossible = false;
-        // }
     }
     public double CalculateFunctionValue(string functionString, double x)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void GetLimits()
     {
         throw new System.NotImplementedException();
     }

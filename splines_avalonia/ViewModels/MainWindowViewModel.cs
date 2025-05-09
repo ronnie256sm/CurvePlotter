@@ -161,6 +161,7 @@ namespace splines_avalonia.ViewModels
                 curve.End = result.End;
                 if (curve != null && curve.IsPossible)
                     CurveList.Add(curve);
+                curve.GetLimits();
                 DrawCurves();
             }
         }
@@ -187,6 +188,7 @@ namespace splines_avalonia.ViewModels
                 {
                     CurveList.Remove(SelectedCurve);
                 }
+                SelectedCurve.GetLimits();
                 DrawCurves();
             }
         }
@@ -533,45 +535,31 @@ namespace splines_avalonia.ViewModels
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;
 
-                    // 1. Определяем текущие границы видимости на экране
+                    // определяем текущие границы видимости на экране
                     double visibleLeft = -(CenterX() + _offsetX) / _zoom;
                     double visibleRight = (width - CenterX() - _offsetX) / _zoom;
 
-                    // 2. Устанавливаем границы функции (по умолчанию - бесконечность)
-                    double funcLeft = double.NegativeInfinity;
-                    double funcRight = double.PositiveInfinity;
+                    double funcLeft = curve.ParsedStart;
+                    double funcRight = curve.ParsedEnd;
 
-                    // 3. Применяем пользовательские ограничения
-                    if (!string.IsNullOrEmpty(curve.Start))
-                    {
-                        var parsed = await NumberParser.ParseNumber(curve.Start).ConfigureAwait(false);
-                        if (parsed.HasValue) funcLeft = parsed.Value;
-                    }
-                    
-                    if (!string.IsNullOrEmpty(curve.End))
-                    {
-                        var parsed = await NumberParser.ParseNumber(curve.End).ConfigureAwait(false);
-                        if (parsed.HasValue) funcRight = parsed.Value;
-                    }
-
-                    // 4. НОВАЯ ЛОГИКА: проверяем видимость функции
+                    // проверяем видимость функции
                     bool shouldRender = 
-                        (funcRight > visibleLeft) &&  // Правая граница функции правее левой границы экрана
-                        (funcLeft < visibleRight);    // Левая граница функции левее правой границы экрана
+                        (funcRight > visibleLeft) &&  // правая граница функции правее левой границы экрана
+                        (funcLeft < visibleRight);    // левая граница функции левее правой границы экрана
 
                     if (!shouldRender) continue;
 
-                    // 5. Определяем реальные границы отрисовки
+                    // определяем реальные границы отрисовки
                     double renderStart = Math.Max(funcLeft, visibleLeft);
                     double renderEnd = Math.Min(funcRight, visibleRight);
                     double renderWidth = renderEnd - renderStart;
 
-                    // 6. Оптимизация количества точек
+                    // оптимизация количества точек
                     int pointCount = Math.Min(1000, (int)(renderWidth * 10));
                     if (pointCount <= 0) return;
                     double step = renderWidth / pointCount;
 
-                    // 7. Отрисовка функции (прежний код)
+                    // отрисовка функции
                     var points = new Points();
                     for (int i = 0; i <= pointCount; i++)
                     {

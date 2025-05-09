@@ -4,6 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using NCalc;
 using Avalonia.Media;
+using splines_avalonia.Helpers;
+using System.Threading.Tasks;
+using CSharpMath.Atom.Atoms;
 
 namespace splines_avalonia
 {
@@ -21,6 +24,26 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(FunctionString));
                 OnPropertyChanged(nameof(Name));
                 PrepareExpression(value);
+            }
+        }
+        private string _start;
+        public string Start
+        {
+            get => _start;
+            set
+            {
+                _start = value;
+                OnPropertyChanged(nameof(Start));
+            }
+        }
+        private string _end;
+        public string End
+        {
+            get => _end;
+            set
+            {
+                _end = value;
+                OnPropertyChanged(nameof(End));
             }
         }
         public Point[] OutputPoints { get; }
@@ -70,9 +93,9 @@ namespace splines_avalonia
         private bool _hasError = false;
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
-        public string Start { get; set; }
-        public string End { get; set; }
         public bool ShowControlPoints { get; set; }
+        public double ParsedStart { get; set; }
+        public double ParsedEnd { get; set; }
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -84,7 +107,28 @@ namespace splines_avalonia
             FunctionString = functionString;
             Name = functionString;
             IsVisible = true;
-            PrepareExpression(FunctionString);
+            ParsedStart = Double.NegativeInfinity;
+            ParsedEnd = Double.PositiveInfinity;
+        }
+
+        public async void GetLimits()
+        {
+            if (Start != null)
+            {
+                ParsedStart = await NumberParser.ParseNumber(Start) ?? Double.NegativeInfinity;
+            }
+            else
+            {
+                ParsedStart = Double.NegativeInfinity;
+            }
+            if (End != null)
+            {
+                ParsedEnd = await NumberParser.ParseNumber(End) ?? Double.PositiveInfinity;
+            }
+            else
+            {
+                ParsedEnd = Double.PositiveInfinity;
+            }
         }
 
         private void PrepareExpression(string function)

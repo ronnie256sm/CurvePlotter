@@ -39,6 +39,8 @@ namespace splines_avalonia
         public string Start { get; set; }
         public string End { get; set; }
         public bool ShowControlPoints { get; set; }
+        public double ParsedStart { get; set; }
+        public double ParsedEnd { get; set; }
         private Color _color;
         public Color Color
         {
@@ -53,8 +55,6 @@ namespace splines_avalonia
         public InterpolatingSpline(Point[] controlPoints)
         {
             Color = Colors.Black;
-            SmoothingCoefficientAlpha = null;
-            SmoothingCoefficientBeta = null;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн";
             IsVisible = true;
@@ -173,6 +173,11 @@ namespace splines_avalonia
         }
 
         public double CalculateFunctionValue(string functionString, double x)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void GetLimits()
         {
             throw new System.NotImplementedException();
         }

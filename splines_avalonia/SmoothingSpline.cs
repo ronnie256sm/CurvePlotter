@@ -48,6 +48,8 @@ namespace splines_avalonia
         public bool IsPossible { get; set; }
         public string Start { get; set; }
         public string End { get; set; }
+        public double ParsedStart { get; set; }
+        public double ParsedEnd { get; set; }
         public bool ShowControlPoints { get; set; }
 
         public string SplineType => "Smoothing Cubic";
@@ -257,6 +259,11 @@ namespace splines_avalonia
         }
 
         public double CalculateFunctionValue(string functionString, double x)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GetLimits()
         {
             throw new NotImplementedException();
         }

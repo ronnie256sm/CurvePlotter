@@ -34,7 +34,10 @@ namespace splines_avalonia
         Color Color { get; set; }
         string Start { get; set; }
         string End { get; set; }
+        double ParsedStart { get; set; }
+        double ParsedEnd { get; set; }
         bool ShowControlPoints { get; set; }
+        void GetLimits();
     }
 
     public interface ILogic
