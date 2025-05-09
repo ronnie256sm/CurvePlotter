@@ -533,54 +533,51 @@ namespace splines_avalonia.ViewModels
                     double width = GraphicCanvas.Bounds.Width;
                     double height = GraphicCanvas.Bounds.Height;
 
-                    // Область видимости на экране
-                    double visibleStartX = -(CenterX() + _offsetX) / _zoom;
-                    double visibleEndX = (width - CenterX() - _offsetX) / _zoom;
+                    // 1. Определяем текущие границы видимости на экране
+                    double visibleLeft = -(CenterX() + _offsetX) / _zoom;
+                    double visibleRight = (width - CenterX() - _offsetX) / _zoom;
 
-                    // Границы функции (по умолчанию - вся видимая область)
-                    double functionStartX = visibleStartX;
-                    double functionEndX = visibleEndX;
+                    // 2. Устанавливаем границы функции (по умолчанию - бесконечность)
+                    double funcLeft = double.NegativeInfinity;
+                    double funcRight = double.PositiveInfinity;
 
-                    // Парсим пользовательские ограничения если они есть
+                    // 3. Применяем пользовательские ограничения
                     if (!string.IsNullOrEmpty(curve.Start))
                     {
-                        var startResult = await NumberParser.ParseNumber(curve.Start).ConfigureAwait(false);
-                        if (startResult.HasValue)
-                            functionStartX = startResult.Value; // Не ограничиваем слева видимой областью!
+                        var parsed = await NumberParser.ParseNumber(curve.Start).ConfigureAwait(false);
+                        if (parsed.HasValue) funcLeft = parsed.Value;
                     }
-
+                    
                     if (!string.IsNullOrEmpty(curve.End))
                     {
-                        var endResult = await NumberParser.ParseNumber(curve.End).ConfigureAwait(false);
-                        if (endResult.HasValue)
-                            functionEndX = endResult.Value; // Не ограничиваем справа видимой областью!
+                        var parsed = await NumberParser.ParseNumber(curve.End).ConfigureAwait(false);
+                        if (parsed.HasValue) funcRight = parsed.Value;
                     }
 
-                    // Проверяем пересечение области функции с видимой областью
-                    bool isVisibleOnScreen = 
-                        functionEndX > visibleStartX && 
-                        functionStartX < visibleEndX;
+                    // 4. НОВАЯ ЛОГИКА: проверяем видимость функции
+                    bool shouldRender = 
+                        (funcRight > visibleLeft) &&  // Правая граница функции правее левой границы экрана
+                        (funcLeft < visibleRight);    // Левая граница функции левее правой границы экрана
 
-                    if (!isVisibleOnScreen)
-                        return;
+                    if (!shouldRender) continue;
 
-                    // Вычисляем реальную область отрисовки (пересечение границ функции и видимой области)
-                    double renderStartX = Math.Max(functionStartX, visibleStartX);
-                    double renderEndX = Math.Min(functionEndX, visibleEndX);
-                    double visibleWidth = renderEndX - renderStartX;
+                    // 5. Определяем реальные границы отрисовки
+                    double renderStart = Math.Max(funcLeft, visibleLeft);
+                    double renderEnd = Math.Min(funcRight, visibleRight);
+                    double renderWidth = renderEnd - renderStart;
 
-                    // Оптимизация количества точек
-                    int pointCount = Math.Min(1000, (int)(visibleWidth * 10));
-                    double step = visibleWidth / pointCount;
+                    // 6. Оптимизация количества точек
+                    int pointCount = Math.Min(1000, (int)(renderWidth * 10));
+                    if (pointCount <= 0) return;
+                    double step = renderWidth / pointCount;
 
+                    // 7. Отрисовка функции (прежний код)
                     var points = new Points();
-
                     for (int i = 0; i <= pointCount; i++)
                     {
-                        double x = renderStartX + i * step;
+                        double x = renderStart + i * step;
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
 
-                        // Обработка разрывов функции
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {
                             if (points.Count >= 2)
@@ -596,13 +593,11 @@ namespace splines_avalonia.ViewModels
                             continue;
                         }
 
-                        // Преобразование в экранные координаты
                         var screenPoint = new Avalonia.Point(
                             (x * _zoom) + CenterX() + _offsetX,
                             (-y * _zoom) + CenterY() + _offsetY
                         );
 
-                        // Проверка вертикальной видимости
                         if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
                         {
                             points.Add(screenPoint);
@@ -619,7 +614,6 @@ namespace splines_avalonia.ViewModels
                         }
                     }
 
-                    // Отрисовка последнего сегмента
                     if (points.Count >= 2)
                     {
                         GraphicCanvas.Children.Add(new Polyline
