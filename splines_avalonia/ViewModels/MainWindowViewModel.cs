@@ -162,6 +162,13 @@ namespace splines_avalonia.ViewModels
                 if (curve != null && curve.IsPossible)
                     CurveList.Add(curve);
                 curve.GetLimits();
+                if (curve.ParsedStart > curve.ParsedEnd)
+                {
+                    await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
+                    curve.Start = null;
+                    curve.End = null;
+                    curve.GetLimits();
+                }
                 DrawCurves();
             }
         }
@@ -189,6 +196,13 @@ namespace splines_avalonia.ViewModels
                     CurveList.Remove(SelectedCurve);
                 }
                 SelectedCurve.GetLimits();
+                if (SelectedCurve.ParsedStart > SelectedCurve.ParsedEnd)
+                {
+                    await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
+                    SelectedCurve.Start = null;
+                    SelectedCurve.End = null;
+                    SelectedCurve.GetLimits();
+                }
                 DrawCurves();
             }
         }

@@ -113,22 +113,8 @@ namespace splines_avalonia
 
         public async void GetLimits()
         {
-            if (Start != null)
-            {
-                ParsedStart = await NumberParser.ParseNumber(Start) ?? Double.NegativeInfinity;
-            }
-            else
-            {
-                ParsedStart = Double.NegativeInfinity;
-            }
-            if (End != null)
-            {
-                ParsedEnd = await NumberParser.ParseNumber(End) ?? Double.PositiveInfinity;
-            }
-            else
-            {
-                ParsedEnd = Double.PositiveInfinity;
-            }
+            ParsedStart = await NumberParser.ParseNumber(Start) ?? Double.NegativeInfinity;
+            ParsedEnd = await NumberParser.ParseNumber(End) ?? Double.PositiveInfinity;
         }
 
         private void PrepareExpression(string function)
