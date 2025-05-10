@@ -16,7 +16,7 @@ namespace splines_avalonia.Views
             InitializeComponent();
             ViewModel = new InterpolatingSplineInputDialogViewModel();
             DataContext = ViewModel;
-            if (type == "Interpolating Cubic")
+            if (type == "Interpolating Cubic 2" || type == "Interpolating Cubic 1")
                 Title = "Выберите файлы для сплайна";
             if (type == "Linear")
                 Title = "Выберите файлы для ломаной";

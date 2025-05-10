@@ -41,7 +41,8 @@ namespace splines_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
         }
 
-        public ReactiveCommand<Unit, Unit> AddInterpolatingSplineCommand { get; }
+        public ReactiveCommand<Unit, Unit> AddInterpolatingSpline1Command { get; }
+        public ReactiveCommand<Unit, Unit> AddInterpolatingSpline2Command { get; }
         public ReactiveCommand<Unit, Unit> AddSmoothingSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddLinearSplineCommand { get; }
         public ReactiveCommand<Unit, Unit> AddFunctionCommand { get; }
@@ -52,7 +53,8 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> SavePngCommand { get; }
         public MainWindowViewModel()
         {
-            AddInterpolatingSplineCommand = ReactiveCommand.Create(() => AddSpline("Interpolating Cubic"));
+            AddInterpolatingSpline1Command = ReactiveCommand.Create(() => AddSpline("Interpolating Cubic 1"));
+            AddInterpolatingSpline2Command = ReactiveCommand.Create(() => AddSpline("Interpolating Cubic 2"));
             AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
             AddLinearSplineCommand = ReactiveCommand.Create(() => AddSpline("Linear"));
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
@@ -192,9 +194,14 @@ namespace splines_avalonia.ViewModels
 
             ICurve curve = null;
             var logic = new SplineLogic();
-            if (type == "Interpolating Cubic")
+            if (type == "Interpolating Cubic 2")
             {
-                curve = logic.CreateInterpolatingSpline(points);
+                curve = logic.CreateInterpolatingSpline(points, 2);
+                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+            }
+            if (type == "Interpolating Cubic 1")
+            {
+                curve = logic.CreateInterpolatingSpline(points, 1);
                 curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
             else if (type == "Linear")
@@ -276,7 +283,7 @@ namespace splines_avalonia.ViewModels
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
-            if (type == "Linear" || type == "Interpolating Cubic")
+            if (type == "Linear" || type == "Interpolating Cubic 2" || type == "Interpolating Cubic 1")
             {
                 var dialog = new InterpolatingSplineInputDialog(type, SelectedCurve.ShowControlPoints);
 
@@ -353,9 +360,14 @@ namespace splines_avalonia.ViewModels
                 newCurve = logic.CreateLinearSpline(newPoints);
                 newCurve.ShowControlPoints = newShowControlPoints;
             }
-            else if (type == "Interpolating Cubic")
+            else if (type == "Interpolating Cubic 2")
             {
-                newCurve = logic.CreateInterpolatingSpline(newPoints);
+                newCurve = logic.CreateInterpolatingSpline(newPoints, 2);
+                newCurve.ShowControlPoints = newShowControlPoints;
+            }
+            else if (type == "Interpolating Cubic 1")
+            {
+                newCurve = logic.CreateInterpolatingSpline(newPoints, 1);
                 newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null)

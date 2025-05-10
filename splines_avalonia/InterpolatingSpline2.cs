@@ -4,7 +4,7 @@ using Avalonia.Media;
 
 namespace splines_avalonia
 {
-    public class InterpolatingSpline : ICurve
+    public class InterpolatingSpline2 : ICurve
     {
         #pragma warning disable CS8618, CS8625
         public string Type => "Spline";
@@ -14,7 +14,7 @@ namespace splines_avalonia
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
         public string FunctionString { get; set; }
-        public string SplineType => "Interpolating Cubic";
+        public string SplineType => "Interpolating Cubic 2";
 
         public string Name { get; set; }
         private bool _isVisible = true;
@@ -52,11 +52,11 @@ namespace splines_avalonia
             }
         }
 
-        public InterpolatingSpline(Point[] controlPoints)
+        public InterpolatingSpline2(Point[] controlPoints)
         {
             Color = Colors.Black;
             ControlPoints = controlPoints;
-            Name = "Интерполяционный сплайн";
+            Name = "Интерполяционный сплайн с непрерывными вторыми производными";
             IsVisible = true;
             IsPossible = true;
 

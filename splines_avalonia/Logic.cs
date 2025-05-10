@@ -15,10 +15,17 @@ namespace splines_avalonia
                 return null;
         }
 
-        public ICurve CreateInterpolatingSpline(Point[] controlPoints)
+        public ICurve CreateInterpolatingSpline(Point[] controlPoints, int type)
         {
             if (controlPoints != null && controlPoints.Length >= 3)
-                return new InterpolatingSpline(controlPoints);
+            {
+                if (type == 1)
+                    return new InterpolatingSpline1(controlPoints);
+                if (type == 2)
+                    return new InterpolatingSpline2(controlPoints);
+                else
+                    return null;
+            }
             else
                 return null;
         }

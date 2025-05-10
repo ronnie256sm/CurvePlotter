@@ -16,7 +16,7 @@ using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels;
 
-#pragma warning disable CS8602, CS8600, CS8604
+#pragma warning disable CS8602, CS8600, CS8604, CS8625
 
 public static class IO
 {
@@ -151,7 +151,7 @@ public static class IO
                     {
                         if (curveData.TryGetValue("SplineType", out var splineTypeObj) && splineTypeObj is string splineType)
                         {
-                            if (splineType == "Interpolating Cubic" && curveData.TryGetValue("ControlPoints", out var controlPointsObj))
+                            if ((splineType == "Interpolating Cubic 2" || splineType == "Interpolating Cubic 1") && curveData.TryGetValue("ControlPoints", out var controlPointsObj))
                             {
                                 var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
                                 var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
@@ -167,7 +167,10 @@ public static class IO
                                 }
                                 if (points.Length >= 3)
                                 {
-                                    curve = logic.CreateInterpolatingSpline(points);
+                                    if (splineType == "Interpolating Cubic 2")
+                                        curve = logic.CreateInterpolatingSpline(points, 2);
+                                    else if (splineType == "Interpolating Cubic 1")
+                                        curve = logic.CreateInterpolatingSpline(points, 1);
                                     curve.Name = name;
                                     Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
                                 }

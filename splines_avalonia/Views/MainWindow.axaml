@@ -40,8 +40,23 @@
                             <MenuItem Header="Добавить ломаную" Command="{Binding AddLinearSplineCommand}"/>
                             <MenuItem Header="Добавить сплайн">
                                 <MenuItem.Items>
-                                    <MenuItem Header="Интерполяционный сплайн" Command="{Binding AddInterpolatingSplineCommand}"/>
-                                    <MenuItem Header="Сглаживающий сплайн" Command="{Binding AddSmoothingSplineCommand}"/>
+                                    <MenuItem Command="{Binding AddInterpolatingSpline1Command}">
+                                        <MenuItem.Header>
+                                            <TextBlock Text="Интерполяционный сплайн с производными, построенными с помощью полиномов Лагранжа"
+                                                    TextWrapping="Wrap"
+                                                    MaxWidth="300"/>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+
+                                    <MenuItem Command="{Binding AddInterpolatingSpline2Command}">
+                                        <MenuItem.Header>
+                                            <TextBlock Text="Интерполяционный сплайн с непрерывными вторыми производными"
+                                                    TextWrapping="Wrap"
+                                                    MaxWidth="300"/>
+                                        </MenuItem.Header>
+                                    </MenuItem>
+
+                                    <MenuItem Header="Сглаживающий сплайн" Command="{Binding AddSmoothingSplineCommand}" />
                                 </MenuItem.Items>
                             </MenuItem>
                         </MenuFlyout>
