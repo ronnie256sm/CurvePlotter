@@ -73,7 +73,7 @@ namespace splines_avalonia
 
             // Генерируем выходные точки
             var outputPoints = new List<Point>();
-            int segments = 100; // Количество точек на сегмент
+            int segments = 50; // Количество точек на сегмент
 
             for (int i = 0; i < points.Count - 1; i++)
             {
