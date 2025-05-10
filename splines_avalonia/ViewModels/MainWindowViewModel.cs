@@ -190,7 +190,7 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            var points = await FileReader.ReadPoints(pointsFile);
+            var points = await FileService.ReadPoints(pointsFile);
 
             ICurve curve = null;
             var logic = new SplineLogic();
@@ -247,8 +247,8 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            var points = await FileReader.ReadPoints(pointsFile);
-            var mesh = await FileReader.ReadGrid(meshFile);
+            var points = await FileService.ReadPoints(pointsFile);
+            var mesh = await FileService.ReadGrid(meshFile);
 
             var logic = new SplineLogic();
             var curve = logic.CreateSmoothingSpline(mesh, points, smoothingAlpha, smoothingBeta);
@@ -338,7 +338,7 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            var newPoints = await FileReader.ReadPoints(newPointsFile);
+            var newPoints = await FileService.ReadPoints(newPointsFile);
             double[] newMesh = null;
 
             if (type == "Smoothing Cubic")
@@ -349,7 +349,7 @@ namespace splines_avalonia.ViewModels
                     return;
                 }
 
-                newMesh = await FileReader.ReadGrid(newMeshFile);
+                newMesh = await FileService.ReadGrid(newMeshFile);
             }
 
             var logic = new SplineLogic();

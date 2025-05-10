@@ -1,7 +1,5 @@
 using System.Reactive.Linq;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
 
 namespace splines_avalonia;
 

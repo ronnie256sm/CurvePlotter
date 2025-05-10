@@ -5,8 +5,6 @@ using System.IO;
 using NCalc;
 using Avalonia.Media;
 using splines_avalonia.Helpers;
-using System.Threading.Tasks;
-using CSharpMath.Atom.Atoms;
 
 namespace splines_avalonia
 {

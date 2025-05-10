@@ -1,4 +1,3 @@
-using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using ReactiveUI;
 using System;

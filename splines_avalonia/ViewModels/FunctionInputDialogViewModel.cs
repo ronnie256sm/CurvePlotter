@@ -1,8 +1,6 @@
-using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using ReactiveUI;
 using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels

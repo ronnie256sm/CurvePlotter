@@ -9,7 +9,7 @@ using splines_avalonia.Helpers;
 
 namespace splines_avalonia
 {
-    public static class FileReader
+    public static class FileService
     {
         public static async Task<Point[]> ReadPoints(string pointsFile)
         {
