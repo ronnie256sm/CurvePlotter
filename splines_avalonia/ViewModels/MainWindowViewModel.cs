@@ -11,9 +11,8 @@ using splines_avalonia.Views;
 using splines_avalonia.Helpers;
 using System.ComponentModel;
 using System.Collections.Specialized;
-using DynamicData.Kernel;
 
-#pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602
+#pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602, CS8625
 
 namespace splines_avalonia.ViewModels
 {
@@ -108,42 +107,6 @@ namespace splines_avalonia.ViewModels
             {
                 DrawCurves();
             }
-        }
-
-        public void ZoomIn()
-        {
-            HandleZoom(1);
-            DrawCurves();
-        }
-
-        public void ZoomOut()
-        {
-            HandleZoom(-1);
-            DrawCurves();
-        }
-
-        public void MoveLeft()
-        {
-            _offsetX += 10;
-            DrawCurves();
-        }
-
-        public void MoveRight()
-        {
-            _offsetX -= 10;
-            DrawCurves();
-        }
-
-        public void MoveUp()
-        {
-            _offsetY += 10;
-            DrawCurves();
-        }
-
-        public void MoveDown()
-        {
-            _offsetY -= 10;
-            DrawCurves();
         }
 
         private async void AddFunction()
@@ -457,8 +420,127 @@ namespace splines_avalonia.ViewModels
                 DrawCurves();
             }
         }
+
+        private void DrawGrid()
+        {
+            double width = GraphicCanvas.Bounds.Width;
+            double height = GraphicCanvas.Bounds.Height;
+
+            double step = CalculateGridStep();
+
+            double startX = -(CenterX() + _offsetX) / _zoom;
+            double endX = (width - CenterX() - _offsetX) / _zoom;
+
+            double startY = -(CenterY() + _offsetY) / _zoom;
+            double endY = (height - CenterY() - _offsetY) / _zoom;
+
+            for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
+            {
+                double screenX = x * _zoom + CenterX() + _offsetX;
+                var line = new Line
+                {
+                    StartPoint = new Avalonia.Point(screenX, 0),
+                    EndPoint = new Avalonia.Point(screenX, height),
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1
+                };
+                GraphicCanvas.Children.Add(line);
+
+                string labelText = Math.Abs(x) < 1e-6 ? "0" : x.ToString("G12");
+                var text = new TextBlock
+                {
+                    Text = labelText,
+                    Foreground = Brushes.Gray,
+                    FontSize = 10
+                };
+
+                // определяем, где разместить подпись по оси X
+                double labelY = CenterY() + _offsetY + 2;
+                if (labelY < 0 || labelY > height)
+                {
+                    // размещаем внизу или вверху в зависимости от четверти
+                    labelY = (_offsetY >= 0) ? height - 20 : 10;
+                }
+
+                Canvas.SetLeft(text, screenX + 2);
+                Canvas.SetTop(text, labelY);
+                GraphicCanvas.Children.Add(text);
+            }
+
+            for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
+            {
+                double screenY = y * _zoom + CenterY() + _offsetY;
+
+                var line = new Line
+                {
+                    StartPoint = new Avalonia.Point(0, screenY),
+                    EndPoint = new Avalonia.Point(width, screenY),
+                    Stroke = Brushes.LightGray,
+                    StrokeThickness = 1
+                };
+                GraphicCanvas.Children.Add(line);
+
+                string labelText = Math.Abs(y) < 1e-6 ? "0" : (-y).ToString("G12");
+                var text = new TextBlock
+                {
+                    Text = labelText,
+                    Foreground = Brushes.Gray,
+                    FontSize = 10
+                };
+
+                // определяем, где разместить подпись по оси Y
+                double labelX = CenterX() + _offsetX + 2;
+                if (labelX < 0 || labelX > width)
+                {
+                    labelX = (_offsetX >= 0) ? width - 20 : 10;
+                }
+
+                Canvas.SetLeft(text, labelX);
+                Canvas.SetTop(text, screenY + 2);
+                GraphicCanvas.Children.Add(text);
+            }
+
+            // логика для размещения осей по четвертям
+            double axisXScreen = CenterY() + _offsetY;
+            double axisYScreen = CenterX() + _offsetX;
+
+            bool isXAxisVisible = axisXScreen >= 0 && axisXScreen <= height;
+            bool isYAxisVisible = axisYScreen >= 0 && axisYScreen <= width;
+
+            if (!isXAxisVisible)
+            {
+                // если Y >= 0 (центр выше) -> 1 или 2 четверть -> ось X внизу
+                // если Y < 0 (центр ниже) -> 3 или 4 четверть -> ось X сверху
+                axisXScreen = (_offsetY >= 0) ? height - 1 : 0;
+            }
+
+            if (!isYAxisVisible)
+            {
+                // если X >= 0 (центр справа) -> 1 или 4 четверть -> ось Y справа
+                // если X < 0 (центр слева) -> 2 или 3 четверть -> ось Y слева
+                axisYScreen = (_offsetX >= 0) ? width - 1 : 0;
+            }
+
+            var xAxis = new Line
+            {
+                StartPoint = new Avalonia.Point(0, axisXScreen),
+                EndPoint = new Avalonia.Point(width, axisXScreen),
+                Stroke = Brushes.DarkGray,
+                StrokeThickness = 2
+            };
+            GraphicCanvas.Children.Add(xAxis);
+
+            var yAxis = new Line
+            {
+                StartPoint = new Avalonia.Point(axisYScreen, 0),
+                EndPoint = new Avalonia.Point(axisYScreen, height),
+                Stroke = Brushes.DarkGray,
+                StrokeThickness = 2
+            };
+            GraphicCanvas.Children.Add(yAxis);
+        }
         
-        public async void DrawCurves()
+        public void DrawCurves()
         {
             if (GraphicCanvas == null)
                 return;
@@ -637,9 +719,66 @@ namespace splines_avalonia.ViewModels
             _fixedCenterY = y;
         }
 
-        private const double MinZoom = 0.00001;
+        private const double MinZoom = 0.000001;
         private const double MaxZoom = 10000;
+        private void ApplyFixedPixelZoom(double zoomFactor)
+        {
+            // Координаты точки (0, 0) в мировых координатах — где она сейчас на экране
+            double worldX = -_offsetX / _zoom;
+            double worldY = -_offsetY / _zoom;
 
+            double oldStep = CalculateGridStep();
+            double oldZoom = _zoom;
+
+            _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom * zoomFactor));
+
+            double newStep = CalculateGridStep();
+
+            // Компенсация изменения размера ячейки
+            double pixelSizeOld = oldStep * oldZoom;
+            double pixelSizeNew = newStep * _zoom;
+            _zoom *= pixelSizeOld / pixelSizeNew;
+
+            // После изменения масштаба — сохраняем положение нуля
+            _offsetX = -worldX * _zoom;
+            _offsetY = -worldY * _zoom;
+
+            DrawCurves();
+        }
+
+        public void ZoomIn()
+        {
+            ApplyFixedPixelZoom(2.0);
+        }
+
+        public void ZoomOut()
+        {
+            ApplyFixedPixelZoom(0.5);
+        }
+
+        public void MoveLeft()
+        {
+            _offsetX += CalculateGridStep() * _zoom;
+            DrawCurves();
+        }
+
+        public void MoveRight()
+        {
+            _offsetX -= CalculateGridStep() * _zoom;
+            DrawCurves();
+        }
+
+        public void MoveUp()
+        {
+            _offsetY += CalculateGridStep() * _zoom;
+            DrawCurves();
+        }
+
+        public void MoveDown()
+        {
+            _offsetY -= CalculateGridStep() * _zoom;
+            DrawCurves();
+        }
         public void HandleZoom(double delta)
         {
             double centerX = CenterX();
@@ -692,123 +831,12 @@ namespace splines_avalonia.ViewModels
             return 10 * exponent;
         }
 
-        private void DrawGrid()
+        public void ResetPosition()
         {
-            double width = GraphicCanvas.Bounds.Width;
-            double height = GraphicCanvas.Bounds.Height;
-
-            double step = CalculateGridStep();
-
-            double startX = -(CenterX() + _offsetX) / _zoom;
-            double endX = (width - CenterX() - _offsetX) / _zoom;
-
-            double startY = -(CenterY() + _offsetY) / _zoom;
-            double endY = (height - CenterY() - _offsetY) / _zoom;
-
-            for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
-            {
-                double screenX = x * _zoom + CenterX() + _offsetX;
-                var line = new Line
-                {
-                    StartPoint = new Avalonia.Point(screenX, 0),
-                    EndPoint = new Avalonia.Point(screenX, height),
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1
-                };
-                GraphicCanvas.Children.Add(line);
-
-                string labelText = Math.Abs(x) < 1e-6 ? "0" : x.ToString("G5");
-                var text = new TextBlock
-                {
-                    Text = labelText,
-                    Foreground = Brushes.Gray,
-                    FontSize = 10
-                };
-
-                // определяем, где разместить подпись по оси X
-                double labelY = CenterY() + _offsetY + 2;
-                if (labelY < 0 || labelY > height)
-                {
-                    // размещаем внизу или вверху в зависимости от четверти
-                    labelY = (_offsetY >= 0) ? height - 20 : 10;
-                }
-
-                Canvas.SetLeft(text, screenX + 2);
-                Canvas.SetTop(text, labelY);
-                GraphicCanvas.Children.Add(text);
-            }
-
-            for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
-            {
-                double screenY = y * _zoom + CenterY() + _offsetY;
-
-                var line = new Line
-                {
-                    StartPoint = new Avalonia.Point(0, screenY),
-                    EndPoint = new Avalonia.Point(width, screenY),
-                    Stroke = Brushes.LightGray,
-                    StrokeThickness = 1
-                };
-                GraphicCanvas.Children.Add(line);
-
-                string labelText = Math.Abs(y) < 1e-6 ? "0" : (-y).ToString("G5");
-                var text = new TextBlock
-                {
-                    Text = labelText,
-                    Foreground = Brushes.Gray,
-                    FontSize = 10
-                };
-
-                // определяем, где разместить подпись по оси Y
-                double labelX = CenterX() + _offsetX + 2;
-                if (labelX < 0 || labelX > width)
-                {
-                    labelX = (_offsetX >= 0) ? width - 20 : 10;
-                }
-
-                Canvas.SetLeft(text, labelX);
-                Canvas.SetTop(text, screenY + 2);
-                GraphicCanvas.Children.Add(text);
-            }
-
-            // логика для размещения осей по четвертям
-            double axisXScreen = CenterY() + _offsetY;
-            double axisYScreen = CenterX() + _offsetX;
-
-            bool isXAxisVisible = axisXScreen >= 0 && axisXScreen <= height;
-            bool isYAxisVisible = axisYScreen >= 0 && axisYScreen <= width;
-
-            if (!isXAxisVisible)
-            {
-                // если Y >= 0 (центр выше) -> 1 или 2 четверть -> ось X внизу
-                // если Y < 0 (центр ниже) -> 3 или 4 четверть -> ось X сверху
-                axisXScreen = (_offsetY >= 0) ? height - 1 : 0;
-            }
-
-            if (!isYAxisVisible)
-            {
-                // если X >= 0 (центр справа) -> 1 или 4 четверть -> ось Y справа
-                // если X < 0 (центр слева) -> 2 или 3 четверть -> ось Y слева
-                axisYScreen = (_offsetX >= 0) ? width - 1 : 0;
-            }
-
-            var xAxis = new Line
-            {
-                StartPoint = new Avalonia.Point(0, axisXScreen),
-                EndPoint = new Avalonia.Point(width, axisXScreen),
-                Stroke = Brushes.DarkGray,
-                StrokeThickness = 2
-            };
-            GraphicCanvas.Children.Add(xAxis);
-
-            var yAxis = new Line
-            {
-                StartPoint = new Avalonia.Point(axisYScreen, 0),
-                EndPoint = new Avalonia.Point(axisYScreen, height),
-                Stroke = Brushes.DarkGray,
-                StrokeThickness = 2
-            };
-            GraphicCanvas.Children.Add(yAxis);
+            _offsetX = 0;
+            _offsetY = 0;
+            _zoom = 50;
+            DrawCurves();
         }
 
         public void UpdateStatusBar(Avalonia.Point mousePosition)
@@ -828,14 +856,6 @@ namespace splines_avalonia.ViewModels
                 double y = -(mousePosition.Y - CenterY() - _offsetY) / _zoom;
                 _statusBar.Text = $"X: {x:0.###}, Y: {y:0.###}";
             }
-        }
-
-        public void ResetPosition()
-        {
-            _offsetX = 0;
-            _offsetY = 0;
-            _zoom = 50;
-            DrawCurves();
         }
     }
 }

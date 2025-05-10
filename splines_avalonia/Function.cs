@@ -126,7 +126,6 @@ namespace splines_avalonia
                 string processed = PreprocessFunctionString(function);
                 _cachedExpr = new Expression(processed, EvaluateOptions.IgnoreCase);
 
-                // Добавляем обработчик ДЛЯ ЭТОГО экземпляра Expression
                 _cachedExpr.EvaluateFunction += (name, args) =>
                 {
                     switch (name.ToLower())
