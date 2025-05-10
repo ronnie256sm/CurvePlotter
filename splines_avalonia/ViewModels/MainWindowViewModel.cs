@@ -733,39 +733,16 @@ namespace splines_avalonia.ViewModels
 
         private const double MinZoom = 0.000001;
         private const double MaxZoom = 10000;
-        private void ApplyFixedPixelZoom(double zoomFactor)
-        {
-            // Координаты точки (0, 0) в мировых координатах — где она сейчас на экране
-            double worldX = -_offsetX / _zoom;
-            double worldY = -_offsetY / _zoom;
-
-            double oldStep = CalculateGridStep();
-            double oldZoom = _zoom;
-
-            _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom * zoomFactor));
-
-            double newStep = CalculateGridStep();
-
-            // Компенсация изменения размера ячейки
-            double pixelSizeOld = oldStep * oldZoom;
-            double pixelSizeNew = newStep * _zoom;
-            _zoom *= pixelSizeOld / pixelSizeNew;
-
-            // После изменения масштаба — сохраняем положение нуля
-            _offsetX = -worldX * _zoom;
-            _offsetY = -worldY * _zoom;
-
-            DrawCurves();
-        }
-
         public void ZoomIn()
         {
-            ApplyFixedPixelZoom(2.0);
+            _zoom = Math.Min(MaxZoom, _zoom * 2.0);
+            DrawCurves();
         }
 
         public void ZoomOut()
         {
-            ApplyFixedPixelZoom(0.5);
+            _zoom = Math.Max(MinZoom, _zoom * 0.5);
+            DrawCurves();
         }
 
         public void MoveLeft()
