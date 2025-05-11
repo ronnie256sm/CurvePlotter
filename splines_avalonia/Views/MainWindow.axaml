@@ -135,6 +135,11 @@
                             <TextBlock Text="Файл"/>
                         </ToolTip.Tip>
                     </Button>
+                    <Button Content="S" Width="30" Height="30" Command="{Binding OpenSettingsCommand}">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Настройки"/>
+                        </ToolTip.Tip>
+                    </Button>
                     <Button Content="?" Width="30" Height="30" Click="OpenHelpWindow">
                         <ToolTip.Tip>
                             <TextBlock Text="Справка"/>

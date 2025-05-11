@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
+        x:Class="splines_avalonia.Views.SettingsWindow"
+        x:DataType="vm:SettingsWindowViewModel"
+        Width="400" Height="250"
+        CanResize="False"
+        Title="Настройки">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
+            <CheckBox Content="Отображать оси координат"
+                      IsChecked="{Binding ShowAxes, Mode=TwoWay}" />
+            <CheckBox Content="Отображать сетку"
+                      IsChecked="{Binding ShowGrid, Mode=TwoWay}" />
+            <TextBlock Text="Количество отрисовываемых точек функций (≥ 2):"/>
+            <TextBox Text="{Binding PointCountText, Mode=TwoWay}" />
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
+            <Button Content="OK" Click="OnOkClick"/>
+            <Button Content="Отмена" Click="OnCancelClick"/>
+        </StackPanel>
+    </DockPanel>
+</Window>
