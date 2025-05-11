@@ -40,7 +40,9 @@ namespace splines_avalonia.ViewModels
             get => _graphicCanvas;
             set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
         }
-
+        public bool HideAxes = false;
+        public bool HideGrid = false;
+        public int PointCount = 1000;
         public ReactiveCommand<Unit, Unit> AddInterpolatingSpline1Command { get; }
         public ReactiveCommand<Unit, Unit> AddInterpolatingSpline2Command { get; }
         public ReactiveCommand<Unit, Unit> AddSmoothingSplineCommand { get; }
@@ -662,14 +664,12 @@ namespace splines_avalonia.ViewModels
                     double renderEnd = Math.Min(funcRight, visibleRight);
                     double renderWidth = renderEnd - renderStart;
 
-                    // оптимизация количества точек
-                    int pointCount = Math.Min(1000, (int)(renderWidth * 10));
-                    if (pointCount <= 0) return;
-                    double step = renderWidth / pointCount;
+                    if (PointCount <= 0) return;
+                    double step = renderWidth / PointCount;
 
                     // отрисовка функции
                     var points = new Points();
-                    for (int i = 0; i <= pointCount; i++)
+                    for (int i = 0; i <= PointCount; i++)
                     {
                         double x = renderStart + i * step;
                         double y = curve.CalculateFunctionValue(curve.FunctionString, x);
