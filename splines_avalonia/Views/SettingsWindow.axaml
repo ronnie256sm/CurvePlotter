@@ -8,12 +8,18 @@
         Title="Настройки">
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
-            <CheckBox Content="Отображать оси координат"
-                      IsChecked="{Binding ShowAxes, Mode=TwoWay}" />
-            <CheckBox Content="Отображать сетку"
-                      IsChecked="{Binding ShowGrid, Mode=TwoWay}" />
+            <CheckBox Content="Отображать оси координат" IsChecked="{Binding ShowAxes, Mode=TwoWay}"/>
+            <CheckBox Content="Отображать сетку" IsChecked="{Binding ShowGrid, Mode=TwoWay}"/>
             <TextBlock Text="Количество отрисовываемых точек функций (≥ 2):"/>
-            <TextBox Text="{Binding PointCountText, Mode=TwoWay}" />
+            <TextBox Text="{Binding PointCountText, Mode=TwoWay}">
+                <ToolTip.Tip>
+                    <Grid MaxWidth="400">
+                        <TextBlock
+                            TextWrapping="Wrap"
+                            Text="Введите количество точек, которое будет рассчитываться для отображения функций на видимой области (минимум — 2, по умолчанию — 1000). Слишком большое количество точек может привести к снижению производительности."/>
+                    </Grid>
+                </ToolTip.Tip>
+            </TextBox>
         </StackPanel>
 
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
