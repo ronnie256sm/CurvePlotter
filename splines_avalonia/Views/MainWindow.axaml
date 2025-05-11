@@ -123,7 +123,7 @@
         <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
             <DockPanel LastChildFill="True">
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
-                    <Button Content="🖫" HorizontalAlignment="Center">
+                    <Button Content="🖫" Width="40" Height="30" HorizontalContentAlignment="Center">
                         <Button.Flyout>
                             <MenuFlyout>
                                 <MenuItem Header="Сохранить" Command="{Binding SaveJsonCommand}"/>
@@ -135,47 +135,47 @@
                             <TextBlock Text="Файл"/>
                         </ToolTip.Tip>
                     </Button>
-                    <Button Content="S" Width="30" Height="30" Command="{Binding OpenSettingsCommand}">
+                    <Button Content="🛠" Width="40" Height="30" HorizontalContentAlignment="Center" Command="{Binding OpenSettingsCommand}">
                         <ToolTip.Tip>
                             <TextBlock Text="Настройки"/>
                         </ToolTip.Tip>
                     </Button>
-                    <Button Content="?" Width="30" Height="30" Click="OpenHelpWindow">
+                    <Button Content="?" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OpenHelpWindow">
                         <ToolTip.Tip>
                             <TextBlock Text="Справка"/>
                         </ToolTip.Tip>
                     </Button>
-                    <Button Content="⌂" Width="30" Height="30" Click="OnResetPosition">
+                    <Button Content="⌂" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnResetPosition">
                         <ToolTip.Tip>
                             <TextBlock Text="Возврат в исходное положение"/>
                         </ToolTip.Tip>
                     </Button>
-                    <RepeatButton Content="←" Width="30" Height="30" Click="OnMoveLeft">
+                    <RepeatButton Content="←" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveLeft">
                         <ToolTip.Tip>
                             <TextBlock Text="Сдвиг влево"/>
                         </ToolTip.Tip>
                     </RepeatButton>
-                    <RepeatButton Content="↓" Width="30" Height="30" Click="OnMoveDown">
+                    <RepeatButton Content="↓" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveDown">
                             <ToolTip.Tip>
                             <TextBlock Text="Сдвиг вниз"/>
                         </ToolTip.Tip>
                     </RepeatButton>
-                    <RepeatButton Content="↑" Width="30" Height="30" Click="OnMoveUp">
+                    <RepeatButton Content="↑" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveUp">
                             <ToolTip.Tip>
                             <TextBlock Text="Сдвиг вверх"/>
                         </ToolTip.Tip>
                     </RepeatButton>
-                    <RepeatButton Content="→" Width="30" Height="30" Click="OnMoveRight">
+                    <RepeatButton Content="→" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveRight">
                             <ToolTip.Tip>
                             <TextBlock Text="Сдвиг вправо"/>
                         </ToolTip.Tip>
                     </RepeatButton>
-                    <RepeatButton Content="+" Width="30" Height="30" Click="OnZoomIn">
+                    <RepeatButton Content="+" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomIn">
                             <ToolTip.Tip>
                             <TextBlock Text="Приблизить"/>
                         </ToolTip.Tip>
                     </RepeatButton>
-                    <RepeatButton Content="−" Width="30" Height="30" Click="OnZoomOut">
+                    <RepeatButton Content="−" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomOut">
                             <ToolTip.Tip>
                             <TextBlock Text="Отдалить"/>
                         </ToolTip.Tip>
