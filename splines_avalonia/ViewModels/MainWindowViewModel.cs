@@ -212,17 +212,17 @@ namespace splines_avalonia.ViewModels
 
             ICurve curve = null;
             var logic = new SplineLogic();
-            if (type == "Interpolating Cubic 2")
+            if (type == "Interpolating Cubic 2" && points != null)
             {
                 curve = logic.CreateInterpolatingSpline(points, 2);
                 curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
-            if (type == "Interpolating Cubic 1")
+            if (type == "Interpolating Cubic 1" && points != null)
             {
                 curve = logic.CreateInterpolatingSpline(points, 1);
                 curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
-            else if (type == "Linear")
+            else if (type == "Linear" && points != null)
             {
                 curve = logic.CreateLinearSpline(points);
                 curve.ShowControlPoints = inputDialog.ShowControlPoints;
@@ -271,7 +271,7 @@ namespace splines_avalonia.ViewModels
             var logic = new SplineLogic();
             var curve = logic.CreateSmoothingSpline(mesh, points, smoothingAlpha, smoothingBeta);
 
-            if (curve != null && curve.IsPossible)
+            if (curve != null && curve.IsPossible && points != null && mesh != null)
             {
                 curve.ControlPointsFile = pointsFile;
                 curve.GridFile = meshFile;
