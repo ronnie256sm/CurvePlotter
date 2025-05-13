@@ -2,6 +2,8 @@ using ReactiveUI;
 using splines_avalonia;
 using System;
 
+#pragma warning disable CS8618
+
 namespace splines_avalonia.ViewModels
 {
     public class CalculateValueDialogViewModel : ReactiveObject

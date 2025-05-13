@@ -20,7 +20,7 @@ namespace splines_avalonia.Views
         {
             if (string.IsNullOrWhiteSpace(ViewModel.XValue))
             {
-                await ErrorHelper.ShowError("Ошибка", "Пожалуйста, введите значение X.");
+                await ErrorHelper.ShowError("Ошибка", "Введите значение X.");
                 return;
             }
 
