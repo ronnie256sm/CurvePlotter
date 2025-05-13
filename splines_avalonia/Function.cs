@@ -206,15 +206,15 @@ namespace splines_avalonia
                        .Replace("π", "3.1415926535897932");
         }
 
-        public double CalculateFunctionValue(string function, double x)
+        public double CalculateFunctionValue(double x)
         {
             Console.SetOut(TextWriter.Null);
 
             try
             {
-                if (_cachedExpr == null || function != FunctionString)
+                if (_cachedExpr == null || FunctionString != FunctionString)
                 {
-                    PrepareExpression(function);
+                    PrepareExpression(FunctionString);
                 }
 
                 _cachedExpr.Parameters["x"] = x;

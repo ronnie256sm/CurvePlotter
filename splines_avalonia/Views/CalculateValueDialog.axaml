@@ -1,0 +1,23 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
+        x:Class="splines_avalonia.Views.CalculateValueDialog"
+        x:DataType="vm:CalculateValueDialogViewModel"
+        Width="400" Height="250"
+        CanResize="false"
+        Title="Вычисление значения кривой в точке">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
+            <TextBlock Text="Введите значение X:" FontWeight="Bold"/>
+            <TextBox Text="{Binding XValue}" HorizontalAlignment="Stretch" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Значение Y:" FontWeight="Bold"/>
+            <TextBox Text="{Binding YValue}" HorizontalAlignment="Stretch" IsReadOnly="True" Margin="0,0,0,10"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
+            <Button Content="Вычислить" Click="OnCalculateClick" HorizontalAlignment="Center"/>
+            <Button Content="Выйти" Click="OnCancelClick" HorizontalAlignment="Center"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

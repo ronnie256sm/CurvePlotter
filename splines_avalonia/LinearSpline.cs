@@ -58,9 +58,30 @@ public class LinearSpline : ICurve
         IsVisible = true;
         IsPossible = true;
     }
-    public double CalculateFunctionValue(string functionString, double x)
+    
+    public double CalculateFunctionValue(double x)
     {
-        throw new System.NotImplementedException();
+        if (ControlPoints == null || ControlPoints.Length < 2)
+            return double.NaN;
+
+        // предполагается, что точки отсортированы по X
+        for (int i = 0; i < ControlPoints.Length - 1; i++)
+        {
+            double x0 = ControlPoints[i].X;
+            double x1 = ControlPoints[i + 1].X;
+
+            if (x >= x0 && x <= x1)
+            {
+                double y0 = ControlPoints[i].Y;
+                double y1 = ControlPoints[i + 1].Y;
+
+                double t = (x - x0) / (x1 - x0);
+                return y0 + t * (y1 - y0); // линейная интерполяция
+            }
+        }
+
+        // x вне диапазона
+        return double.NaN;
     }
 
     public void GetLimits()

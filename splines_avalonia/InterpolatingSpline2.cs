@@ -41,6 +41,8 @@ namespace splines_avalonia
         public bool ShowControlPoints { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
+        private double[] _x;
+        private double[] _a, _b, _c, _d;
         private Color _color;
         public Color Color
         {
@@ -77,6 +79,12 @@ namespace splines_avalonia
             var b = new double[n - 1];
             var c = new double[n - 1];
             var d = new double[n - 1];
+
+            _x = x;
+            _a = a;
+            _b = b;
+            _c = c;
+            _d = d;
 
             // Вычисление коэффициентов
             ComputeSpline(x, y, fPrime, a, b, c, d);
@@ -172,9 +180,30 @@ namespace splines_avalonia
             return x;
         }
 
-        public double CalculateFunctionValue(string functionString, double x)
+        public double CalculateFunctionValue(double x)
         {
-            throw new System.NotImplementedException();
+            int n = _x.Length;
+
+            // Если x вне интервала, возвращаем NaN
+            if (x < _x[0] || x > _x[n - 1])
+                return double.NaN;
+
+            // Найдём нужный интервал [x_i, x_{i+1}]
+            int i = -1;
+            for (int j = 0; j < n - 1; j++)
+            {
+                if (x >= _x[j] && x <= _x[j + 1])
+                {
+                    i = j;
+                    break;
+                }
+            }
+
+            if (i == -1)
+                return double.NaN;
+
+            double dx = x - _x[i];
+            return _a[i] + _b[i] * dx + _c[i] * dx * dx + _d[i] * dx * dx * dx;
         }
 
         public void GetLimits()

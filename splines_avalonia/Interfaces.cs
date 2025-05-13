@@ -29,7 +29,7 @@ namespace splines_avalonia
         bool IsVisible { get; set; }
         string SmoothingCoefficientAlpha { get; set; }
         string SmoothingCoefficientBeta { get; set; }
-        double CalculateFunctionValue(string functionString, double x);
+        double CalculateFunctionValue(double x);
         bool IsPossible { get; set; }
         Color Color { get; set; }
         string Start { get; set; }

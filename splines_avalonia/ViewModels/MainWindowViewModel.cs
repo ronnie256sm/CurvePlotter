@@ -54,6 +54,7 @@ namespace splines_avalonia.ViewModels
         public ReactiveCommand<Unit, Unit> LoadJsonCommand { get; }
         public ReactiveCommand<Unit, Unit> SavePngCommand { get; }
         public ReactiveCommand<Unit, Unit> OpenSettingsCommand { get; }
+        public ReactiveCommand<ICurve, Unit> CalculateValueCommand { get; }
         public MainWindowViewModel()
         {
             AddInterpolatingSpline1Command = ReactiveCommand.Create(() => AddSpline("Interpolating Cubic 1"));
@@ -71,6 +72,12 @@ namespace splines_avalonia.ViewModels
             {
                 SelectedCurve = curve;
                 DeleteSelectedCurve();
+            });
+
+            CalculateValueCommand = ReactiveCommand.Create<ICurve>(curve =>
+            {
+                SelectedCurve = curve;
+                CalculateValue(curve);
             });
 
             SaveJsonCommand = ReactiveCommand.CreateFromTask(() => IO.SaveJSON(CurveList));
@@ -113,6 +120,13 @@ namespace splines_avalonia.ViewModels
             {
                 DrawCurves();
             }
+        }
+
+        private async void CalculateValue(ICurve curve)
+        {
+            var dialog = new CalculateValueDialog();
+            dialog.SetCurve(curve);
+            await dialog.ShowDialog((Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow);
         }
 
         public async void OpenSettings()
@@ -596,7 +610,7 @@ namespace splines_avalonia.ViewModels
                 {
                     var points = new Points();
 
-                    if (curve.SplineType != "Linear")
+                    if (curve.SplineType != "Linear" && curve.IsPossible)
                     {
                         foreach (var p in curve.OutputPoints)
                         {
@@ -618,7 +632,7 @@ namespace splines_avalonia.ViewModels
                             GraphicCanvas.Children.Add(polyline);
                         }
                     }
-                    if (curve.SplineType == "Linear")
+                    if (curve.SplineType == "Linear" && curve.IsPossible)
                     {
                         foreach (var p in curve.ControlPoints)
                         {
@@ -642,7 +656,7 @@ namespace splines_avalonia.ViewModels
                     }
 
                     // контрольные точки
-                    if (curve.ControlPoints != null && curve.ShowControlPoints)
+                    if (curve.ControlPoints != null && curve.ShowControlPoints && curve.IsPossible)
                     {
                         foreach (var p in curve.ControlPoints)
                         {
@@ -700,7 +714,7 @@ namespace splines_avalonia.ViewModels
                     for (int i = 0; i <= PointCount; i++)
                     {
                         double x = renderStart + i * step;
-                        double y = curve.CalculateFunctionValue(curve.FunctionString, x);
+                        double y = curve.CalculateFunctionValue(x);
 
                         if (double.IsNaN(y) || double.IsInfinity(y))
                         {

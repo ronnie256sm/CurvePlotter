@@ -91,9 +91,10 @@
                                         </ColorPicker>
 
                                         <Button Content="✎"
-                                                Width="30"
+                                                Width="40"
                                                 Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).EditCurveCommand}"
                                                 CommandParameter="{Binding}"
+                                                HorizontalContentAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 HorizontalAlignment="Right">
                                             <ToolTip.Tip>
@@ -102,13 +103,26 @@
                                         </Button>
 
                                         <Button Content="✕"
-                                                Width="30"
+                                                Width="40"
                                                 Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).DeleteCurveCommand}"
                                                 CommandParameter="{Binding}"
+                                                HorizontalContentAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 HorizontalAlignment="Right">
                                             <ToolTip.Tip>
                                                 <TextBlock Text="Удалить"/>
+                                            </ToolTip.Tip>
+                                        </Button>
+
+                                        <Button Content="🔍"
+                                                Width="40"
+                                                Command="{Binding $parent[ListBox].((vm:MainWindowViewModel)DataContext).CalculateValueCommand}"
+                                                CommandParameter="{Binding}"
+                                                HorizontalContentAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right">
+                                            <ToolTip.Tip>
+                                                <TextBlock Text="Найти значение в точке"/>
                                             </ToolTip.Tip>
                                         </Button>
                                     </StackPanel>

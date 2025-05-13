@@ -51,6 +51,7 @@ namespace splines_avalonia
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
         public bool ShowControlPoints { get; set; }
+        private readonly SLAE slae;
 
         public string SplineType => "Smoothing Cubic";
 
@@ -74,7 +75,7 @@ namespace splines_avalonia
             var n_mesh = mesh.Length;
 
             // СЛАУ для сплайна
-            var slae = new SLAE(n_mesh * 2);
+            slae = new SLAE(n_mesh * 2);
             slae.Initialize();
 
             // Заполнение СЛАУ (поставить интегралы и уравнения)
@@ -210,12 +211,12 @@ namespace splines_avalonia
 
         private static double Alpha(double x, Function AlphaFunction)
         {
-            return AlphaFunction.CalculateFunctionValue(AlphaFunction.FunctionString, x);
+            return AlphaFunction.CalculateFunctionValue(x);
         }
 
         private static double Beta(double x, Function BetaFunction)
         {
-            return BetaFunction.CalculateFunctionValue(BetaFunction.FunctionString, x);
+            return BetaFunction.CalculateFunctionValue(x);
         }
 
         private static double D1Psi(int l, double t, double h)
@@ -258,9 +259,25 @@ namespace splines_avalonia
             return result;
         }
 
-        public double CalculateFunctionValue(string functionString, double x)
+        public double CalculateFunctionValue(double x)
         {
-            throw new NotImplementedException();
+            // Проверка на допустимость значения x
+            if (x < Grid[0] || x > Grid[^1] || !IsPossible)
+                return double.NaN;
+
+            // Поиск подходящего отрезка в сетке
+            int elem = 0;
+            while (elem < Grid.Length - 2 && x >= Grid[elem + 1])
+                elem++;
+
+            double h = Grid[elem + 1] - Grid[elem];
+            double t = (x - Grid[elem]) / h;
+
+            double result = 0.0;
+            for (int i = 0; i < 4; ++i)
+                result += slae.X[2 * elem + i] * Psi(i, t, h);
+
+            return result;
         }
 
         public void GetLimits()

@@ -151,9 +151,35 @@ namespace splines_avalonia
             return h00 * p0.Y + h10 * h * p0.Dy + h01 * p1.Y + h11 * h * p1.Dy;
         }
 
-        public double CalculateFunctionValue(string functionString, double x)
+        public double CalculateFunctionValue(double x)
         {
-            throw new System.NotImplementedException();
+            // Преобразуем ControlPoints в список PointData с производными
+            var points = new List<PointData>();
+            foreach (var p in ControlPoints)
+            {
+                points.Add(new PointData { X = p.X, Y = p.Y });
+            }
+            ComputeDerivatives(points);
+
+            // Если x вне диапазона — возвращаем NaN
+            if (x < points[0].X || x > points[^1].X)
+                return double.NaN;
+
+            // Ищем сегмент, к которому принадлежит x
+            for (int i = 0; i < points.Count - 1; i++)
+            {
+                var p0 = points[i];
+                var p1 = points[i + 1];
+
+                if (x >= p0.X && x <= p1.X)
+                {
+                    double h = p1.X - p0.X;
+                    double t = (x - p0.X) / h;
+                    return HermiteInterpolate(p0, p1, t, h);
+                }
+            }
+
+            return double.NaN;
         }
 
         public void GetLimits()
