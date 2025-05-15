@@ -134,7 +134,7 @@ namespace splines_avalonia.ViewModels
 
         public async void OpenSettings()
         {
-            var settingsWindow = new SettingsWindow(ShowAxes, ShowGrid, DarkMode, PointCount);
+            var settingsWindow = new SettingsWindow(ShowAxes, ShowGrid, DarkMode, PointCount, XAxisColor, YAxisColor);
             await settingsWindow.ShowDialog(App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
 
             if (settingsWindow.IsOkClicked)
@@ -143,6 +143,8 @@ namespace splines_avalonia.ViewModels
                 ShowGrid = settingsWindow.ShowGrid;
                 DarkMode = settingsWindow.DarkMode;
                 PointCount = settingsWindow.PointCount;
+                XAxisColor = settingsWindow.XAxisColor;
+                YAxisColor = settingsWindow.YAxisColor;
                 DrawCurves();
             }
         }
@@ -610,7 +612,7 @@ namespace splines_avalonia.ViewModels
                 GraphicCanvas.Background = new SolidColorBrush(Colors.Black);
             else
                 GraphicCanvas.Background = new SolidColorBrush(Colors.White);
-                
+
             DrawGrid();
 
             foreach (var curve in CurveList)

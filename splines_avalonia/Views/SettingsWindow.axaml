@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.SettingsWindow"
         x:DataType="vm:SettingsWindowViewModel"
-        Width="400" Height="300"
+        Width="400" Height="400"
         CanResize="False"
         Title="Настройки">
     <DockPanel>
@@ -11,6 +11,19 @@
             <CheckBox Content="Отображать оси координат" IsChecked="{Binding ShowAxes, Mode=TwoWay}"/>
             <CheckBox Content="Отображать сетку" IsChecked="{Binding ShowGrid, Mode=TwoWay}"/>
             <CheckBox Content="Темная тема" IsChecked="{Binding DarkMode, Mode=TwoWay}"/>
+
+            <TextBlock Text="Цвета осей:"/>
+            <StackPanel Orientation="Horizontal" Spacing="10">
+                <StackPanel>
+                    <TextBlock Text="Ось X" HorizontalAlignment="Center"/>
+                    <ColorPicker Color="{Binding XAxisColor, Mode=TwoWay}" Width="150"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Ось Y" HorizontalAlignment="Center"/>
+                    <ColorPicker Color="{Binding YAxisColor, Mode=TwoWay}" Width="150"/>
+                </StackPanel>
+            </StackPanel>
+
             <TextBlock Text="Количество отрисовываемых точек функций (≥ 2):"/>
             <TextBox Text="{Binding PointCountText, Mode=TwoWay}">
                 <ToolTip.Tip>

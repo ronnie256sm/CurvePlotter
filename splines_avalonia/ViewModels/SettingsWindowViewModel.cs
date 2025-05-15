@@ -1,3 +1,4 @@
+using Avalonia.Media;
 using ReactiveUI;
 
 namespace splines_avalonia.ViewModels
@@ -8,6 +9,8 @@ namespace splines_avalonia.ViewModels
         private bool _showGrid;
         private bool _darkMode = false;
         private string _pointCountText = "1000";
+        private Color _xAxisColor = Colors.DarkGray;
+        private Color _yAxisColor = Colors.DarkGray;
 
         public bool ShowAxes
         {
@@ -31,6 +34,18 @@ namespace splines_avalonia.ViewModels
         {
             get => _pointCountText;
             set => this.RaiseAndSetIfChanged(ref _pointCountText, value);
+        }
+
+        public Color XAxisColor
+        {
+            get => _xAxisColor;
+            set => this.RaiseAndSetIfChanged(ref _xAxisColor, value);
+        }
+
+        public Color YAxisColor
+        {
+            get => _yAxisColor;
+            set => this.RaiseAndSetIfChanged(ref _yAxisColor, value);
         }
 
         public bool TryGetValidatedPointCount(out int count)
