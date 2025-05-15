@@ -3,7 +3,7 @@
         xmlns:vm="clr-namespace:splines_avalonia.ViewModels"
         x:Class="splines_avalonia.Views.SettingsWindow"
         x:DataType="vm:SettingsWindowViewModel"
-        Width="400" Height="400"
+        Width="400" Height="420"
         CanResize="False"
         Title="Настройки">
     <DockPanel>
@@ -11,6 +11,7 @@
             <CheckBox Content="Отображать оси координат" IsChecked="{Binding ShowAxes, Mode=TwoWay}"/>
             <CheckBox Content="Отображать сетку" IsChecked="{Binding ShowGrid, Mode=TwoWay}"/>
             <CheckBox Content="Темная тема" IsChecked="{Binding DarkMode, Mode=TwoWay}"/>
+            <CheckBox Content="Автоматически менять черный цвет для кривых на белых для темной темы и наоборот" IsChecked="{Binding AutomaticColor, Mode=TwoWay}"/>
 
             <TextBlock Text="Цвета осей:"/>
             <StackPanel Orientation="Horizontal" Spacing="10">

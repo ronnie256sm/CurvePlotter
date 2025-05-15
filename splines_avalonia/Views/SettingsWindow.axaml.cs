@@ -11,23 +11,25 @@ namespace splines_avalonia.Views
         public bool ShowAxes { get; private set; }
         public bool ShowGrid { get; private set; }
         public bool DarkMode { get; private set; } = false;
+        public bool AutomaticColor { get; private set; } = false;
         public int PointCount { get; private set; }
         public Color XAxisColor { get; private set; }
         public Color YAxisColor { get; private set; }
 
         private readonly SettingsWindowViewModel _viewModel;
 
-        public SettingsWindow(bool currentAxes, bool currentGrid, bool currentColorMode, int currentPointCount, Color currentXAxisColor, Color currentYAxisColor)
+        public SettingsWindow()
         {
             InitializeComponent();
             _viewModel = new SettingsWindowViewModel
             {
-                ShowAxes = currentAxes,
-                ShowGrid = currentGrid,
-                DarkMode = currentColorMode,
-                PointCountText = currentPointCount.ToString(),
-                XAxisColor = currentXAxisColor,
-                YAxisColor = currentYAxisColor
+                ShowAxes = Globals.ShowAxes,
+                ShowGrid = Globals.ShowGrid,
+                DarkMode = Globals.DarkMode,
+                PointCountText = Globals.PointCount.ToString(),
+                XAxisColor = Globals.XAxisColor,
+                YAxisColor = Globals.YAxisColor,
+                AutomaticColor = Globals.AutomaticColor
             };
             DataContext = _viewModel;
         }
@@ -40,12 +42,13 @@ namespace splines_avalonia.Views
                 return;
             }
 
-            ShowAxes = _viewModel.ShowAxes;
-            ShowGrid = _viewModel.ShowGrid;
-            DarkMode = _viewModel.DarkMode;
-            PointCount = count;
-            XAxisColor = _viewModel.XAxisColor;
-            YAxisColor = _viewModel.YAxisColor;
+            Globals.ShowAxes = _viewModel.ShowAxes;
+            Globals.ShowGrid = _viewModel.ShowGrid;
+            Globals.DarkMode = _viewModel.DarkMode;
+            Globals.PointCount = count;
+            Globals.XAxisColor = _viewModel.XAxisColor;
+            Globals.YAxisColor = _viewModel.YAxisColor;
+            Globals.AutomaticColor = _viewModel.AutomaticColor;
             IsOkClicked = true;
             Close();
         }
@@ -57,12 +60,13 @@ namespace splines_avalonia.Views
 
         private void OnDefaultClick(object? sender, RoutedEventArgs e)
         {
-            ShowAxes = true;
-            ShowGrid = true;
-            DarkMode = false;
-            PointCount = 1000;
-            XAxisColor = Colors.DarkGray;
-            YAxisColor = Colors.DarkGray;
+            Globals.ShowAxes = true;
+            Globals.ShowGrid = true;
+            Globals.DarkMode = false;
+            Globals.PointCount = 1000;
+            Globals.XAxisColor = Colors.DarkGray;
+            Globals.YAxisColor = Colors.DarkGray;
+            Globals.AutomaticColor = false;
             IsOkClicked = true;
             Close();
         }

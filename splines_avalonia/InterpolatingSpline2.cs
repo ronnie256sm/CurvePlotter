@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia.Media;
+using splines_avalonia.ViewModels;
 
 namespace splines_avalonia
 {
@@ -69,7 +70,10 @@ namespace splines_avalonia
 
         public InterpolatingSpline2(Point[] controlPoints)
         {
-            Color = Colors.Black;
+            if (Globals.DarkMode)
+                Color = Colors.White;
+            else
+                Color = Colors.Black;
             Thickness = 2;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн с непрерывными вторыми производными";

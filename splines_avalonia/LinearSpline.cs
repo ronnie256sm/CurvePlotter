@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Avalonia.Media;
+using splines_avalonia.ViewModels;
 
 namespace splines_avalonia;
 #pragma warning disable CS8618, CS8625
@@ -65,7 +66,10 @@ public class LinearSpline : ICurve
 
     public LinearSpline(Point[] controlPoints)
     {
-        Color = Colors.Black;
+        if (Globals.DarkMode)
+            Color = Colors.White;
+        else
+            Color = Colors.Black;
         Thickness = 2;
         ControlPoints = controlPoints;
         OutputPoints = ControlPoints;

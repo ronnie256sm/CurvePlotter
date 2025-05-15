@@ -8,6 +8,7 @@ namespace splines_avalonia.ViewModels
         private bool _showAxes;
         private bool _showGrid;
         private bool _darkMode = false;
+        private bool _automaticColor = false;
         private string _pointCountText = "1000";
         private Color _xAxisColor = Colors.DarkGray;
         private Color _yAxisColor = Colors.DarkGray;
@@ -46,6 +47,12 @@ namespace splines_avalonia.ViewModels
         {
             get => _yAxisColor;
             set => this.RaiseAndSetIfChanged(ref _yAxisColor, value);
+        }
+
+        public bool AutomaticColor
+        {
+            get => _automaticColor;
+            set => this.RaiseAndSetIfChanged(ref _automaticColor, value);
         }
 
         public bool TryGetValidatedPointCount(out int count)

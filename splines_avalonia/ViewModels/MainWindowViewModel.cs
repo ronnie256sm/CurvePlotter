@@ -16,6 +16,17 @@ using System.Collections.Specialized;
 
 namespace splines_avalonia.ViewModels
 {
+    public static class Globals
+    {
+        public static bool ShowAxes = true;
+        public static bool ShowGrid = true;
+        public static int PointCount = 1000;
+        public static Color XAxisColor = Colors.DarkGray;
+        public static Color YAxisColor = Colors.DarkGray;
+        public static bool DarkMode = false;
+        public static bool AutomaticColor = false;
+    }
+
     public class MainWindowViewModel : ViewModelBase
     {
         public Canvas _graphicCanvas;
@@ -26,7 +37,6 @@ namespace splines_avalonia.ViewModels
         private double _fixedCenterX = 400;
         private double _fixedCenterY = 300;
         private Avalonia.Point _lastPanPosition;
-
         public static ObservableCollection<ICurve> CurveList { get; } = new();
         private ICurve? _selectedCurve;
         public ICurve? SelectedCurve
@@ -34,18 +44,12 @@ namespace splines_avalonia.ViewModels
             get => _selectedCurve;
             set => this.RaiseAndSetIfChanged(ref _selectedCurve, value);
         }
-        
+
         public Canvas GraphicCanvas
         {
             get => _graphicCanvas;
             set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
         }
-        public bool ShowAxes = true;
-        public bool ShowGrid = true;
-        public int PointCount = 1000;
-        public Color XAxisColor = Colors.DarkGray;
-        public Color YAxisColor = Colors.DarkGray;
-        public bool DarkMode = false;
         public ReactiveCommand<Unit, Unit> AddInterpolatingSpline1Command { get; }
         public ReactiveCommand<Unit, Unit> AddInterpolatingSpline2Command { get; }
         public ReactiveCommand<Unit, Unit> AddSmoothingSplineCommand { get; }
@@ -65,13 +69,13 @@ namespace splines_avalonia.ViewModels
             AddSmoothingSplineCommand = ReactiveCommand.Create(AddSmoothingSpline);
             AddLinearSplineCommand = ReactiveCommand.Create(() => AddSpline("Linear"));
             AddFunctionCommand = ReactiveCommand.Create(AddFunction);
-            EditCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
+            EditCurveCommand = ReactiveCommand.Create<ICurve>(curve =>
             {
                 SelectedCurve = curve;
                 EditCurve();
             });
-            
-            DeleteCurveCommand = ReactiveCommand.Create<ICurve>(curve => 
+
+            DeleteCurveCommand = ReactiveCommand.Create<ICurve>(curve =>
             {
                 SelectedCurve = curve;
                 DeleteSelectedCurve();
@@ -116,7 +120,7 @@ namespace splines_avalonia.ViewModels
             }
             DrawCurves();
         }
-        
+
         private void Curve_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ICurve.IsVisible) || e.PropertyName == nameof(ICurve.Color) || e.PropertyName == nameof(ICurve.Thickness))
@@ -134,17 +138,11 @@ namespace splines_avalonia.ViewModels
 
         public async void OpenSettings()
         {
-            var settingsWindow = new SettingsWindow(ShowAxes, ShowGrid, DarkMode, PointCount, XAxisColor, YAxisColor);
+            var settingsWindow = new SettingsWindow();
             await settingsWindow.ShowDialog(App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
 
             if (settingsWindow.IsOkClicked)
             {
-                ShowAxes = settingsWindow.ShowAxes;
-                ShowGrid = settingsWindow.ShowGrid;
-                DarkMode = settingsWindow.DarkMode;
-                PointCount = settingsWindow.PointCount;
-                XAxisColor = settingsWindow.XAxisColor;
-                YAxisColor = settingsWindow.YAxisColor;
                 DrawCurves();
             }
         }
@@ -446,7 +444,7 @@ namespace splines_avalonia.ViewModels
         }
 
         private async void EditCurve()
-        {            
+        {
             if (SelectedCurve != null && SelectedCurve.Type == "Function")
             {
                 EditFunction();
@@ -485,7 +483,7 @@ namespace splines_avalonia.ViewModels
             double endY = (height - CenterY() - _offsetY) / _zoom;
 
             // Отрисовка линий сетки
-            if (ShowGrid)
+            if (Globals.ShowGrid)
             {
                 for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
                 {
@@ -515,7 +513,7 @@ namespace splines_avalonia.ViewModels
             }
 
             // Отрисовка осей и числовых подписей
-            if (ShowAxes)
+            if (Globals.ShowAxes)
             {
                 // Подписи вдоль оси X
                 for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
@@ -526,7 +524,7 @@ namespace splines_avalonia.ViewModels
                     var text = new TextBlock
                     {
                         Text = labelText,
-                        Foreground = new SolidColorBrush(XAxisColor),
+                        Foreground = new SolidColorBrush(Globals.XAxisColor),
                         FontSize = 10
                     };
 
@@ -550,7 +548,7 @@ namespace splines_avalonia.ViewModels
                     var text = new TextBlock
                     {
                         Text = labelText,
-                        Foreground = new SolidColorBrush(YAxisColor),
+                        Foreground = new SolidColorBrush(Globals.YAxisColor),
                         FontSize = 10
                     };
 
@@ -586,7 +584,7 @@ namespace splines_avalonia.ViewModels
                 {
                     StartPoint = new Avalonia.Point(0, axisXScreen),
                     EndPoint = new Avalonia.Point(width, axisXScreen),
-                    Stroke = new SolidColorBrush(XAxisColor),
+                    Stroke = new SolidColorBrush(Globals.XAxisColor),
                     StrokeThickness = 2
                 };
                 GraphicCanvas.Children.Add(xAxis);
@@ -595,20 +593,20 @@ namespace splines_avalonia.ViewModels
                 {
                     StartPoint = new Avalonia.Point(axisYScreen, 0),
                     EndPoint = new Avalonia.Point(axisYScreen, height),
-                    Stroke = new SolidColorBrush(YAxisColor),
+                    Stroke = new SolidColorBrush(Globals.YAxisColor),
                     StrokeThickness = 2
                 };
                 GraphicCanvas.Children.Add(yAxis);
             }
         }
-        
+
         public void DrawCurves()
         {
             if (GraphicCanvas == null)
                 return;
 
             GraphicCanvas.Children.Clear();
-            if (DarkMode)
+            if (Globals.DarkMode)
                 GraphicCanvas.Background = new SolidColorBrush(Colors.Black);
             else
                 GraphicCanvas.Background = new SolidColorBrush(Colors.White);
@@ -699,30 +697,34 @@ namespace splines_avalonia.ViewModels
                     double renderEnd = Math.Min(funcRight, visibleRight);
                     double renderWidth = renderEnd - renderStart;
 
-                    if (PointCount <= 0) return;
-                    double step = renderWidth / PointCount;
+                    if (Globals.PointCount <= 0) return;
+                    double step = renderWidth / Globals.PointCount;
 
                     // отрисовка функции
                     var points = new Points();
-                    for (int i = 0; i <= PointCount; i++)
+                    for (int i = 0; i <= Globals.PointCount; i++)
                     {
                         double x = renderStart + i * step;
                         double y = curve.CalculateFunctionValue(x);
+                        if (curve.Color == Colors.White && !Globals.DarkMode && Globals.AutomaticColor)
+                            curve.Color = Colors.Black;
+                        if (curve.Color == Colors.Black && Globals.DarkMode && Globals.AutomaticColor)
+                            curve.Color = Colors.White;
 
                         if (double.IsNaN(y) || double.IsInfinity(y))
-                        {
-                            if (points.Count >= 2)
                             {
-                                GraphicCanvas.Children.Add(new Polyline
+                                if (points.Count >= 2)
                                 {
-                                    Points = new Points(points),
-                                    Stroke = new SolidColorBrush(curve.Color),
-                                    StrokeThickness = curve.Thickness
-                                });
+                                    GraphicCanvas.Children.Add(new Polyline
+                                    {
+                                        Points = new Points(points),
+                                        Stroke = new SolidColorBrush(curve.Color),
+                                        StrokeThickness = curve.Thickness
+                                    });
+                                }
+                                points.Clear();
+                                continue;
                             }
-                            points.Clear();
-                            continue;
-                        }
 
                         var screenPoint = new Avalonia.Point(
                             (x * _zoom) + CenterX() + _offsetX,

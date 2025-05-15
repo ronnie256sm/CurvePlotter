@@ -5,6 +5,7 @@ using System.IO;
 using NCalc;
 using Avalonia.Media;
 using splines_avalonia.Helpers;
+using splines_avalonia.ViewModels;
 
 namespace splines_avalonia
 {
@@ -113,7 +114,10 @@ namespace splines_avalonia
 
         public Function(string functionString)
         {
-            Color = Colors.Black;
+            if (Globals.DarkMode && Globals.AutomaticColor)
+                Color = Colors.White;
+            else
+                Color = Colors.Black;
             Thickness = 2;
             IsPossible = true;
             FunctionString = functionString;
