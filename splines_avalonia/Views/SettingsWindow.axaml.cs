@@ -54,5 +54,17 @@ namespace splines_avalonia.Views
         {
             Close();
         }
+
+        private void OnDefaultClick(object? sender, RoutedEventArgs e)
+        {
+            ShowAxes = true;
+            ShowGrid = true;
+            DarkMode = false;
+            PointCount = 1000;
+            XAxisColor = Colors.DarkGray;
+            YAxisColor = Colors.DarkGray;
+            IsOkClicked = true;
+            Close();
+        }
     }
 }

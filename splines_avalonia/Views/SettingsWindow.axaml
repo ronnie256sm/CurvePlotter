@@ -39,6 +39,7 @@
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
             <Button Content="OK" Click="OnOkClick"/>
             <Button Content="Отмена" Click="OnCancelClick"/>
+            <Button Content="По умолчанию" Click="OnDefaultClick"/>
         </StackPanel>
     </DockPanel>
 </Window>
