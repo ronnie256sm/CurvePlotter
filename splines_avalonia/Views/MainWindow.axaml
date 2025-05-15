@@ -9,18 +9,90 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="splines_avalonia">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="400" />
         </Grid.ColumnDefinitions>
 
-        <Canvas x:Name="GraphicHolder" Background="White" Grid.Row="0" Grid.Column="0" />
+        <!-- Левая часть: Canvas + нижняя панель -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Grid.Column="1" Background="#1E1E1E">
+            <!-- Canvas -->
+            <Canvas x:Name="GraphicHolder" Background="White" Grid.Row="0" />
+
+            <!-- Нижняя панель только под Canvas -->
+            <Border Grid.Row="1" Background="Black" Padding="5">
+                <DockPanel LastChildFill="True">
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
+                        <Button Content="🖫" Width="40" Height="30" HorizontalContentAlignment="Center">
+                            <Button.Flyout>
+                                <MenuFlyout>
+                                    <MenuItem Header="Сохранить" Command="{Binding SaveJsonCommand}"/>
+                                    <MenuItem Header="Открыть" Command="{Binding LoadJsonCommand}"/>
+                                    <MenuItem Header="Экспортировать в PNG" Command="{Binding SavePngCommand}"/>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                            <ToolTip.Tip>
+                                <TextBlock Text="Файл"/>
+                            </ToolTip.Tip>
+                        </Button>
+                        <Button Content="🛠" Width="40" Height="30" HorizontalContentAlignment="Center" Command="{Binding OpenSettingsCommand}">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Настройки"/>
+                            </ToolTip.Tip>
+                        </Button>
+                        <Button Content="?" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OpenHelpWindow">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Справка"/>
+                            </ToolTip.Tip>
+                        </Button>
+                        <Button Content="⌂" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnResetPosition">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Возврат в исходное положение"/>
+                            </ToolTip.Tip>
+                        </Button>
+                        <RepeatButton Content="←" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveLeft">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Сдвиг влево"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                        <RepeatButton Content="↓" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveDown">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Сдвиг вниз"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                        <RepeatButton Content="↑" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveUp">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Сдвиг вверх"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                        <RepeatButton Content="→" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveRight">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Сдвиг вправо"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                        <RepeatButton Content="+" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomIn">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Приблизить"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                        <RepeatButton Content="−" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomOut">
+                            <ToolTip.Tip>
+                                <TextBlock Text="Отдалить"/>
+                            </ToolTip.Tip>
+                        </RepeatButton>
+                    </StackPanel>
+                    <TextBlock x:Name="StatusBar" FontSize="14" Foreground="White" VerticalAlignment="Center" />
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Правая панель: список кривых на всю высоту -->
+        <Grid Grid.Column="1" Background="#1E1E1E">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -71,7 +143,7 @@
                             <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Padding="5" Margin="5">
                                 <StackPanel Orientation="Vertical" Spacing="5">
                                     
-                                    <!-- Адаптивный переносимый Name без лишнего отступа -->
+                                    <!-- Имя и чекбокс -->
                                     <Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
                                         <CheckBox IsChecked="{Binding IsVisible, Mode=TwoWay}" VerticalAlignment="Center" Margin="0"/>
                                         <TextBlock Grid.Column="1"
@@ -133,70 +205,5 @@
                 </ListBox>
             </Border>
         </Grid>
-
-        <Border Grid.ColumnSpan="2" Grid.Row="1" Background="Black" Padding="5">
-            <DockPanel LastChildFill="True">
-                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Spacing="5">
-                    <Button Content="🖫" Width="40" Height="30" HorizontalContentAlignment="Center">
-                        <Button.Flyout>
-                            <MenuFlyout>
-                                <MenuItem Header="Сохранить" Command="{Binding SaveJsonCommand}"/>
-                                <MenuItem Header="Открыть" Command="{Binding LoadJsonCommand}"/>
-                                <MenuItem Header="Экспортировать в PNG" Command="{Binding SavePngCommand}"/>
-                            </MenuFlyout>
-                        </Button.Flyout>
-                        <ToolTip.Tip>
-                            <TextBlock Text="Файл"/>
-                        </ToolTip.Tip>
-                    </Button>
-                    <Button Content="🛠" Width="40" Height="30" HorizontalContentAlignment="Center" Command="{Binding OpenSettingsCommand}">
-                        <ToolTip.Tip>
-                            <TextBlock Text="Настройки"/>
-                        </ToolTip.Tip>
-                    </Button>
-                    <Button Content="?" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OpenHelpWindow">
-                        <ToolTip.Tip>
-                            <TextBlock Text="Справка"/>
-                        </ToolTip.Tip>
-                    </Button>
-                    <Button Content="⌂" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnResetPosition">
-                        <ToolTip.Tip>
-                            <TextBlock Text="Возврат в исходное положение"/>
-                        </ToolTip.Tip>
-                    </Button>
-                    <RepeatButton Content="←" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveLeft">
-                        <ToolTip.Tip>
-                            <TextBlock Text="Сдвиг влево"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                    <RepeatButton Content="↓" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveDown">
-                            <ToolTip.Tip>
-                            <TextBlock Text="Сдвиг вниз"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                    <RepeatButton Content="↑" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveUp">
-                            <ToolTip.Tip>
-                            <TextBlock Text="Сдвиг вверх"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                    <RepeatButton Content="→" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnMoveRight">
-                            <ToolTip.Tip>
-                            <TextBlock Text="Сдвиг вправо"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                    <RepeatButton Content="+" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomIn">
-                            <ToolTip.Tip>
-                            <TextBlock Text="Приблизить"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                    <RepeatButton Content="−" Width="40" Height="30" HorizontalContentAlignment="Center" Click="OnZoomOut">
-                            <ToolTip.Tip>
-                            <TextBlock Text="Отдалить"/>
-                        </ToolTip.Tip>
-                    </RepeatButton>
-                </StackPanel>
-                <TextBlock x:Name="StatusBar" FontSize="14" Foreground="White" VerticalAlignment="Center" />
-            </DockPanel>
-        </Border>
     </Grid>
 </Window>

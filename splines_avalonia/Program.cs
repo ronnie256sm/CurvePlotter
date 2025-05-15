@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using System;
 
@@ -18,5 +18,5 @@ sealed class Program
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace()
-            .UseReactiveUI(); // Добавляем эту строку
+            .UseReactiveUI();
 }
