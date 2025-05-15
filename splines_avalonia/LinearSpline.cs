@@ -68,6 +68,7 @@ public class LinearSpline : ICurve
         Color = Colors.Black;
         Thickness = 2;
         ControlPoints = controlPoints;
+        OutputPoints = ControlPoints;
         Name = "Ломаная";
         IsVisible = true;
         IsPossible = true;

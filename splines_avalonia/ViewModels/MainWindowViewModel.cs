@@ -621,31 +621,9 @@ namespace splines_avalonia.ViewModels
                 {
                     var points = new Points();
 
-                    if (curve.SplineType != "Linear" && curve.IsPossible)
+                    if (curve.IsPossible)
                     {
                         foreach (var p in curve.OutputPoints)
-                        {
-                            var screenPoint = new Avalonia.Point(
-                                (p.X * _zoom) + CenterX() + _offsetX,
-                                (-p.Y * _zoom) + CenterY() + _offsetY
-                            );
-                            points.Add(screenPoint);
-                        }
-
-                        if (points.Count >= 2)
-                        {
-                            var polyline = new Polyline
-                            {
-                                Points = points,
-                                Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = curve.Thickness
-                            };
-                            GraphicCanvas.Children.Add(polyline);
-                        }
-                    }
-                    if (curve.SplineType == "Linear" && curve.IsPossible)
-                    {
-                        foreach (var p in curve.ControlPoints)
                         {
                             var screenPoint = new Avalonia.Point(
                                 (p.X * _zoom) + CenterX() + _offsetX,
