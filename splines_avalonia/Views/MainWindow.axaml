@@ -22,7 +22,7 @@
             </Grid.RowDefinitions>
 
             <!-- Canvas -->
-            <Canvas x:Name="GraphicHolder" Background="White" Grid.Row="0" />
+            <Canvas x:Name="GraphicHolder" Grid.Row="0" />
 
             <!-- Нижняя панель только под Canvas -->
             <Border Grid.Row="1" Background="Black" Padding="5">

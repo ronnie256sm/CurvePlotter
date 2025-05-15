@@ -6,6 +6,7 @@ namespace splines_avalonia.ViewModels
     {
         private bool _showAxes;
         private bool _showGrid;
+        private bool _darkMode = false;
         private string _pointCountText = "1000";
 
         public bool ShowAxes
@@ -18,6 +19,12 @@ namespace splines_avalonia.ViewModels
         {
             get => _showGrid;
             set => this.RaiseAndSetIfChanged(ref _showGrid, value);
+        }
+
+        public bool DarkMode
+        {
+            get => _darkMode;
+            set => this.RaiseAndSetIfChanged(ref _darkMode, value);
         }
 
         public string PointCountText

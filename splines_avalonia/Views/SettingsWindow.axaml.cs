@@ -9,17 +9,19 @@ namespace splines_avalonia.Views
         public bool IsOkClicked { get; private set; }
         public bool ShowAxes { get; private set; }
         public bool ShowGrid { get; private set; }
+        public bool DarkMode { get; private set; } = false;
         public int PointCount { get; private set; }
 
         private readonly SettingsWindowViewModel _viewModel;
 
-        public SettingsWindow(bool currentAxes, bool currentGrid, int currentPointCount)
+        public SettingsWindow(bool currentAxes, bool currentGrid, bool currentColorMode, int currentPointCount)
         {
             InitializeComponent();
             _viewModel = new SettingsWindowViewModel
             {
                 ShowAxes = currentAxes,
                 ShowGrid = currentGrid,
+                DarkMode = currentColorMode,
                 PointCountText = currentPointCount.ToString()
             };
             DataContext = _viewModel;
@@ -35,6 +37,7 @@ namespace splines_avalonia.Views
 
             ShowAxes = _viewModel.ShowAxes;
             ShowGrid = _viewModel.ShowGrid;
+            DarkMode = _viewModel.DarkMode;
             PointCount = count;
             IsOkClicked = true;
             Close();
