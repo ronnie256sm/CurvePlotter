@@ -38,6 +38,7 @@ namespace splines_avalonia
         double ParsedEnd { get; set; }
         bool ShowControlPoints { get; set; }
         void GetLimits();
+        double Thickness { get; set; }
     }
 
     public interface ILogic

@@ -41,6 +41,19 @@ namespace splines_avalonia
         public bool ShowControlPoints { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
+        private double _thickness = 2;
+        public double Thickness
+        {
+            get => _thickness;
+            set
+            {
+                if (_thickness != value)
+                {
+                    _thickness = value;
+                    OnPropertyChanged(nameof(Thickness));
+                }
+            }
+        }
         private Color _color;
         public Color Color
         {
@@ -55,6 +68,7 @@ namespace splines_avalonia
         public InterpolatingSpline1(Point[] controlPoints)
         {
             Color = Colors.Black;
+            Thickness = 2;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн с производными, построенными с помощью полиномов Лагранжа";
             IsVisible = true;

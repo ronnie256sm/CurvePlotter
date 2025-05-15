@@ -41,6 +41,19 @@ namespace splines_avalonia
         public bool ShowControlPoints { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
+        private double _thickness = 2;
+        public double Thickness
+        {
+            get => _thickness;
+            set
+            {
+                if (_thickness != value)
+                {
+                    _thickness = value;
+                    OnPropertyChanged(nameof(Thickness));
+                }
+            }
+        }
         private double[] _x;
         private double[] _a, _b, _c, _d;
         private Color _color;
@@ -57,6 +70,7 @@ namespace splines_avalonia
         public InterpolatingSpline2(Point[] controlPoints)
         {
             Color = Colors.Black;
+            Thickness = 2;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн с непрерывными вторыми производными";
             IsVisible = true;

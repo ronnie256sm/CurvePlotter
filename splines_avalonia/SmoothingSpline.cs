@@ -52,6 +52,19 @@ namespace splines_avalonia
         public double ParsedEnd { get; set; }
         public bool ShowControlPoints { get; set; }
         private readonly SLAE slae;
+        private double _thickness = 2;
+        public double Thickness
+        {
+            get => _thickness;
+            set
+            {
+                if (_thickness != value)
+                {
+                    _thickness = value;
+                    OnPropertyChanged(nameof(Thickness));
+                }
+            }
+        }
 
         public string SplineType => "Smoothing Cubic";
 
@@ -60,6 +73,7 @@ namespace splines_avalonia
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
             Color = Colors.Black;
+            Thickness = 2;
             SmoothingCoefficientAlpha = smoothingCoefficientAlpha;
             SmoothingCoefficientBeta = smoothingCoefficientBeta;
             AlphaFunction = new Function(smoothingCoefficientAlpha);

@@ -119,7 +119,7 @@ namespace splines_avalonia.ViewModels
         
         private void Curve_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(ICurve.IsVisible) || e.PropertyName == nameof(ICurve.Color))
+            if (e.PropertyName == nameof(ICurve.IsVisible) || e.PropertyName == nameof(ICurve.Color) || e.PropertyName == nameof(ICurve.Thickness))
             {
                 DrawCurves();
             }
@@ -638,7 +638,7 @@ namespace splines_avalonia.ViewModels
                             {
                                 Points = points,
                                 Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = 2
+                                StrokeThickness = curve.Thickness
                             };
                             GraphicCanvas.Children.Add(polyline);
                         }
@@ -660,7 +660,7 @@ namespace splines_avalonia.ViewModels
                             {
                                 Points = points,
                                 Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = 2
+                                StrokeThickness = curve.Thickness
                             };
                             GraphicCanvas.Children.Add(polyline);
                         }
@@ -676,17 +676,21 @@ namespace splines_avalonia.ViewModels
                                 (-p.Y * _zoom) + CenterY() + _offsetY
                             );
 
+                            // Увеличенный диаметр точки
+                            double diameter = Math.Max(6, curve.Thickness * 2.5);
+                            double strokeThickness = Math.Max(1, curve.Thickness);
+
                             var ellipse = new Ellipse
                             {
-                                Width = 6,
-                                Height = 6,
+                                Width = diameter,
+                                Height = diameter,
                                 Fill = new SolidColorBrush(curve.Color),
                                 Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = 1
+                                StrokeThickness = strokeThickness
                             };
 
-                            Canvas.SetLeft(ellipse, screenPoint.X - 3); // центрируем круг
-                            Canvas.SetTop(ellipse, screenPoint.Y - 3);
+                            Canvas.SetLeft(ellipse, screenPoint.X - diameter / 2);
+                            Canvas.SetTop(ellipse, screenPoint.Y - diameter / 2);
 
                             GraphicCanvas.Children.Add(ellipse);
                         }
@@ -735,7 +739,7 @@ namespace splines_avalonia.ViewModels
                                 {
                                     Points = new Points(points),
                                     Stroke = new SolidColorBrush(curve.Color),
-                                    StrokeThickness = 2
+                                    StrokeThickness = curve.Thickness
                                 });
                             }
                             points.Clear();
@@ -757,7 +761,7 @@ namespace splines_avalonia.ViewModels
                             {
                                 Points = new Points(points),
                                 Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = 2
+                                StrokeThickness = curve.Thickness
                             });
                             points.Clear();
                         }
@@ -769,7 +773,7 @@ namespace splines_avalonia.ViewModels
                         {
                             Points = points,
                             Stroke = new SolidColorBrush(curve.Color),
-                            StrokeThickness = 2
+                            StrokeThickness = curve.Thickness
                         });
                     }
                 }

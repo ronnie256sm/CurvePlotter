@@ -49,10 +49,24 @@ public class LinearSpline : ICurve
             OnPropertyChanged(nameof(Color));
         }
     }
+    private double _thickness = 2;
+    public double Thickness
+    {
+        get => _thickness;
+        set
+        {
+            if (_thickness != value)
+            {
+                _thickness = value;
+                OnPropertyChanged(nameof(Thickness));
+            }
+        }
+    }
 
     public LinearSpline(Point[] controlPoints)
     {
         Color = Colors.Black;
+        Thickness = 2;
         ControlPoints = controlPoints;
         Name = "Ломаная";
         IsVisible = true;

@@ -65,6 +65,7 @@ public static class IO
                             IsVisible = curve.IsVisible,
                             SmoothingCoefficientAlpha = curve.SmoothingCoefficientAlpha,
                             SmoothingCoefficientBeta = curve.SmoothingCoefficientBeta,
+                            Thickness = curve.Thickness,
                             Color = new
                             {
                                 A = curve.Color.A,
@@ -265,6 +266,9 @@ public static class IO
                         curve.Color = Color.FromArgb(a, r, g, b);
                         Console.WriteLine($"Цвет кривой {name}: {a}, {r}, {g}, {b}");
                     }
+
+                    if (curveData.TryGetValue("Thickness", out var ThicknessObj) && ThicknessObj is double Thickness)
+                        curve.Thickness = Thickness;
 
                     // Добавление кривой в список
                     MainWindowViewModel.CurveList.Add(curve);
