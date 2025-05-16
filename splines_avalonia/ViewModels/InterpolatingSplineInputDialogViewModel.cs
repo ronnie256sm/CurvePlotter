@@ -44,7 +44,7 @@ namespace splines_avalonia.ViewModels
         {
             var savePickerOptions = new FilePickerSaveOptions
             {
-                Title = "Создать файл с точками",
+                Title = "Создать файл",
                 SuggestedFileName = "points.txt",
                 FileTypeChoices = new[] { new FilePickerFileType("Text files") { Patterns = new[] { "*.txt" } } }
             };
@@ -57,7 +57,7 @@ namespace splines_avalonia.ViewModels
                 {
                     File.WriteAllText(path, ""); // создаем пустой файл
                     PointsFilePath = path;
-                    await Helpers.ErrorHelper.ShowError("Файл создан", "Создан пустой файл. Пожалуйста, отредактируйте его, прежде чем продолжить.");
+                    await Helpers.ErrorHelper.ShowError("Предупреждение", "Создан пустой файл. Пожалуйста, отредактируйте его, прежде чем продолжить.");
                 }
                 catch (Exception ex)
                 {
@@ -87,7 +87,7 @@ namespace splines_avalonia.ViewModels
                 }
                 else
                 {
-                    await Helpers.ErrorHelper.ShowError("Ошибка", "Редактирование файла не поддерживается в этой операционной системе.");
+                    await Helpers.ErrorHelper.ShowError("Ошибка", "Редактирование файла поддерживается только в Windows и Linux.");
                 }
             }
             catch (Exception ex)

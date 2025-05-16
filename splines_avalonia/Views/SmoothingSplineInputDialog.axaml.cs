@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views
@@ -32,5 +33,29 @@ namespace splines_avalonia.Views
         public string SmoothingFactorAlpha => (DataContext as SmoothingSplineInputDialogViewModel)?.SmoothingFactorAlpha ?? "";
         public string SmoothingFactorBeta => (DataContext as SmoothingSplineInputDialogViewModel)?.SmoothingFactorBeta ?? "";
         public bool ShowControlPoints => (DataContext as SmoothingSplineInputDialogViewModel)?.ShowControlPoints ?? true;
+        private async void OnSelectPointsFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.SelectPointsFileAsync();
+        }
+        private async void OnCreatePointsFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.CreatePointsFile(this, true);
+        }
+        private async void OnEditPointsFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.EditFile(true);
+        }
+        private async void OnSelectMeshFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.SelectMeshFileAsync();
+        }
+        private async void OnCreateMeshFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.CreatePointsFile(this, false);
+        }
+        private async void OnEditMeshFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.EditFile(false);
+        }
     }
 }
