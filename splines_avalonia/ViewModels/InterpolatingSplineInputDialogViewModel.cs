@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
@@ -35,6 +37,62 @@ namespace splines_avalonia.ViewModels
             if (fileResult.Count > 0)
             {
                 PointsFilePath = fileResult[0].Path.LocalPath;
+            }
+        }
+
+        public async Task CreatePointsFile(Window parent)
+        {
+            var savePickerOptions = new FilePickerSaveOptions
+            {
+                Title = "Создать файл с точками",
+                SuggestedFileName = "points.txt",
+                FileTypeChoices = new[] { new FilePickerFileType("Text files") { Patterns = new[] { "*.txt" } } }
+            };
+
+            var result = await parent.StorageProvider.SaveFilePickerAsync(savePickerOptions);
+            if (result != null)
+            {
+                var path = result.Path.LocalPath;
+                try
+                {
+                    File.WriteAllText(path, ""); // создаем пустой файл
+                    PointsFilePath = path;
+                    await Helpers.ErrorHelper.ShowError("Файл создан", "Создан пустой файл. Пожалуйста, отредактируйте его, прежде чем продолжить.");
+                }
+                catch (Exception ex)
+                {
+                    await Helpers.ErrorHelper.ShowError("Ошибка", $"Не удалось создать файл: {ex.Message}");
+                }
+            }
+        }
+
+        public async Task EditPointsFile()
+        {
+            var path = PointsFilePath;
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path))
+            {
+                await Helpers.ErrorHelper.ShowError("Ошибка", "Файл не выбран или не существует.");
+                return;
+            }
+
+            try
+            {
+                if (OperatingSystem.IsWindows())
+                {
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("notepad", path) { UseShellExecute = true });
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    System.Diagnostics.Process.Start("xdg-open", path);
+                }
+                else
+                {
+                    await Helpers.ErrorHelper.ShowError("Ошибка", "Редактирование файла не поддерживается в этой операционной системе.");
+                }
+            }
+            catch (Exception ex)
+            {
+                await Helpers.ErrorHelper.ShowError("Ошибка", $"Не удалось открыть файл для редактирования: {ex.Message}");
             }
         }
     }

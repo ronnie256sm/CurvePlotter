@@ -1,5 +1,8 @@
+using System;
+using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views
@@ -51,6 +54,16 @@ namespace splines_avalonia.Views
         {
             ViewModel.PointsFilePath = pointsPath;
             ViewModel.ShowControlPoints = showControlPoints;
+        }
+
+        private async void OnCreateNewFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.CreatePointsFile(this);
+        }
+
+        private async void OnEditFileClick(object? sender, RoutedEventArgs e)
+        {
+            await ViewModel.EditPointsFile();
         }
     }
 }

@@ -9,17 +9,26 @@
         <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
             <TextBlock Text="Файл точек:"/>
             <TextBox Text="{Binding PointsFilePath}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
-            <Button Content="Выбрать файл точек"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Click="OnSelectPointsFileClick"
-                    HorizontalAlignment="Stretch">
-                <ToolTip.Tip>
-                    <TextBlock Width="300"
-                            TextWrapping="Wrap"
-                            Text="Формат файла: первая строка — количество точек; следующие строки содержат координаты X и Y одной точки, разделённые пробелом; по одной точке на строку"/>
-                </ToolTip.Tip>
-            </Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <Button Content="Выбрать"
+                        Click="OnSelectPointsFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Создать"
+                        Click="OnCreateNewFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Редактировать"
+                        Click="OnEditFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+            </StackPanel>
 
             <!-- Добавляем CheckBox для "Отображать контрольные точки" -->
             <CheckBox Content="Отображать контрольные точки"
