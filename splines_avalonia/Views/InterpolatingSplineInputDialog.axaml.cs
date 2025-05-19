@@ -1,8 +1,5 @@
-using System;
-using System.IO;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using Avalonia.Platform.Storage;
 using splines_avalonia.ViewModels;
 
 namespace splines_avalonia.Views

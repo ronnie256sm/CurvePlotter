@@ -11,7 +11,7 @@
             <CheckBox Content="Отображать оси координат" IsChecked="{Binding ShowAxes, Mode=TwoWay}"/>
             <CheckBox Content="Отображать сетку" IsChecked="{Binding ShowGrid, Mode=TwoWay}"/>
             <CheckBox Content="Темная тема" IsChecked="{Binding DarkMode, Mode=TwoWay}"/>
-            <CheckBox Content="Автоматически менять черный цвет для кривых на белых для темной темы и наоборот" IsChecked="{Binding AutomaticColor, Mode=TwoWay}"/>
+            <CheckBox Content="Автоматически менять черный цвет кривой на белый для темной темы и наоборот" IsChecked="{Binding AutomaticColor, Mode=TwoWay}"/>
 
             <TextBlock Text="Цвета осей:"/>
             <StackPanel Orientation="Horizontal" Spacing="10">
