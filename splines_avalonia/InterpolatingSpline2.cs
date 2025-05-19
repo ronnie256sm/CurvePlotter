@@ -3,21 +3,28 @@ using System.ComponentModel;
 using Avalonia.Media;
 using splines_avalonia.ViewModels;
 
+#pragma warning disable CS8618
+
 namespace splines_avalonia
 {
     public class InterpolatingSpline2 : ICurve
     {
-        #pragma warning disable CS8618, CS8625
+        private record SplineSegment(double X, double A, double B, double C, double D);
         public string Type => "Spline";
-        public double[] Grid { get; }
+        public string SplineType => "Interpolating Cubic 2";
         public Point[] ControlPoints { get; }
-        public Point[] OutputPoints { get; }
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
         public string FunctionString { get; set; }
-        public string SplineType => "Interpolating Cubic 2";
-
         public string Name { get; set; }
+        public string SmoothingCoefficientAlpha { get; set; }
+        public string SmoothingCoefficientBeta { get; set; }
+        public bool IsPossible { get; set; } = true;
+        public string Start { get; set; }
+        public string End { get; set; }
+        public bool ShowControlPoints { get; set; }
+        public double ParsedStart { get; set; }
+        public double ParsedEnd { get; set; }
         private bool _isVisible = true;
         public bool IsVisible
         {
@@ -31,17 +38,6 @@ namespace splines_avalonia
                 }
             }
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        public string SmoothingCoefficientAlpha { get; set; }
-        public string SmoothingCoefficientBeta { get; set; }
-        public bool IsPossible { get; set; }
-        public string Start { get; set; }
-        public string End { get; set; }
-        public bool ShowControlPoints { get; set; }
-        public double ParsedStart { get; set; }
-        public double ParsedEnd { get; set; }
         private double _thickness = 2;
         public double Thickness
         {
@@ -55,8 +51,6 @@ namespace splines_avalonia
                 }
             }
         }
-        private double[] _x;
-        private double[] _a, _b, _c, _d;
         private Color _color;
         public Color Color
         {
@@ -67,84 +61,70 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(Color));
             }
         }
-
+        public double[] Grid { get; set; }
+        private SplineSegment[] _segments;
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected virtual void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public InterpolatingSpline2(Point[] controlPoints)
         {
-            if (Globals.DarkMode)
-                Color = Colors.White;
-            else
-                Color = Colors.Black;
-            Thickness = 2;
+            Color = Globals.DarkMode ? Colors.White : Colors.Black;
             ControlPoints = controlPoints;
             Name = "Интерполяционный сплайн с непрерывными вторыми производными";
-            IsVisible = true;
-            IsPossible = true;
 
             int n = controlPoints.Length;
-
             double[] x = new double[n];
             double[] y = new double[n];
 
-            // Заполняем массивы x и y из ControlPoints
             for (int i = 0; i < n; i++)
             {
                 x[i] = controlPoints[i].X;
                 y[i] = controlPoints[i].Y;
             }
 
-            var fPrime = new double[n];
-            var a = new double[n - 1];
-            var b = new double[n - 1];
-            var c = new double[n - 1];
-            var d = new double[n - 1];
+            _segments = ComputeSegments(x, y);
+        }
 
-            _x = x;
-            _a = a;
-            _b = b;
-            _c = c;
-            _d = d;
+        public double CalculateFunctionValue(double x)
+        {
+            if (_segments is null || _segments.Length == 0)
+                return double.NaN;
 
-            // Вычисление коэффициентов
-            ComputeSpline(x, y, fPrime, a, b, c, d);
+            if (x < _segments[0].X || x > _segments[^1].X)
+                return double.NaN;
 
-            // Вычисление точек сплайна
-            List<Point> output = new();
-            int numPoints = 50;
-
-            for (int i = 0; i < n - 1; i++)
+            for (int i = 0; i < _segments.Length; i++)
             {
-                double h = (x[i + 1] - x[i]) / numPoints;
-                for (int j = 0; j <= numPoints; j++)
+                var seg = _segments[i];
+                if (x >= seg.X && (i == _segments.Length - 1 || x <= _segments[i + 1].X))
                 {
-                    double xVal = x[i] + j * h;
-                    double dx = xVal - x[i];
-                    double yVal = a[i] + b[i] * dx + c[i] * dx * dx + d[i] * dx * dx * dx;
-                    output.Add(new Point(xVal, yVal));
+                    double dx = x - seg.X;
+                    return seg.A + seg.B * dx + seg.C * dx * dx + seg.D * dx * dx * dx;
                 }
             }
 
-            OutputPoints = output.ToArray();
+            return double.NaN;
         }
 
-        private static void ComputeSpline(double[] x, double[] y, double[] fPrime,
-            double[] a, double[] b, double[] c, double[] d)
+        public void GetLimits() => throw new System.NotImplementedException();
+
+        private static SplineSegment[] ComputeSegments(double[] x, double[] y)
         {
             int n = x.Length;
             double[] h = new double[n - 1];
             for (int i = 0; i < n - 1; i++)
                 h[i] = x[i + 1] - x[i];
 
-            double[] diagLower = new double[n];
-            double[] diagMain = new double[n];
-            double[] diagUpper = new double[n];
+            double[] lower = new double[n];
+            double[] main = new double[n];
+            double[] upper = new double[n];
             double[] rhs = new double[n];
 
-            diagMain[0] = diagMain[n - 1] = 1.0;
+            main[0] = main[n - 1] = 1.0;
 
-            // Граничные условия
             rhs[0] = 0.5 * (
-                -((3 * h[0] + 2 * h[1]) / (h[0] * (h[0] + h[1]))) * y[0] 
-                + ((h[0] + 2 * h[1]) / (h[0] * h[1])) * y[1] 
+                -((3 * h[0] + 2 * h[1]) / (h[0] * (h[0] + h[1]))) * y[0]
+                + ((h[0] + 2 * h[1]) / (h[0] * h[1])) * y[1]
                 - (h[0] / ((h[0] + h[1]) * h[1])) * y[2]);
 
             rhs[n - 1] = 0.5 * (
@@ -154,24 +134,29 @@ namespace splines_avalonia
 
             for (int i = 1; i < n - 1; i++)
             {
-                diagLower[i] = 2.0 / h[i - 1];
-                diagMain[i] = 4.0 * (1.0 / h[i - 1] + 1.0 / h[i]);
-                diagUpper[i] = 2.0 / h[i];
+                lower[i] = 2.0 / h[i - 1];
+                main[i] = 4.0 * (1.0 / h[i - 1] + 1.0 / h[i]);
+                upper[i] = 2.0 / h[i];
 
                 rhs[i] = -y[i - 1] * (6.0 / (h[i - 1] * h[i - 1]))
                          + y[i] * 6.0 * (1.0 / (h[i - 1] * h[i - 1]) - 1.0 / (h[i] * h[i]))
                          + y[i + 1] * (6.0 / (h[i] * h[i]));
             }
 
-            fPrime = SolveTridiagonal(diagLower, diagMain, diagUpper, rhs);
+            double[] fPrime = SolveTridiagonal(lower, main, upper, rhs);
 
+            var segments = new List<SplineSegment>(n - 1);
             for (int i = 0; i < n - 1; i++)
             {
-                a[i] = y[i];
-                b[i] = fPrime[i];
-                c[i] = (3.0 / (h[i] * h[i])) * (y[i + 1] - y[i]) - (fPrime[i + 1] + 2.0 * fPrime[i]) / h[i];
-                d[i] = (2.0 / (h[i] * h[i] * h[i])) * (y[i] - y[i + 1]) + (fPrime[i + 1] + fPrime[i]) / (h[i] * h[i]);
+                double dx = h[i];
+                double a = y[i];
+                double b = fPrime[i];
+                double c = (3.0 / (dx * dx)) * (y[i + 1] - y[i]) - (fPrime[i + 1] + 2.0 * fPrime[i]) / dx;
+                double d = (2.0 / (dx * dx * dx)) * (y[i] - y[i + 1]) + (fPrime[i + 1] + fPrime[i]) / (dx * dx);
+                segments.Add(new SplineSegment(x[i], a, b, c, d));
             }
+
+            return segments.ToArray();
         }
 
         private static double[] SolveTridiagonal(double[] a, double[] b, double[] c, double[] d)
@@ -196,37 +181,6 @@ namespace splines_avalonia
                 x[i] = dPrime[i] - cPrime[i] * x[i + 1];
 
             return x;
-        }
-
-        public double CalculateFunctionValue(double x)
-        {
-            int n = _x.Length;
-
-            // Если x вне интервала, возвращаем NaN
-            if (x < _x[0] || x > _x[n - 1])
-                return double.NaN;
-
-            // Найдём нужный интервал [x_i, x_{i+1}]
-            int i = -1;
-            for (int j = 0; j < n - 1; j++)
-            {
-                if (x >= _x[j] && x <= _x[j + 1])
-                {
-                    i = j;
-                    break;
-                }
-            }
-
-            if (i == -1)
-                return double.NaN;
-
-            double dx = x - _x[i];
-            return _a[i] + _b[i] * dx + _c[i] * dx * dx + _d[i] * dx * dx * dx;
-        }
-
-        public void GetLimits()
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

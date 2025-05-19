@@ -11,7 +11,6 @@ namespace splines_avalonia
         public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
-        public Point[] OutputPoints { get; }
         public string ControlPointsFile { get; set; }
         public string GridFile { get; set; }
         public string FunctionString { get; set; }
@@ -87,29 +86,6 @@ namespace splines_avalonia
 
             // Вычисляем производные
             ComputeDerivatives(points);
-
-            // Генерируем выходные точки
-            var outputPoints = new List<Point>();
-            int segments = 50; // Количество точек на сегмент
-
-            for (int i = 0; i < points.Count - 1; i++)
-            {
-                var p0 = points[i];
-                var p1 = points[i + 1];
-                double h = p1.X - p0.X;
-
-                for (int j = 0; j < segments; j++)
-                {
-                    double t = j / (double)segments;
-                    double x = p0.X + t * h;
-                    double y = HermiteInterpolate(p0, p1, t, h);
-                    outputPoints.Add(new Point(x, y));
-                }
-            }
-
-            // Добавляем последнюю точку
-            outputPoints.Add(new Point(points[^1].X, points[^1].Y));
-            OutputPoints = outputPoints.ToArray();
         }
 
         private class PointData

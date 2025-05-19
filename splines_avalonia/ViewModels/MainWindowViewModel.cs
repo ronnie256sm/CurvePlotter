@@ -11,6 +11,7 @@ using splines_avalonia.Views;
 using splines_avalonia.Helpers;
 using System.ComponentModel;
 using System.Collections.Specialized;
+using System.Linq;
 
 #pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602, CS8625
 
@@ -606,136 +607,65 @@ namespace splines_avalonia.ViewModels
                 return;
 
             GraphicCanvas.Children.Clear();
-            if (Globals.DarkMode)
-                GraphicCanvas.Background = new SolidColorBrush(Colors.Black);
-            else
-                GraphicCanvas.Background = new SolidColorBrush(Colors.White);
+            GraphicCanvas.Background = new SolidColorBrush(Globals.DarkMode ? Colors.Black : Colors.White);
 
             DrawGrid();
 
+            double width = GraphicCanvas.Bounds.Width;
+            double height = GraphicCanvas.Bounds.Height;
+
+            double visibleLeft = -(CenterX() + _offsetX) / _zoom;
+            double visibleRight = (width - CenterX() - _offsetX) / _zoom;
+
             foreach (var curve in CurveList)
             {
-                if (curve.Type == "Spline" && curve.IsVisible && curve.IsPossible)
+                if (!curve.IsVisible || !curve.IsPossible)
+                    continue;
+
+                // Автоматическая коррекция цвета
+                if (curve.Color == Colors.White && !Globals.DarkMode && Globals.AutomaticColor)
+                    curve.Color = Colors.Black;
+                if (curve.Color == Colors.Black && Globals.DarkMode && Globals.AutomaticColor)
+                    curve.Color = Colors.White;
+
+                double funcLeft = 0;
+                double funcRight = 0;
+                if (curve.Type == "Function")
                 {
-                    var points = new Points();
-
-                    if (curve.IsPossible)
-                    {
-                        foreach (var p in curve.OutputPoints)
-                        {
-                            var screenPoint = new Avalonia.Point(
-                                (p.X * _zoom) + CenterX() + _offsetX,
-                                (-p.Y * _zoom) + CenterY() + _offsetY
-                            );
-                            points.Add(screenPoint);
-                        }
-
-                        if (points.Count >= 2)
-                        {
-                            var polyline = new Polyline
-                            {
-                                Points = points,
-                                Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = curve.Thickness
-                            };
-                            GraphicCanvas.Children.Add(polyline);
-                        }
-                    }
-
-                    // контрольные точки
-                    if (curve.ControlPoints != null && curve.ShowControlPoints && curve.IsPossible)
-                    {
-                        foreach (var p in curve.ControlPoints)
-                        {
-                            var screenPoint = new Avalonia.Point(
-                                (p.X * _zoom) + CenterX() + _offsetX,
-                                (-p.Y * _zoom) + CenterY() + _offsetY
-                            );
-
-                            // Увеличенный диаметр точки
-                            double diameter = Math.Max(6, curve.Thickness * 2.5);
-                            double strokeThickness = Math.Max(1, curve.Thickness);
-
-                            var ellipse = new Ellipse
-                            {
-                                Width = diameter,
-                                Height = diameter,
-                                Fill = new SolidColorBrush(curve.Color),
-                                Stroke = new SolidColorBrush(curve.Color),
-                                StrokeThickness = strokeThickness
-                            };
-
-                            Canvas.SetLeft(ellipse, screenPoint.X - diameter / 2);
-                            Canvas.SetTop(ellipse, screenPoint.Y - diameter / 2);
-
-                            GraphicCanvas.Children.Add(ellipse);
-                        }
-                    }
+                    funcLeft = curve.ParsedStart;
+                    funcRight = curve.ParsedEnd;
+                }
+                else
+                {
+                    funcLeft = curve.ControlPoints[0].X;
+                    funcRight = curve.ControlPoints.Last().X;
                 }
 
-                if (curve.Type == "Function" && curve.IsVisible && curve.IsPossible)
+                // Проверка, находится ли кривая в пределах экрана
+                bool shouldRender = (funcRight > visibleLeft) && (funcLeft < visibleRight);
+
+                if (!shouldRender)
+                    continue;
+
+                double renderStart = Math.Max(funcLeft, visibleLeft);
+                double renderEnd = Math.Min(funcRight, visibleRight);
+                double renderWidth = renderEnd - renderStart;
+
+                if (Globals.PointCount <= 0)
+                    return;
+
+                double step = renderWidth / Globals.PointCount;
+
+                var points = new Points();
+
+                for (int i = 0; i <= Globals.PointCount; i++)
                 {
-                    double width = GraphicCanvas.Bounds.Width;
-                    double height = GraphicCanvas.Bounds.Height;
+                    double x = renderStart + i * step;
+                    double y = curve.CalculateFunctionValue(x);
 
-                    // определяем текущие границы видимости на экране
-                    double visibleLeft = -(CenterX() + _offsetX) / _zoom;
-                    double visibleRight = (width - CenterX() - _offsetX) / _zoom;
-
-                    double funcLeft = curve.ParsedStart;
-                    double funcRight = curve.ParsedEnd;
-
-                    // проверяем видимость функции
-                    bool shouldRender =
-                        (funcRight > visibleLeft) &&  // правая граница функции правее левой границы экрана
-                        (funcLeft < visibleRight);    // левая граница функции левее правой границы экрана
-
-                    if (!shouldRender) continue;
-
-                    // определяем реальные границы отрисовки
-                    double renderStart = Math.Max(funcLeft, visibleLeft);
-                    double renderEnd = Math.Min(funcRight, visibleRight);
-                    double renderWidth = renderEnd - renderStart;
-
-                    if (Globals.PointCount <= 0) return;
-                    double step = renderWidth / Globals.PointCount;
-
-                    // отрисовка функции
-                    var points = new Points();
-                    for (int i = 0; i <= Globals.PointCount; i++)
+                    if (double.IsNaN(y) || double.IsInfinity(y))
                     {
-                        double x = renderStart + i * step;
-                        double y = curve.CalculateFunctionValue(x);
-                        if (curve.Color == Colors.White && !Globals.DarkMode && Globals.AutomaticColor)
-                            curve.Color = Colors.Black;
-                        if (curve.Color == Colors.Black && Globals.DarkMode && Globals.AutomaticColor)
-                            curve.Color = Colors.White;
-
-                        if (double.IsNaN(y) || double.IsInfinity(y))
-                            {
-                                if (points.Count >= 2)
-                                {
-                                    GraphicCanvas.Children.Add(new Polyline
-                                    {
-                                        Points = new Points(points),
-                                        Stroke = new SolidColorBrush(curve.Color),
-                                        StrokeThickness = curve.Thickness
-                                    });
-                                }
-                                points.Clear();
-                                continue;
-                            }
-
-                        var screenPoint = new Avalonia.Point(
-                            (x * _zoom) + CenterX() + _offsetX,
-                            (-y * _zoom) + CenterY() + _offsetY
-                        );
-
-                        if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
-                        {
-                            points.Add(screenPoint);
-                        }
-                        else if (points.Count >= 2)
+                        if (points.Count >= 2)
                         {
                             GraphicCanvas.Children.Add(new Polyline
                             {
@@ -743,18 +673,70 @@ namespace splines_avalonia.ViewModels
                                 Stroke = new SolidColorBrush(curve.Color),
                                 StrokeThickness = curve.Thickness
                             });
-                            points.Clear();
                         }
+                        points.Clear();
+                        continue;
                     }
 
-                    if (points.Count >= 2)
+                    var screenPoint = new Avalonia.Point(
+                        (x * _zoom) + CenterX() + _offsetX,
+                        (-y * _zoom) + CenterY() + _offsetY
+                    );
+
+                    // Проверка на выход за экран по Y
+                    if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
+                    {
+                        points.Add(screenPoint);
+                    }
+                    else if (points.Count >= 2)
                     {
                         GraphicCanvas.Children.Add(new Polyline
                         {
-                            Points = points,
+                            Points = new Points(points),
                             Stroke = new SolidColorBrush(curve.Color),
                             StrokeThickness = curve.Thickness
                         });
+                        points.Clear();
+                    }
+                }
+
+                // Финальный сегмент
+                if (points.Count >= 2)
+                {
+                    GraphicCanvas.Children.Add(new Polyline
+                    {
+                        Points = points,
+                        Stroke = new SolidColorBrush(curve.Color),
+                        StrokeThickness = curve.Thickness
+                    });
+                }
+
+                // Контрольные точки только для сплайнов
+                if (curve.Type == "Spline" && curve.ShowControlPoints && curve.ControlPoints != null)
+                {
+                    foreach (var p in curve.ControlPoints)
+                    {
+                        var screenPoint = new Avalonia.Point(
+                            (p.X * _zoom) + CenterX() + _offsetX,
+                            (-p.Y * _zoom) + CenterY() + _offsetY
+                        );
+
+                        double diameter = Math.Max(6, curve.Thickness * 2.5);
+                        double strokeThickness = Math.Max(1, curve.Thickness);
+
+                        var ellipse = new Ellipse
+                        {
+                            Width = diameter,
+                            Height = diameter,
+                            Fill = new SolidColorBrush(curve.Color),
+                            Stroke = new SolidColorBrush(curve.Color),
+                            StrokeThickness = strokeThickness
+                        };
+
+                        Canvas.SetLeft(ellipse, screenPoint.X - diameter / 2);
+                        Canvas.SetTop(ellipse, screenPoint.Y - diameter / 2);
+
+                        GraphicCanvas.Children.Add(ellipse);
                     }
                 }
             }

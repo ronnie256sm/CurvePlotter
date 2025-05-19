@@ -3,6 +3,7 @@ using Avalonia.Media;
 using splines_avalonia.ViewModels;
 
 namespace splines_avalonia;
+
 #pragma warning disable CS8618, CS8625
 
 public class LinearSpline : ICurve
@@ -15,7 +16,6 @@ public class LinearSpline : ICurve
     public Point[] ControlPoints { get; }
     public string ControlPointsFile { get; set; }
     public string GridFile { get; set; }
-    public Point[] OutputPoints { get; }
     public string SmoothingCoefficientAlpha { get; set; }
     public string SmoothingCoefficientBeta { get; set; }
     public string Start { get; set; }
@@ -24,8 +24,8 @@ public class LinearSpline : ICurve
     public double ParsedEnd { get; set; }
     public bool ShowControlPoints { get; set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    public bool IsPossible { get; set; }
+
     private bool _isVisible = true;
     public bool IsVisible
     {
@@ -39,7 +39,7 @@ public class LinearSpline : ICurve
             }
         }
     }
-    public bool IsPossible { get; set; }
+
     private Color _color;
     public Color Color
     {
@@ -50,6 +50,7 @@ public class LinearSpline : ICurve
             OnPropertyChanged(nameof(Color));
         }
     }
+
     private double _thickness = 2;
     public double Thickness
     {
@@ -63,27 +64,25 @@ public class LinearSpline : ICurve
             }
         }
     }
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected virtual void OnPropertyChanged(string propertyName) =>
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
     public LinearSpline(Point[] controlPoints)
     {
-        if (Globals.DarkMode)
-            Color = Colors.White;
-        else
-            Color = Colors.Black;
-        Thickness = 2;
         ControlPoints = controlPoints;
-        OutputPoints = ControlPoints;
         Name = "Ломаная";
         IsVisible = true;
         IsPossible = true;
+        Color = Globals.DarkMode ? Colors.White : Colors.Black;
+        Thickness = 2;
     }
-    
+
     public double CalculateFunctionValue(double x)
     {
         if (ControlPoints == null || ControlPoints.Length < 2)
             return double.NaN;
 
-        // предполагается, что точки отсортированы по X
         for (int i = 0; i < ControlPoints.Length - 1; i++)
         {
             double x0 = ControlPoints[i].X;
@@ -95,11 +94,10 @@ public class LinearSpline : ICurve
                 double y1 = ControlPoints[i + 1].Y;
 
                 double t = (x - x0) / (x1 - x0);
-                return y0 + t * (y1 - y0); // линейная интерполяция
+                return y0 + t * (y1 - y0);
             }
         }
 
-        // x вне диапазона
         return double.NaN;
     }
 

@@ -12,7 +12,6 @@ namespace splines_avalonia
         public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
-        public Point[] OutputPoints { get; }
         public string Name { get; set; }
         private Color _color;
         public Color Color
@@ -101,9 +100,6 @@ namespace splines_avalonia
 
             // Решение СЛАУ
             IsPossible = SolveSLAE(slae);
-
-            // Вычисление точек сплайна
-            OutputPoints = CalculateSplinePoints(mesh, slae);
         }
 
         private static void BuildSLAE(SLAE slae, Point[] points, double[] mesh, int n_points, int n_mesh, Function AlphaFunction, Function BetaFunction)
@@ -147,30 +143,6 @@ namespace splines_avalonia
                 IsPossible = false;
             }
             return IsPossible;
-        }
-
-        private static Point[] CalculateSplinePoints(double[] mesh, SLAE slae)
-        {
-            var output = new List<Point>();
-            for (int i = 0; i < mesh.Length - 1; ++i)
-            {
-                double x = mesh[i];
-                double step = (mesh[i + 1] - mesh[i]) / 100.0;
-
-                for (int j = 0; j < 100; ++j)
-                {
-                    double y = Interpolate(slae, mesh, x);
-                    output.Add(new Point(x, y));
-                    x += step;
-                }
-            }
-
-            // явно добавляем самую последнюю точку
-            double lastX = mesh[mesh.Length - 1];
-            double lastY = Interpolate(slae, mesh, lastX - 1e-10); // чуть меньше, чтобы не выйти за диапазон
-            output.Add(new Point(lastX, lastY));
-
-            return output.ToArray();
         }
 
         private static double Psi(int l, double t, double h)
@@ -259,22 +231,6 @@ namespace splines_avalonia
                 case 3: return (-1 + 6 * t) / h;
                 default: return 0;
             }
-        }
-
-        private static double Interpolate(SLAE slae, double[] mesh, double x)
-        {
-            int elem = 0;
-            while (elem < mesh.Length - 2 && x >= mesh[elem + 1])
-                elem++;
-
-            double h = mesh[elem + 1] - mesh[elem];
-            double t = (x - mesh[elem]) / h;
-
-            double result = 0.0;
-            for (int i = 0; i < 4; ++i)
-                result += slae.X[2 * elem + i] * Psi(i, t, h);
-
-            return result;
         }
 
         public double CalculateFunctionValue(double x)

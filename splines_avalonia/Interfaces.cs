@@ -25,7 +25,6 @@ namespace splines_avalonia
         Point[] ControlPoints { get; }
         string ControlPointsFile { get; set; }
         string GridFile { get; set; }
-        Point[] OutputPoints { get; }
         bool IsVisible { get; set; }
         string SmoothingCoefficientAlpha { get; set; }
         string SmoothingCoefficientBeta { get; set; }
