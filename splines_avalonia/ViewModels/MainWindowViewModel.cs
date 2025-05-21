@@ -157,19 +157,22 @@ namespace splines_avalonia.ViewModels
             {
                 var logic = new SplineLogic();
                 var curve = await logic.CreateFunction(result.FunctionString);
-                curve.Start = result.Start;
-                curve.End = result.End;
-                if (curve != null && curve.IsPossible)
-                    CurveList.Add(curve);
-                curve.GetLimits();
-                if (curve.ParsedStart > curve.ParsedEnd)
+                if (curve != null)
                 {
-                    await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
-                    curve.Start = null;
-                    curve.End = null;
+                    curve.Start = result.Start;
+                    curve.End = result.End;
+                    if (curve.IsPossible)
+                        CurveList.Add(curve);
                     curve.GetLimits();
+                    if (curve.ParsedStart > curve.ParsedEnd)
+                    {
+                        await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
+                        curve.Start = null;
+                        curve.End = null;
+                        curve.GetLimits();
+                    }
+                    DrawCurves();
                 }
-                DrawCurves();
             }
         }
 
@@ -232,17 +235,20 @@ namespace splines_avalonia.ViewModels
             if (type == "Interpolating Cubic 2" && points != null)
             {
                 curve = logic.CreateInterpolatingSpline(points, 2);
-                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+                if (curve != null)
+                    curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
             if (type == "Interpolating Cubic 1" && points != null)
             {
                 curve = logic.CreateInterpolatingSpline(points, 1);
-                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+                if (curve != null)
+                    curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
             else if (type == "Linear" && points != null)
             {
                 curve = logic.CreateLinearSpline(points);
-                curve.ShowControlPoints = inputDialog.ShowControlPoints;
+                if (curve != null)
+                    curve.ShowControlPoints = inputDialog.ShowControlPoints;
             }
 
             if (curve != null && curve.IsPossible)
@@ -395,22 +401,26 @@ namespace splines_avalonia.ViewModels
             if (type == "Linear" && newPoints != null)
             {
                 newCurve = logic.CreateLinearSpline(newPoints);
-                newCurve.ShowControlPoints = newShowControlPoints;
+                if (newCurve != null)
+                    newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Interpolating Cubic 2" && newPoints != null)
             {
                 newCurve = logic.CreateInterpolatingSpline(newPoints, 2);
-                newCurve.ShowControlPoints = newShowControlPoints;
+                if (newCurve != null)
+                    newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Interpolating Cubic 1" && newPoints != null)
             {
                 newCurve = logic.CreateInterpolatingSpline(newPoints, 1);
-                newCurve.ShowControlPoints = newShowControlPoints;
+                if (newCurve != null)
+                    newCurve.ShowControlPoints = newShowControlPoints;
             }
             else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null && newSmoothingFactorAlpha != null && newSmoothingFactorBeta != null)
             {
                 newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
-                newCurve.ShowControlPoints = newShowControlPoints;
+                if (newCurve != null)
+                    newCurve.ShowControlPoints = newShowControlPoints;
             }
 
             if (newCurve == null)
@@ -472,6 +482,9 @@ namespace splines_avalonia.ViewModels
 
         private void DrawGrid()
         {
+            if (GraphicCanvas == null)
+                return;
+
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
