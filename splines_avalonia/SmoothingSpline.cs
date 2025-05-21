@@ -8,11 +8,10 @@ namespace splines_avalonia
 {
     public class SmoothingSpline : ICurve
     {
-        #pragma warning disable CS8618, CS8604, CS4014
         public string Type => "Spline";
         public double[] Grid { get; }
         public Point[] ControlPoints { get; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
         private Color _color;
         public Color Color
         {
@@ -39,15 +38,15 @@ namespace splines_avalonia
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        public string SmoothingCoefficientAlpha { get; set; }
-        public string SmoothingCoefficientBeta { get; set; }
+        public string? SmoothingCoefficientAlpha { get; set; }
+        public string? SmoothingCoefficientBeta { get; set; }
         private Function AlphaFunction { get; set; }
         private Function BetaFunction { get; set; }
-        public string ControlPointsFile { get; set; }
-        public string GridFile { get; set; }
+        public string? ControlPointsFile { get; set; }
+        public string? GridFile { get; set; }
         public bool IsPossible { get; set; }
-        public string Start { get; set; }
-        public string End { get; set; }
+        public string? Start { get; set; }
+        public string? End { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
         public bool ShowControlPoints { get; set; }
@@ -68,7 +67,7 @@ namespace splines_avalonia
 
         public string SplineType => "Smoothing Cubic";
 
-        public string FunctionString { get; set; }
+        public string? FunctionString { get; set; }
 
         public SmoothingSpline(Point[] controlPoints, double[] grid, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {

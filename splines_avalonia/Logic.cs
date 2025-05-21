@@ -1,13 +1,11 @@
 using System.Threading.Tasks;
 using splines_avalonia.Helpers;
 
-#pragma warning disable CS8603
-
 namespace splines_avalonia
 {
     public class SplineLogic : ILogic
     {
-        public async Task<ICurve> CreateFunction(string functionString)
+        public async Task<ICurve?> CreateFunction(string functionString)
         {
             if (await FunctionChecker.TryValidateFunctionInput(functionString))
                 return new Function(functionString);
@@ -15,7 +13,7 @@ namespace splines_avalonia
                 return null;
         }
 
-        public ICurve CreateInterpolatingSpline(Point[] controlPoints, int type)
+        public ICurve? CreateInterpolatingSpline(Point[] controlPoints, int type)
         {
             if (controlPoints != null && controlPoints.Length >= 3)
             {
@@ -30,7 +28,7 @@ namespace splines_avalonia
                 return null;
         }
 
-        public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
+        public ICurve? CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta)
         {
             if (controlPoints != null && grid != null && controlPoints.Length >= 4)
                 return new SmoothingSpline(controlPoints, grid, smoothingCoefficientAlpha, smoothingCoefficientBeta);
@@ -38,7 +36,7 @@ namespace splines_avalonia
                 return null;
         }
 
-        public ICurve CreateLinearSpline(Point[] controlPoints)
+        public ICurve? CreateLinearSpline(Point[] controlPoints)
         {
             if (controlPoints != null)
                 return new LinearSpline(controlPoints);

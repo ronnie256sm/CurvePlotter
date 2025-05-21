@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 
 namespace splines_avalonia.Helpers;
-#pragma warning disable CS8603
 
 public static class ErrorHelper
 {
@@ -78,7 +77,7 @@ public static class FunctionChecker
             return false;
         }
 
-        string validationError = ValidateFunctionArguments(input);
+        string? validationError = ValidateFunctionArguments(input);
         if (validationError != null)
         {
             await ErrorHelper.ShowError("Ошибка", validationError);
@@ -114,7 +113,7 @@ public static class FunctionChecker
         return true;
     }
 
-    private static string ValidateFunctionArguments(string expression)
+    private static string? ValidateFunctionArguments(string expression)
     {
         int i = 0;
         while (i < expression.Length)
@@ -146,7 +145,7 @@ public static class FunctionChecker
                         string args = expression.Substring(start, i - start);
                         int argCount = CountArgumentsInFunctionCall(args);
 
-                        string validationError = ValidateFunction(funcName, argCount);
+                        string? validationError = ValidateFunction(funcName, argCount);
                         if (validationError != null)
                             return validationError;
                     }
@@ -183,7 +182,7 @@ public static class FunctionChecker
         return argCount;
     }
 
-    private static string ValidateFunction(string func, int args)
+    private static string? ValidateFunction(string func, int args)
     {
         string lowerFunc = func.ToLower();
         string[] singleArg = {
@@ -205,7 +204,7 @@ public static class FunctionChecker
 
 public static class NumberParser
 {
-    public static async Task<double?> ParseNumber(string input)
+    public static async Task<double?> ParseNumber(string? input)
     {
         if (string.IsNullOrWhiteSpace(input))
         {

@@ -16,8 +16,6 @@ using splines_avalonia.Helpers;
 
 namespace splines_avalonia.ViewModels;
 
-#pragma warning disable CS8602, CS8600, CS8604, CS8625
-
 public static class IO
 {
     public static async Task SaveJSON(ObservableCollection<ICurve> curves)
@@ -110,6 +108,11 @@ public static class IO
             var filePath = res[0].Path.LocalPath;
             var jsonString = File.ReadAllText(filePath);
             var curvesData = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
+            if (curvesData == null)
+            {
+                await ErrorHelper.ShowError("Ошибка", "Не удалось прочитать файл");
+                return;
+            }
 
             var logic = new SplineLogic();
 
@@ -118,7 +121,7 @@ public static class IO
                 if (!curveData.TryGetValue("Name", out var nameObj) || nameObj is not string name)
                     continue;
 
-                ICurve curve = null;
+                ICurve? curve = null;
 
                 if (curveData.TryGetValue("Type", out var typeObj) && typeObj is string type)
                 {
@@ -129,24 +132,24 @@ public static class IO
                         {
                             curve.Name = name;
                             Console.WriteLine($"Загружена функция: {name}");
+                            if (curveData.TryGetValue("Start", out var StartObj) && StartObj is string Start)
+                            {
+                                if (Start == "")
+                                    curve.Start = null;
+                                else
+                                    curve.Start = Start;
+                            }
+                                
+                            if (curveData.TryGetValue("End", out var EndObj) && EndObj is string End)
+                            {
+                                if (End == "")
+                                    curve.End = null;
+                                else
+                                    curve.End = End;
+                            }
+                                
+                            curve.GetLimits();
                         }
-                        if (curveData.TryGetValue("Start", out var StartObj) && StartObj is string Start)
-                        {
-                            if (Start == "")
-                                curve.Start = null;
-                            else
-                                curve.Start = Start;
-                        }
-                            
-                        if (curveData.TryGetValue("End", out var EndObj) && EndObj is string End)
-                        {
-                            if (End == "")
-                                curve.End = null;
-                            else
-                                curve.End = End;
-                        }
-                            
-                        curve.GetLimits();
                     }
                     else if (type == "Spline")
                     {
@@ -155,33 +158,39 @@ public static class IO
                             if ((splineType == "Interpolating Cubic 2" || splineType == "Interpolating Cubic 1") && curveData.TryGetValue("ControlPoints", out var controlPointsObj))
                             {
                                 var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
-                                var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points.Length < 3 && points.Length > 0)
+                                if (controlPoints != null)
                                 {
-                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
-                                    curve = null;
-                                }
-                                if (points.Length == 0)
-                                {
-                                    await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
-                                    curve = null;
-                                }
-                                if (points.Length >= 3)
-                                {
-                                    if (splineType == "Interpolating Cubic 2")
-                                        curve = logic.CreateInterpolatingSpline(points, 2);
-                                    else if (splineType == "Interpolating Cubic 1")
-                                        curve = logic.CreateInterpolatingSpline(points, 1);
-                                    curve.Name = name;
-                                    Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
+                                    var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
+                                    if (points.Length < 3 && points.Length > 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                        curve = null;
+                                    }
+                                    if (points.Length == 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                        curve = null;
+                                    }
+                                    if (points.Length >= 3)
+                                    {
+                                        if (splineType == "Interpolating Cubic 2")
+                                            curve = logic.CreateInterpolatingSpline(points, 2);
+                                        else if (splineType == "Interpolating Cubic 1")
+                                            curve = logic.CreateInterpolatingSpline(points, 1);
+                                        if (curve != null)
+                                        {
+                                            curve.Name = name;
+                                            Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
+                                        }
+                                    }
                                 }
                             }
                             else if (splineType == "Smoothing Cubic" && curveData.TryGetValue("Grid", out var gridObj) && curveData.TryGetValue("ControlPoints", out var controlPointsObj2))
                             {
                                 var grid = ((JArray)gridObj).ToObject<double[]>();
                                 var controlPoints = ((JArray)controlPointsObj2).ToObject<List<Dictionary<string, double>>>();
-                                var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (curveData.TryGetValue("SmoothingCoefficientAlpha", out var alphaObj) && curveData.TryGetValue("SmoothingCoefficientBeta", out var betaObj))
+                                var points = controlPoints?.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
+                                if (grid != null && points != null && curveData.TryGetValue("SmoothingCoefficientAlpha", out var alphaObj) && curveData.TryGetValue("SmoothingCoefficientBeta", out var betaObj))
                                 {
                                     var alpha = alphaObj?.ToString();
                                     var beta = betaObj?.ToString();
@@ -211,41 +220,50 @@ public static class IO
                                         await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
                                         incorrect = true;
                                     }
-                                    if (!incorrect)
+                                    if (!incorrect && alpha != null && beta != null)
                                     {
                                         curve = logic.CreateSmoothingSpline(grid, points, alpha, beta);
-                                        if (!curve.IsPossible)
+                                        if (curve != null)
                                         {
-                                            await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+                                            if (!curve.IsPossible)
+                                            {
+                                                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+                                            }
+                                            curve.Name = name;
+                                            Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
                                         }
-                                        curve.Name = name;
-                                        Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
                                     }
                                 }
                             }
                             if (splineType == "Linear" && curveData.TryGetValue("ControlPoints", out var controlPointsObj3))
                             {
                                 var controlPoints = ((JArray)controlPointsObj3).ToObject<List<Dictionary<string, double>>>();
-                                var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points.Length < 3 && points.Length > 0)
+                                var points = controlPoints?.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
+                                if (points != null)
                                 {
-                                    await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
-                                    curve = null;
-                                }
-                                if (points.Length == 0)
-                                {
-                                    await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
-                                    curve = null;
-                                }
-                                if (points.Length >= 3)
-                                {
-                                    curve = logic.CreateLinearSpline(points);
-                                    curve.Name = name;
-                                    Console.WriteLine($"Загружена ломаная: {name}");
+                                    if (points.Length < 3 && points.Length > 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
+                                        curve = null;
+                                    }
+                                    if (points.Length == 0)
+                                    {
+                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
+                                        curve = null;
+                                    }
+                                    if (points.Length >= 3)
+                                    {
+                                        curve = logic.CreateLinearSpline(points);
+                                        if (curve != null)
+                                        {
+                                            curve.Name = name;
+                                            Console.WriteLine($"Загружена ломаная: {name}");
+                                        }
+                                    }
                                 }
                             }
                         }
-                        if (curveData.TryGetValue("ShowControlPoints", out var ShowControlPointsObj) && ShowControlPointsObj is bool ShowControlPoints)
+                        if (curve != null && curveData.TryGetValue("ShowControlPoints", out var ShowControlPointsObj) && ShowControlPointsObj is bool ShowControlPoints)
                             curve.ShowControlPoints = ShowControlPoints;
                     }
                 }

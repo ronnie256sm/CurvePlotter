@@ -3,8 +3,6 @@ using System.ComponentModel;
 using Avalonia.Media;
 using splines_avalonia.ViewModels;
 
-#pragma warning disable CS8618
-
 namespace splines_avalonia
 {
     public class InterpolatingSpline2 : ICurve
@@ -13,15 +11,15 @@ namespace splines_avalonia
         public string Type => "Spline";
         public string SplineType => "Interpolating Cubic 2";
         public Point[] ControlPoints { get; }
-        public string ControlPointsFile { get; set; }
-        public string GridFile { get; set; }
-        public string FunctionString { get; set; }
-        public string Name { get; set; }
-        public string SmoothingCoefficientAlpha { get; set; }
-        public string SmoothingCoefficientBeta { get; set; }
+        public string? ControlPointsFile { get; set; }
+        public string? GridFile { get; set; }
+        public string? FunctionString { get; set; }
+        public string? Name { get; set; }
+        public string? SmoothingCoefficientAlpha { get; set; }
+        public string? SmoothingCoefficientBeta { get; set; }
         public bool IsPossible { get; set; } = true;
-        public string Start { get; set; }
-        public string End { get; set; }
+        public string? Start { get; set; }
+        public string? End { get; set; }
         public bool ShowControlPoints { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
@@ -61,7 +59,7 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(Color));
             }
         }
-        public double[] Grid { get; set; }
+        public double[]? Grid { get; set; }
         private SplineSegment[] _segments;
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) =>

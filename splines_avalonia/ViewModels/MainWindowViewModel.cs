@@ -13,8 +13,6 @@ using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Linq;
 
-#pragma warning disable CS8618, CS8604, CS8600, CS8601, CS8602, CS8625
-
 namespace splines_avalonia.ViewModels
 {
     public static class Globals
@@ -30,8 +28,8 @@ namespace splines_avalonia.ViewModels
 
     public class MainWindowViewModel : ViewModelBase
     {
-        public Canvas _graphicCanvas;
-        private TextBlock _statusBar;
+        public Canvas? _graphicCanvas;
+        private TextBlock? _statusBar;
         private double _offsetX;
         private double _offsetY;
         private double _zoom = 50;
@@ -46,7 +44,7 @@ namespace splines_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedCurve, value);
         }
 
-        public Canvas GraphicCanvas
+        public Canvas? GraphicCanvas
         {
             get => _graphicCanvas;
             set => this.RaiseAndSetIfChanged(ref _graphicCanvas, value);
@@ -140,7 +138,7 @@ namespace splines_avalonia.ViewModels
         public async void OpenSettings()
         {
             var settingsWindow = new SettingsWindow();
-            await settingsWindow.ShowDialog(App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
+            await settingsWindow.ShowDialog(Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
 
             if (settingsWindow.IsOkClicked)
             {
@@ -229,7 +227,7 @@ namespace splines_avalonia.ViewModels
 
             var points = await FileService.ReadPoints(pointsFile);
 
-            ICurve curve = null;
+            ICurve? curve = null;
             var logic = new SplineLogic();
             if (type == "Interpolating Cubic 2" && points != null)
             {
@@ -286,20 +284,22 @@ namespace splines_avalonia.ViewModels
 
             var points = await FileService.ReadPoints(pointsFile);
             var mesh = await FileService.ReadGrid(meshFile);
-
-            var logic = new SplineLogic();
-            var curve = logic.CreateSmoothingSpline(mesh, points, smoothingAlpha, smoothingBeta);
-
-            if (curve != null && curve.IsPossible && points != null && mesh != null)
+            if (mesh != null && points != null)
             {
-                curve.ControlPointsFile = pointsFile;
-                curve.GridFile = meshFile;
-                curve.ShowControlPoints = showControlPoints;
-                CurveList.Add(curve);
-            }
-            else
-            {
-                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+                var logic = new SplineLogic();
+                var curve = logic.CreateSmoothingSpline(mesh, points, smoothingAlpha, smoothingBeta);
+
+                if (curve != null && curve.IsPossible && points != null && mesh != null)
+                {
+                    curve.ControlPointsFile = pointsFile;
+                    curve.GridFile = meshFile;
+                    curve.ShowControlPoints = showControlPoints;
+                    CurveList.Add(curve);
+                }
+                else
+                {
+                    await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
+                }
             }
 
             DrawCurves();
@@ -312,10 +312,10 @@ namespace splines_avalonia.ViewModels
 
             var type = SelectedCurve.SplineType;
 
-            string newPointsFile = null;
-            string newMeshFile = null;
-            string newSmoothingFactorAlpha = null;
-            string newSmoothingFactorBeta = null;
+            string? newPointsFile = null;
+            string? newMeshFile = null;
+            string? newSmoothingFactorAlpha = null;
+            string? newSmoothingFactorBeta = null;
             bool newShowControlPoints = true;
 
             var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
@@ -375,8 +375,8 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            var newPoints = await FileService.ReadPoints(newPointsFile);
-            double[] newMesh = null;
+            Point[]? newPoints = await FileService.ReadPoints(newPointsFile);
+            double[]? newMesh = null;
 
             if (type == "Smoothing Cubic")
             {
@@ -390,24 +390,24 @@ namespace splines_avalonia.ViewModels
             }
 
             var logic = new SplineLogic();
-            ICurve newCurve = null;
+            ICurve? newCurve = null;
 
-            if (type == "Linear")
+            if (type == "Linear" && newPoints != null)
             {
                 newCurve = logic.CreateLinearSpline(newPoints);
                 newCurve.ShowControlPoints = newShowControlPoints;
             }
-            else if (type == "Interpolating Cubic 2")
+            else if (type == "Interpolating Cubic 2" && newPoints != null)
             {
                 newCurve = logic.CreateInterpolatingSpline(newPoints, 2);
                 newCurve.ShowControlPoints = newShowControlPoints;
             }
-            else if (type == "Interpolating Cubic 1")
+            else if (type == "Interpolating Cubic 1" && newPoints != null)
             {
                 newCurve = logic.CreateInterpolatingSpline(newPoints, 1);
                 newCurve.ShowControlPoints = newShowControlPoints;
             }
-            else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null)
+            else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null && newSmoothingFactorAlpha != null && newSmoothingFactorBeta != null)
             {
                 newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
                 newCurve.ShowControlPoints = newShowControlPoints;
@@ -635,7 +635,7 @@ namespace splines_avalonia.ViewModels
                     funcLeft = curve.ParsedStart;
                     funcRight = curve.ParsedEnd;
                 }
-                else
+                else if (curve.ControlPoints != null)
                 {
                     funcLeft = curve.ControlPoints[0].X;
                     funcRight = curve.ControlPoints.Last().X;
@@ -851,7 +851,7 @@ namespace splines_avalonia.ViewModels
         {
             if (_statusBar == null)
             {
-                if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
                     desktop.MainWindow is MainWindow mainWindow)
                 {
                     _statusBar = mainWindow.FindControl<TextBlock>("StatusBar");

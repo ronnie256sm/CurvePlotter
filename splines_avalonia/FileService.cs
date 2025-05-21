@@ -5,13 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using splines_avalonia.Helpers;
 
-#pragma warning disable CS8604, CS8603
-
 namespace splines_avalonia
 {
     public static class FileService
     {
-        public static async Task<Point[]> ReadPoints(string pointsFile)
+        public static async Task<Point[]?> ReadPoints(string pointsFile)
         {
             var rawLines = File.ReadAllLines(pointsFile);
             var lines = rawLines
@@ -62,7 +60,7 @@ namespace splines_avalonia
             return controlPoints;
         }
 
-        public static async Task<double[]> ReadGrid(string gridFile)
+        public static async Task<double[]?> ReadGrid(string gridFile)
         {
             var rawLines = File.ReadAllLines(gridFile);
             var lines = rawLines

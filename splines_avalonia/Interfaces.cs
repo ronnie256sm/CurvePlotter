@@ -17,22 +17,22 @@ namespace splines_avalonia
 
     public interface ICurve : INotifyPropertyChanged
     {
-        string Name { get; set; }
+        string? Name { get; set; }
         string Type { get; }
-        string FunctionString { get; set; }
-        string SplineType { get; }
-        double[] Grid { get; }
-        Point[] ControlPoints { get; }
-        string ControlPointsFile { get; set; }
-        string GridFile { get; set; }
+        string? FunctionString { get; set; }
+        string? SplineType { get; }
+        double[]? Grid { get; }
+        Point[]? ControlPoints { get; }
+        string? ControlPointsFile { get; set; }
+        string? GridFile { get; set; }
         bool IsVisible { get; set; }
-        string SmoothingCoefficientAlpha { get; set; }
-        string SmoothingCoefficientBeta { get; set; }
+        string? SmoothingCoefficientAlpha { get; set; }
+        string? SmoothingCoefficientBeta { get; set; }
         double CalculateFunctionValue(double x);
         bool IsPossible { get; set; }
         Color Color { get; set; }
-        string Start { get; set; }
-        string End { get; set; }
+        string? Start { get; set; }
+        string? End { get; set; }
         double ParsedStart { get; set; }
         double ParsedEnd { get; set; }
         bool ShowControlPoints { get; set; }
@@ -42,9 +42,9 @@ namespace splines_avalonia
 
     public interface ILogic
     {
-        public Task<ICurve> CreateFunction(string functionString);
-        public ICurve CreateInterpolatingSpline(Point[] controlPoints, int type);
-        public ICurve CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
-        public ICurve CreateLinearSpline(Point[] controlPoints);
+        public Task<ICurve?> CreateFunction(string functionString);
+        public ICurve? CreateInterpolatingSpline(Point[] controlPoints, int type);
+        public ICurve? CreateSmoothingSpline(double[] grid, Point[] controlPoints, string smoothingCoefficientAlpha, string smoothingCoefficientBeta);
+        public ICurve? CreateLinearSpline(Point[] controlPoints);
     }
 }

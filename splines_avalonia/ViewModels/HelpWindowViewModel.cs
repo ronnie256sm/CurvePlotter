@@ -4,8 +4,6 @@ using System;
 using System.IO;
 using System.Reactive;
 
-#pragma warning disable CS8618, CS8625
-
 namespace splines_avalonia
 {
     public class HelpWindowViewModel : ReactiveObject
@@ -17,15 +15,15 @@ namespace splines_avalonia
             set => this.RaiseAndSetIfChanged(ref _description, value);
         }
 
-        private string _gifSource;
-        public string GifSource
+        private string? _gifSource;
+        public string? GifSource
         {
             get => _gifSource;
             set => this.RaiseAndSetIfChanged(ref _gifSource, value);
         }
 
-        private string _content;
-        public string Content
+        private string? _content;
+        public string? Content
         {
             get => _content;
             set => this.RaiseAndSetIfChanged(ref _content, value);

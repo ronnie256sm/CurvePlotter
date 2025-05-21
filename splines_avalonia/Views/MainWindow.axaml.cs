@@ -8,7 +8,6 @@ namespace splines_avalonia.Views;
 
 public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 {
-    #pragma warning disable CS8602, CS8622, CS8625
     public MainWindow()
     {
         InitializeComponent();
@@ -57,42 +56,42 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
 
     private void OnMouseWheel(object? sender, PointerWheelEventArgs e)
     {
-        ViewModel.HandleZoom(e.Delta.Y);
+        ViewModel?.HandleZoom(e.Delta.Y);
     }
 
     private void OnZoomIn(object sender, RoutedEventArgs e)
     {
-        ViewModel.ZoomIn();
+        ViewModel?.ZoomIn();
     }
 
     private void OnZoomOut(object sender, RoutedEventArgs e)
     {
-        ViewModel.ZoomOut();
+        ViewModel?.ZoomOut();
     }
 
     private void OnResetPosition(object sender, RoutedEventArgs e)
     {
-        ViewModel.ResetPosition();
+        ViewModel?.ResetPosition();
     }
 
     private void OnMoveLeft(object sender, RoutedEventArgs e)
     {
-        ViewModel.MoveLeft();
+        ViewModel?.MoveLeft();
     }
 
     private void OnMoveRight(object sender, RoutedEventArgs e)
     {
-        ViewModel.MoveRight();
+        ViewModel?.MoveRight();
     }
 
     private void OnMoveUp(object sender, RoutedEventArgs e)
     {
-        ViewModel.MoveUp();
+        ViewModel?.MoveUp();
     }
 
     private void OnMoveDown(object sender, RoutedEventArgs e)
     {
-        ViewModel.MoveDown();
+        ViewModel?.MoveDown();
     }
 
     private void OpenHelpWindow(object sender, RoutedEventArgs e)
@@ -100,5 +99,4 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         var helpWindow = new HelpWindow();
         helpWindow.Show();
     }
-    #pragma warning restore CS8602
 }

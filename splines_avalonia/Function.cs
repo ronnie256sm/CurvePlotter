@@ -11,9 +11,8 @@ namespace splines_avalonia
 {
     public class Function : ICurve
     {
-        #pragma warning disable CS8603, CS8618, CS8602
-        private string _functionString;
-        public string FunctionString
+        private string? _functionString;
+        public string? FunctionString
         {
             get => _functionString;
             set
@@ -25,8 +24,8 @@ namespace splines_avalonia
                 PrepareExpression(value);
             }
         }
-        private string _start;
-        public string Start
+        private string? _start;
+        public string? Start
         {
             get => _start;
             set
@@ -35,8 +34,8 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(Start));
             }
         }
-        private string _end;
-        public string End
+        private string? _end;
+        public string? End
         {
             get => _end;
             set
@@ -45,7 +44,6 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(End));
             }
         }
-        public Point[] OutputPoints { get; }
         public bool IsPossible { get; set; }
         private Color _color;
         public Color Color
@@ -57,8 +55,8 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(Color));
             }
         }
-        private string _name;
-        public string Name
+        private string? _name;
+        public string? Name
         {
             get => _name;
             set
@@ -67,12 +65,12 @@ namespace splines_avalonia
                 OnPropertyChanged(nameof(Name));
             }
         }
-        public string SmoothingCoefficientAlpha { get; set; }
-        public string SmoothingCoefficientBeta { get; set; }
+        public string? SmoothingCoefficientAlpha { get; set; }
+        public string? SmoothingCoefficientBeta { get; set; }
 
         public string Type => "Function";
-        public string SplineType => null;
-        public double[] Grid => null;
+        public string? SplineType => null;
+        public double[]? Grid => null;
         private bool _isVisible = true;
         public bool IsVisible
         {
@@ -86,12 +84,12 @@ namespace splines_avalonia
                 }
             }
         }
-        public Point[] ControlPoints => null;
+        public Point[]? ControlPoints => null;
 
-        private Expression _cachedExpr;
+        private Expression? _cachedExpr;
         private bool _hasError = false;
-        public string ControlPointsFile { get; set; }
-        public string GridFile { get; set; }
+        public string? ControlPointsFile { get; set; }
+        public string? GridFile { get; set; }
         public bool ShowControlPoints { get; set; }
         public double ParsedStart { get; set; }
         public double ParsedEnd { get; set; }
@@ -133,13 +131,13 @@ namespace splines_avalonia
             ParsedEnd = await NumberParser.ParseNumber(End) ?? Double.PositiveInfinity;
         }
 
-        private void PrepareExpression(string function)
+        private void PrepareExpression(string? function)
         {
             Console.SetOut(TextWriter.Null);
 
             try
             {
-                string processed = PreprocessFunctionString(function);
+                string? processed = PreprocessFunctionString(function);
                 _cachedExpr = new Expression(processed, EvaluateOptions.IgnoreCase);
 
                 _cachedExpr.EvaluateFunction += (name, args) =>
@@ -204,9 +202,9 @@ namespace splines_avalonia
             }
         }
 
-        private string PreprocessFunctionString(string func)
+        private string? PreprocessFunctionString(string? func)
         {
-            return func.Replace("arcsin", "Asin")
+            return func?.Replace("arcsin", "Asin")
                        .Replace("arccos", "Acos")
                        .Replace("arctg", "Atan")
                        .Replace("arcctg", "Arccot")
@@ -234,13 +232,15 @@ namespace splines_avalonia
                 {
                     PrepareExpression(FunctionString);
                 }
-
-                _cachedExpr.Parameters["x"] = x;
-                var result = _cachedExpr.Evaluate();
-                if (result is double d)
-                    return d;
-                if (result is int i)
-                    return i;
+                if (_cachedExpr != null)
+                {
+                    _cachedExpr.Parameters["x"] = x;
+                    var result = _cachedExpr.Evaluate();
+                    if (result is double d)
+                        return d;
+                    if (result is int i)
+                        return i;
+                }
 
                 return 0;
             }

@@ -4,22 +4,20 @@ using splines_avalonia.ViewModels;
 
 namespace splines_avalonia;
 
-#pragma warning disable CS8618, CS8625
-
 public class LinearSpline : ICurve
 {
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public string Type => "Spline";
-    public string FunctionString { get; set; }
+    public string? FunctionString { get; set; }
     public string SplineType => "Linear";
-    public double[] Grid { get; }
+    public double[]? Grid { get; }
     public Point[] ControlPoints { get; }
-    public string ControlPointsFile { get; set; }
-    public string GridFile { get; set; }
-    public string SmoothingCoefficientAlpha { get; set; }
-    public string SmoothingCoefficientBeta { get; set; }
-    public string Start { get; set; }
-    public string End { get; set; }
+    public string? ControlPointsFile { get; set; }
+    public string? GridFile { get; set; }
+    public string? SmoothingCoefficientAlpha { get; set; }
+    public string? SmoothingCoefficientBeta { get; set; }
+    public string? Start { get; set; }
+    public string? End { get; set; }
     public double ParsedStart { get; set; }
     public double ParsedEnd { get; set; }
     public bool ShowControlPoints { get; set; }
