@@ -13,6 +13,8 @@ using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Linq;
 
+#pragma warning disable CS8604
+
 namespace splines_avalonia.ViewModels
 {
     public static class Globals
