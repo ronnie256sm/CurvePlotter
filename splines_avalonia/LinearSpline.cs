@@ -72,7 +72,7 @@ public class LinearSpline : ICurve
         Name = "Ломаная";
         IsVisible = true;
         IsPossible = true;
-        Color = Globals.DarkMode ? Colors.White : Colors.Black;
+        Color = (Globals.DarkMode && Globals.AutomaticColor) ? Colors.White : Colors.Black;
         Thickness = 2;
     }
 
