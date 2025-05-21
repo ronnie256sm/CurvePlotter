@@ -21,7 +21,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         GraphicHolder.PointerMoved += OnMouseMove;
     }
 
-    private void InitializeWindow(object sender, RoutedEventArgs e)
+    private void InitializeWindow(object? sender, RoutedEventArgs e)
     {
         if (ViewModel != null)
         {
@@ -30,7 +30,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         }
     }
 
-    private void OnWindowLoaded(object sender, SizeChangedEventArgs e)
+    private void OnWindowLoaded(object? sender, SizeChangedEventArgs? e)
     {
         ViewModel?.SetInitialCenter(GraphicHolder.Bounds.Width / 2, GraphicHolder.Bounds.Height / 2);
         ViewModel?.DrawCurves();
