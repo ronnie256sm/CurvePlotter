@@ -94,13 +94,14 @@ namespace splines_avalonia
             slae = new SLAE(n_mesh * 2);
             slae.Initialize();
 
-            // Заполнение СЛАУ (поставить интегралы и уравнения)
+            // заполнение СЛАУ (поставить интегралы и уравнения)
             BuildSLAE(slae, points, mesh, n_points, n_mesh, AlphaFunction, BetaFunction);
 
-            // Решение СЛАУ
+            // решение СЛАУ методом Гаусса
             IsPossible = SolveSLAE(slae);
         }
 
+        // построение СЛАУ
         private static void BuildSLAE(SLAE slae, Point[] points, double[] mesh, int n_points, int n_mesh, Function AlphaFunction, Function BetaFunction)
         {
             int index = 0;
@@ -114,7 +115,7 @@ namespace splines_avalonia
                 {
                     double t = (points[index].X - start) / h; // нормированная координата
 
-                    // Формирование уравнений по точкам
+                    // формирование уравнений по точкам
                     for (int i = 0; i < 4; i++)
                     {
                         double psiValue = Psi(i, t, h);
@@ -127,13 +128,14 @@ namespace splines_avalonia
                     index++;
                 }
 
-                // Добавление интегральных членов для сглаживания
+                // добавление интегральных членов для сглаживания
                 for (int i = 0; i < 4; i++)
                     for (int j = 0; j < 4; j++)
                         slae.A[2 * k + i][2 * k + j] += (SumPsiAlpha(i, j, h, AlphaFunction) + SumPsiBeta(i, j, h, BetaFunction));
             }
         }
 
+        // решение СЛАУ, возвращает true, если успешно
         private static bool SolveSLAE(SLAE slae)
         {
             bool IsPossible = true;
@@ -156,6 +158,7 @@ namespace splines_avalonia
             }
         }
 
+        // вычисление интеграла для альфа методом трапеций
         private static double SumPsiAlpha(int i, int j, double h, Function AlphaFunction)
         {
             const double h_i = 0.01;
@@ -177,6 +180,7 @@ namespace splines_avalonia
             return sum;
         }
 
+        // вычисление интеграла для бета методом трапеций
         private static double SumPsiBeta(int i, int j, double h, Function BetaFunction)
         {
             const double h_i = 0.01;
@@ -261,10 +265,10 @@ namespace splines_avalonia
 
     public class SLAE
     {
-        public double[][] A { get; set; }
-        public double[] F { get; set; }
-        public double[] X { get; set; }
-        public int N { get; set; }
+        public double[][] A { get; set; } // матрица коэффициентов
+        public double[] F { get; set; } // вектор свободных членов
+        public double[] X { get; set; } // решение
+        public int N { get; set; } // размер системы
 
         public SLAE(int size)
         {
@@ -276,6 +280,7 @@ namespace splines_avalonia
             X = new double[size];
         }
 
+        // инициализация матрицы и вектора нулями
         public void Initialize()
         {
             for (int i = 0; i < N; i++)
@@ -288,9 +293,10 @@ namespace splines_avalonia
 
         public bool Solve()
         {
-            // Метод Гаусса с выбором ведущего элемента
+            // метод Гаусса с выбором ведущего элемента
             for (int k = 0; k < N - 1; ++k)
             {
+                // поиск максимального элемента в столбце
                 int i_max = k;
                 double max_val = Math.Abs(A[k][k]);
                 for (int i = k; i < N; ++i)
@@ -302,6 +308,7 @@ namespace splines_avalonia
                     }
                 }
 
+                // перестановка строк
                 if (i_max != k)
                 {
                     var temp = A[k];
@@ -313,6 +320,7 @@ namespace splines_avalonia
                     F[i_max] = tempF;
                 }
 
+                // деление строки
                 double div = A[k][k];
                 if (div == 0) return false;
 
@@ -329,6 +337,7 @@ namespace splines_avalonia
                 }
             }
 
+            // обратный ход
             double last = A[N - 1][N - 1];
             if (last == 0) return false;
             X[N - 1] = F[N - 1] / last;

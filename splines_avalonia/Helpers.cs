@@ -38,14 +38,14 @@ public static class ErrorHelper
         });
 
         if (owner is not null)
-            await box.ShowWindowDialogAsync(owner); // если нашли активное окно, показываем модально
+            await box.ShowWindowDialogAsync(owner);
         else
-            await box.ShowAsync(); // иначе просто показываем
+            await box.ShowAsync();
     }
 
     private static Window? GetActiveWindow()
     {
-        // Берём текущее активное окно
+        // берём текущее активное окно
         return Application.Current?.ApplicationLifetime switch
         {
             IClassicDesktopStyleApplicationLifetime desktop => 
@@ -211,10 +211,10 @@ public static class NumberParser
             return null;
         }
 
-        // Заменяем pi на значение числа Пи
+        // Заменяем pi на значение числа пи
         input = Regex.Replace(input, @"\bpi\b", Math.PI.ToString(CultureInfo.InvariantCulture), RegexOptions.IgnoreCase);
 
-        // Проверка на допустимые символы
+        // проверка на допустимые символы
         if (!Regex.IsMatch(input, @"^[0-9+\-*/().\s]+$"))
         {
             await ErrorHelper.ShowError("Ошибка ввода", "Разрешены только числа, операции (+ - * /), скобки и 'pi'.");

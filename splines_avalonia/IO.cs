@@ -20,343 +20,248 @@ public static class IO
 {
     public static async Task SaveJSON(ObservableCollection<ICurve> curves)
     {
-        if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow is null)
-            return;
-        // получаем главное окно
-        var storageProvider = desktop.MainWindow.StorageProvider;
-        if (storageProvider == null)
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+            desktop.MainWindow?.StorageProvider is not { } storageProvider)
             return;
 
-            var filePickerOptions = new FilePickerSaveOptions
+        // открываем диалог сохранения файла
+        var file = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = "Сохранить как",
+            SuggestedFileName = "curves",
+            ShowOverwritePrompt = true,
+            FileTypeChoices = new[]
             {
-                Title = "Сохранить как",
-                SuggestedFileName = "curves", //дефолтное имя файла
-                ShowOverwritePrompt = true, // предупреждение о перезаписи файла
-                FileTypeChoices = new[] // забиваем доступные форматы в выпадающий список
-                {
-                    new FilePickerFileType("Файл JSON") { Patterns = new[] { "*.json" } }
-                }
-            };
-
-            //открываем проводник
-            var res = await storageProvider.SaveFilePickerAsync(filePickerOptions);
-
-            if (res != null)
-            {
-                var filePath = res.Path.LocalPath; // получаем путь
-                var extension = Path.GetExtension(filePath).ToLower(); // определяем расширение файла
-
-                switch (extension)
-                {
-                    case ".json":
-                        var curvesInfo = curves.Select(curve => new
-                        {
-                            Name = curve.Name,
-                            Type = curve.Type,
-                            FunctionString = curve.FunctionString,
-                            SplineType = curve.SplineType,
-                            Grid = curve.Grid,
-                            ControlPoints = curve.ControlPoints,
-                            ShowControlPoints = curve.ShowControlPoints,
-                            Start = curve.Start,
-                            End = curve.End,
-                            IsVisible = curve.IsVisible,
-                            SmoothingCoefficientAlpha = curve.SmoothingCoefficientAlpha,
-                            SmoothingCoefficientBeta = curve.SmoothingCoefficientBeta,
-                            Thickness = curve.Thickness,
-                            Color = new
-                            {
-                                A = curve.Color.A,
-                                R = curve.Color.R,
-                                G = curve.Color.G,
-                                B = curve.Color.B
-                            }
-                        }).ToList();
-
-                        var jsonString = JsonConvert.SerializeObject(curvesInfo, new JsonSerializerSettings 
-                        { 
-                            Formatting = Formatting.Indented,
-                            NullValueHandling = NullValueHandling.Ignore
-                        });
-                        File.WriteAllText(filePath, jsonString);
-                        break;
-                    default:
-                        break;
-                }
+                new FilePickerFileType("Файл JSON") { Patterns = new[] { "*.json" } }
             }
+        });
+
+        if (file is null || Path.GetExtension(file.Path.LocalPath).ToLower() != ".json")
+            return;
+
+        // формируем список с нужной информацией о кривых
+        var curvesInfo = curves.Select(c => new
+        {
+            c.Name,
+            c.Type,
+            c.FunctionString,
+            c.SplineType,
+            c.Grid,
+            c.ControlPoints,
+            c.ShowControlPoints,
+            c.Start,
+            c.End,
+            c.IsVisible,
+            c.SmoothingCoefficientAlpha,
+            c.SmoothingCoefficientBeta,
+            c.Thickness,
+            Color = new { c.Color.A, c.Color.R, c.Color.G, c.Color.B }
+        });
+
+        // сериализуем список в строку JSON
+        var json = JsonConvert.SerializeObject(curvesInfo, new JsonSerializerSettings
+        {
+            Formatting = Formatting.Indented,
+            NullValueHandling = NullValueHandling.Ignore
+        });
+
+        File.WriteAllText(file.Path.LocalPath, json);
     }
 
     public static async Task LoadJSON()
     {
-        if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow is null)
+        if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop ||
+            desktop.MainWindow?.StorageProvider is not { } storageProvider)
             return;
 
-        var storageProvider = desktop.MainWindow.StorageProvider;
-        if (storageProvider == null)
-            return;
-
-        var filePickerOptions = new FilePickerOpenOptions
+        // открываем диалог выбора файла
+        var file = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Открыть файл",
-            AllowMultiple = false, // только один файл
+            AllowMultiple = false,
             FileTypeFilter = new[] { new FilePickerFileType("Файл JSON") { Patterns = new[] { "*.json" } } }
-        };
+        });
 
-        var res = await storageProvider.OpenFilePickerAsync(filePickerOptions);
-        if (res.Count > 0)
+        if (file.Count == 0)
+            return;
+
+        var filePath = file[0].Path.LocalPath;
+        var json = File.ReadAllText(filePath);
+
+        // десериализация JSON в список словарей
+        var curvesData = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json);
+
+        if (curvesData == null)
         {
-            var filePath = res[0].Path.LocalPath;
-            var jsonString = File.ReadAllText(filePath);
-            var curvesData = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonString);
-            if (curvesData == null)
+            await ErrorHelper.ShowError("Ошибка", "Не удалось прочитать файл");
+            return;
+        }
+
+        var logic = new SplineLogic();
+
+        foreach (var data in curvesData)
+        {
+            // извлечение имени кривой
+            if (!data.TryGetValue("Name", out var nameObj) || nameObj is not string name)
+                continue;
+
+            // попытка создать кривую
+            ICurve? curve = await TryCreateCurve(data, logic, name);
+            if (curve == null || !curve.IsPossible)
             {
-                await ErrorHelper.ShowError("Ошибка", "Не удалось прочитать файл");
-                return;
+                Console.WriteLine($"Кривая не была загружена: {name}");
+                continue;
             }
 
-            var logic = new SplineLogic();
+            ApplyOptionalProperties(curve, data, name); // применение дополнительных параметров
 
-            foreach (var curveData in curvesData)
+            // добавление кривой в список и перерисовка
+            MainWindowViewModel.CurveList.Add(curve);
+            new MainWindowViewModel().DrawCurves();
+        }
+
+        static async Task<ICurve?> TryCreateCurve(Dictionary<string, object> data, SplineLogic logic, string name)
+        {
+            if (!data.TryGetValue("Type", out var typeObj) || typeObj is not string type)
+                return null;
+
+            // создание функции
+            if (type == "Function" && data.TryGetValue("FunctionString", out var funcStrObj) && funcStrObj is string funcStr)
             {
-                if (!curveData.TryGetValue("Name", out var nameObj) || nameObj is not string name)
-                    continue;
+                var function = await logic.CreateFunction(funcStr);
+                if (function == null)
+                    return null;
 
-                ICurve? curve = null;
+                function.Name = name;
+                if (data.TryGetValue("Start", out var s) && s is string start) function.Start = string.IsNullOrEmpty(start) ? null : start;
+                if (data.TryGetValue("End", out var e) && e is string end) function.End = string.IsNullOrEmpty(end) ? null : end;
+                function.GetLimits(); // вычисление границ графика
+                Console.WriteLine($"Загружена функция: {name}");
+                return function;
+            }
 
-                if (curveData.TryGetValue("Type", out var typeObj) && typeObj is string type)
+            // создание сплайна
+            if (type == "Spline" && data.TryGetValue("SplineType", out var splineTypeObj) && splineTypeObj is string splineType)
+            {
+                var points = GetControlPoints(data, "ControlPoints");
+                if (points == null)
+                    return null;
+
+                switch (splineType)
                 {
-                    if (type == "Function" && curveData.TryGetValue("FunctionString", out var funcStrObj) && funcStrObj is string funcStr)
-                    {
-                        curve = await logic.CreateFunction(funcStr);
-                        if (curve != null)
+                    // интерполяционные сплайны
+                    case "Interpolating Cubic 1":
+                    case "Interpolating Cubic 2":
+                        if (points.Length >= 3)
                         {
-                            curve.Name = name;
-                            Console.WriteLine($"Загружена функция: {name}");
-                            if (curveData.TryGetValue("Start", out var StartObj) && StartObj is string Start)
+                            var spline = logic.CreateInterpolatingSpline(points, splineType.EndsWith("2") ? 2 : 1);
+                            if (spline != null)
                             {
-                                if (Start == "")
-                                    curve.Start = null;
-                                else
-                                    curve.Start = Start;
-                            }
-                                
-                            if (curveData.TryGetValue("End", out var EndObj) && EndObj is string End)
-                            {
-                                if (End == "")
-                                    curve.End = null;
-                                else
-                                    curve.End = End;
-                            }
-                                
-                            curve.GetLimits();
-                        }
-                    }
-                    else if (type == "Spline")
-                    {
-                        if (curveData.TryGetValue("SplineType", out var splineTypeObj) && splineTypeObj is string splineType)
-                        {
-                            if ((splineType == "Interpolating Cubic 2" || splineType == "Interpolating Cubic 1") && curveData.TryGetValue("ControlPoints", out var controlPointsObj))
-                            {
-                                var controlPoints = ((JArray)controlPointsObj).ToObject<List<Dictionary<string, double>>>();
-                                if (controlPoints != null)
-                                {
-                                    var points = controlPoints.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                    if (points.Length < 3 && points.Length > 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
-                                        curve = null;
-                                    }
-                                    if (points.Length == 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
-                                        curve = null;
-                                    }
-                                    if (points.Length >= 3)
-                                    {
-                                        if (splineType == "Interpolating Cubic 2")
-                                            curve = logic.CreateInterpolatingSpline(points, 2);
-                                        else if (splineType == "Interpolating Cubic 1")
-                                            curve = logic.CreateInterpolatingSpline(points, 1);
-                                        if (curve != null)
-                                        {
-                                            curve.Name = name;
-                                            Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
-                                        }
-                                    }
-                                }
-                            }
-                            else if (splineType == "Smoothing Cubic" && curveData.TryGetValue("Grid", out var gridObj) && curveData.TryGetValue("ControlPoints", out var controlPointsObj2))
-                            {
-                                var grid = ((JArray)gridObj).ToObject<double[]>();
-                                var controlPoints = ((JArray)controlPointsObj2).ToObject<List<Dictionary<string, double>>>();
-                                var points = controlPoints?.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (grid != null && points != null && curveData.TryGetValue("SmoothingCoefficientAlpha", out var alphaObj) && curveData.TryGetValue("SmoothingCoefficientBeta", out var betaObj))
-                                {
-                                    var alpha = alphaObj?.ToString();
-                                    var beta = betaObj?.ToString();
-                                    bool incorrect = false;
-                                    if (alpha == null || alpha == "")
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Коэффициент альфа не может быть пустым.");
-                                        incorrect = true;
-                                    }
-                                    if (beta == null || beta == "")
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Коэффициент бета не может быть пустым.");
-                                        incorrect = true;
-                                    }
-                                    if (grid.Length < 2)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Сетка должна содержать хотя бы один конечный элемент.");
-                                        incorrect = true;
-                                    }
-                                    if (points.Length < 3 && points.Length > 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
-                                        incorrect = true;
-                                    }
-                                    if (points.Length == 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
-                                        incorrect = true;
-                                    }
-                                    if (!incorrect && alpha != null && beta != null)
-                                    {
-                                        curve = logic.CreateSmoothingSpline(grid, points, alpha, beta);
-                                        if (curve != null)
-                                        {
-                                            if (!curve.IsPossible)
-                                            {
-                                                await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн. Попробуйте изменить параметры.");
-                                            }
-                                            curve.Name = name;
-                                            Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
-                                        }
-                                    }
-                                }
-                            }
-                            if (splineType == "Linear" && curveData.TryGetValue("ControlPoints", out var controlPointsObj3))
-                            {
-                                var controlPoints = ((JArray)controlPointsObj3).ToObject<List<Dictionary<string, double>>>();
-                                var points = controlPoints?.Select(p => new Point((double)p["X"], (double)p["Y"])).ToArray();
-                                if (points != null)
-                                {
-                                    if (points.Length < 3 && points.Length > 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Сплайн должен содержать минимум 3 контрольные точки");
-                                        curve = null;
-                                    }
-                                    if (points.Length == 0)
-                                    {
-                                        await ErrorHelper.ShowError("Ошибка", "Отсутствуют контрольные точки у сплайна");
-                                        curve = null;
-                                    }
-                                    if (points.Length >= 3)
-                                    {
-                                        curve = logic.CreateLinearSpline(points);
-                                        if (curve != null)
-                                        {
-                                            curve.Name = name;
-                                            Console.WriteLine($"Загружена ломаная: {name}");
-                                        }
-                                    }
-                                }
+                                spline.Name = name;
+                                Console.WriteLine($"Загружен интерполяционный сплайн: {name}");
+                                return spline;
                             }
                         }
-                        if (curve != null && curveData.TryGetValue("ShowControlPoints", out var ShowControlPointsObj) && ShowControlPointsObj is bool ShowControlPoints)
-                            curve.ShowControlPoints = ShowControlPoints;
-                    }
-                }
+                        break;
 
-                if (curve != null && curve.IsPossible)
-                {
-                    // Обработка видимости
-                    if (curveData.TryGetValue("IsVisible", out var isVisibleObj) && isVisibleObj is bool isVisible)
-                        curve.IsVisible = isVisible;
+                    // сглаживающий сплайн
+                    case "Smoothing Cubic":
+                        var grid = ((JArray?)data["Grid"])?.ToObject<double[]>();
+                        var alpha = data.TryGetValue("SmoothingCoefficientAlpha", out var a) ? a?.ToString() : null;
+                        var beta = data.TryGetValue("SmoothingCoefficientBeta", out var b) ? b?.ToString() : null;
 
-                    // Обработка цвета
-                    if (curveData.TryGetValue("Color", out var colorObj) && colorObj is JObject colorDict)
-                    {
-                        byte a = colorDict["A"]?.ToObject<byte>() ?? 255;
-                        byte r = colorDict["R"]?.ToObject<byte>() ?? 0;
-                        byte g = colorDict["G"]?.ToObject<byte>() ?? 0;
-                        byte b = colorDict["B"]?.ToObject<byte>() ?? 0;
-                        curve.Color = Color.FromArgb(a, r, g, b);
-                        Console.WriteLine($"Цвет кривой {name}: {a}, {r}, {g}, {b}");
-                    }
+                        if (grid != null && alpha != null && beta != null && grid.Length >= 2 && points.Length >= 3)
+                        {
+                            var spline = logic.CreateSmoothingSpline(grid, points, alpha, beta);
+                            if (spline != null)
+                            {
+                                if (!spline.IsPossible)
+                                    await ErrorHelper.ShowError("Ошибка", "Не удалось построить сглаживающий сплайн.");
+                                spline.Name = name;
+                                Console.WriteLine($"Загружен сглаживающий сплайн: {name}");
+                                return spline;
+                            }
+                        }
+                        break;
 
-                    if (curveData.TryGetValue("Thickness", out var ThicknessObj) && ThicknessObj is double Thickness)
-                        curve.Thickness = Thickness;
-
-                    // Добавление кривой в список
-                    MainWindowViewModel.CurveList.Add(curve);
-                    var mainWindowViewModel = new MainWindowViewModel();  // Создание экземпляра
-                    mainWindowViewModel.DrawCurves();  // Вызов метода
-                }
-                else
-                {
-                    Console.WriteLine($"Кривая не была загружена: {name}");
+                    // ломаная
+                    case "Linear":
+                        if (points.Length >= 3)
+                        {
+                            var linear = logic.CreateLinearSpline(points);
+                            if (linear != null)
+                            {
+                                linear.Name = name;
+                                Console.WriteLine($"Загружена ломаная: {name}");
+                                return linear;
+                            }
+                        }
+                        break;
                 }
             }
+
+            return null;
+        }
+
+        static Point[]? GetControlPoints(Dictionary<string, object> data, string key)
+        {
+            if (!data.TryGetValue(key, out var cpObj)) return null;
+            var controlPointList = ((JArray?)cpObj)?.ToObject<List<Dictionary<string, double>>>();
+            return controlPointList?.Select(p => new Point(p["X"], p["Y"])).ToArray();
+        }
+
+        static void ApplyOptionalProperties(ICurve curve, Dictionary<string, object> data, string name)
+        {
+            if (data.TryGetValue("IsVisible", out var v) && v is bool vis)
+                curve.IsVisible = vis;
+
+            if (data.TryGetValue("Color", out var colorObj) && colorObj is JObject color)
+            {
+                byte a = color["A"]?.ToObject<byte>() ?? 255;
+                byte r = color["R"]?.ToObject<byte>() ?? 0;
+                byte g = color["G"]?.ToObject<byte>() ?? 0;
+                byte b = color["B"]?.ToObject<byte>() ?? 0;
+                curve.Color = Color.FromArgb(a, r, g, b);
+                Console.WriteLine($"Цвет кривой {name}: {a}, {r}, {g}, {b}");
+            }
+
+            if (data.TryGetValue("Thickness", out var t) && t is double thickness)
+                curve.Thickness = thickness;
+
+            if (data.TryGetValue("ShowControlPoints", out var scp) && scp is bool show)
+                curve.ShowControlPoints = show;
         }
     }
 
     public static async Task SavePNG()
     {
-        if (Avalonia.Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop || desktop.MainWindow is null)
-            return;
-
-        // Получаем главное окно
-        var mainWindow = desktop.MainWindow as MainWindow;
-        if (mainWindow == null)
+        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime { MainWindow: MainWindow mainWindow })
             return;
 
         var storageProvider = mainWindow.StorageProvider;
         if (storageProvider == null)
             return;
 
-        var filePickerOptions = new FilePickerSaveOptions
+        var result = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Сохранить как",
-            SuggestedFileName = "curves", // Дефолтное имя файла
-            ShowOverwritePrompt = true, // Предупреждение о перезаписи файла
-            FileTypeChoices = new[]
-            {
-                new FilePickerFileType("Файл PNG") { Patterns = new[] { "*.png" } }
-            }
-        };
+            SuggestedFileName = "curves",
+            ShowOverwritePrompt = true,
+            FileTypeChoices = new[] { new FilePickerFileType("Файл PNG") { Patterns = new[] { "*.png" } } }
+        });
 
-        // Открываем проводник
-        var res = await storageProvider.SaveFilePickerAsync(filePickerOptions);
+        if (result?.Path is not { } path || Path.GetExtension(path.LocalPath).ToLower() != ".png")
+            return;
 
-        if (res != null)
-        {
-            var filePath = res.Path.LocalPath; // Получаем путь
-            var extension = Path.GetExtension(filePath).ToLower(); // Определяем расширение файла
+        var bounds = mainWindow.GraphicHolder.Bounds;
+        var size = new Size(bounds.Width, bounds.Height);
+        var bitmap = new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
 
-            switch (extension)
-            {
-                case ".png":
-                    // Определяем размер канваса
-                    var size = new Size(mainWindow.GraphicHolder.Bounds.Width, mainWindow.GraphicHolder.Bounds.Height);
+        mainWindow.GraphicHolder.Measure(size);
+        mainWindow.GraphicHolder.Arrange(new Rect(size));
+        bitmap.Render(mainWindow.GraphicHolder);
 
-                    // Создаем RenderTargetBitmap
-                    var bitmap = new RenderTargetBitmap(new PixelSize((int)size.Width, (int)size.Height));
-
-                    // Отрисовываем Canvas в битмап
-                    mainWindow.GraphicHolder.Measure(size);
-                    mainWindow.GraphicHolder.Arrange(new Rect(size));
-                    bitmap.Render(mainWindow.GraphicHolder);
-
-                    // Сохраняем в PNG
-                    using (var stream = File.Create(filePath))
-                    {
-                        bitmap.Save(stream);
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
+        using var stream = File.Create(path.LocalPath);
+        bitmap.Save(stream);
     }
 }

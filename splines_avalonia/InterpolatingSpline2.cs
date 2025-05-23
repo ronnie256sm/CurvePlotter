@@ -60,7 +60,7 @@ namespace splines_avalonia
             }
         }
         public double[]? Grid { get; set; }
-        private SplineSegment[] _segments;
+        private SplineSegment[] _segments; // массив сегментов сплайна
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -88,9 +88,11 @@ namespace splines_avalonia
             if (_segments is null || _segments.Length == 0)
                 return double.NaN;
 
+            // проверка, входит ли x в область определения
             if (x < _segments[0].X || x > _segments[^1].X)
                 return double.NaN;
 
+            // поиск нужного сегмента
             for (int i = 0; i < _segments.Length; i++)
             {
                 var seg = _segments[i];
@@ -106,13 +108,17 @@ namespace splines_avalonia
 
         public void GetLimits() => throw new System.NotImplementedException();
 
+        // вычисление коэффициентов сегментов интерполяционного сплайна
         private static SplineSegment[] ComputeSegments(double[] x, double[] y)
         {
             int n = x.Length;
             double[] h = new double[n - 1];
+
+            // вычисление длины интервалов
             for (int i = 0; i < n - 1; i++)
                 h[i] = x[i + 1] - x[i];
 
+            // матрица трёхдиагональной системы
             double[] lower = new double[n];
             double[] main = new double[n];
             double[] upper = new double[n];
@@ -120,6 +126,7 @@ namespace splines_avalonia
 
             main[0] = main[n - 1] = 1.0;
 
+            // правая часть для начальной и конечной точек
             rhs[0] = 0.5 * (
                 -((3 * h[0] + 2 * h[1]) / (h[0] * (h[0] + h[1]))) * y[0]
                 + ((h[0] + 2 * h[1]) / (h[0] * h[1])) * y[1]
@@ -130,6 +137,7 @@ namespace splines_avalonia
                 - ((2 * h[n - 3] + h[n - 2]) / (h[n - 2] * h[n - 3])) * y[n - 2]
                 + ((3 * h[n - 2] + 2 * h[n - 3]) / (h[n - 2] * (h[n - 3] + h[n - 2]))) * y[n - 1]);
 
+            // заполнение СЛАУ для внутренних точек
             for (int i = 1; i < n - 1; i++)
             {
                 lower[i] = 2.0 / h[i - 1];
@@ -141,8 +149,10 @@ namespace splines_avalonia
                          + y[i + 1] * (6.0 / (h[i] * h[i]));
             }
 
+            // решение СЛАУ методом прогонки
             double[] fPrime = SolveTridiagonal(lower, main, upper, rhs);
 
+            // вычисление коэффициентов каждого сегмента
             var segments = new List<SplineSegment>(n - 1);
             for (int i = 0; i < n - 1; i++)
             {
@@ -157,6 +167,7 @@ namespace splines_avalonia
             return segments.ToArray();
         }
 
+        // решение трёхдиагональной СЛАУ методом прогонки
         private static double[] SolveTridiagonal(double[] a, double[] b, double[] c, double[] d)
         {
             int n = d.Length;
@@ -164,6 +175,7 @@ namespace splines_avalonia
             double[] dPrime = new double[n];
             double[] x = new double[n];
 
+            // прямой ход
             cPrime[0] = c[0] / b[0];
             dPrime[0] = d[0] / b[0];
 
@@ -174,6 +186,7 @@ namespace splines_avalonia
                 dPrime[i] = (d[i] - a[i] * dPrime[i - 1]) / denom;
             }
 
+            // обратный ход
             x[n - 1] = dPrime[n - 1];
             for (int i = n - 2; i >= 0; i--)
                 x[i] = dPrime[i] - cPrime[i] * x[i + 1];

@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace splines_avalonia.ViewModels
 {
-    public static class Globals
+    public static class Globals // глобальные настройки
     {
         public static bool ShowAxes = true;
         public static bool ShowGrid = true;
@@ -130,7 +130,7 @@ namespace splines_avalonia.ViewModels
             }
         }
 
-        private async void CalculateValue(ICurve curve)
+        private async void CalculateValue(ICurve curve) // окно нахождения значения в точке
         {
             var dialog = new CalculateValueDialog();
             dialog.SetCurve(curve);
@@ -164,14 +164,16 @@ namespace splines_avalonia.ViewModels
                     curve.Start = result.Start;
                     curve.End = result.End;
                     if (curve.IsPossible)
-                        CurveList.Add(curve);
-                    curve.GetLimits();
-                    if (curve.ParsedStart > curve.ParsedEnd)
                     {
-                        await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
-                        curve.Start = null;
-                        curve.End = null;
+                        CurveList.Add(curve);
                         curve.GetLimits();
+                        if (curve.ParsedStart > curve.ParsedEnd)
+                        {
+                            await ErrorHelper.ShowError("Ошибка", "Начало области определения не может быть больше конца. Ограничения были сброшены.");
+                            curve.Start = null;
+                            curve.End = null;
+                            curve.GetLimits();
+                        }
                     }
                     DrawCurves();
                 }
@@ -319,6 +321,7 @@ namespace splines_avalonia.ViewModels
                 return;
 
             var type = SelectedCurve.SplineType;
+            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
 
             string? newPointsFile = null;
             string? newMeshFile = null;
@@ -326,55 +329,53 @@ namespace splines_avalonia.ViewModels
             string? newSmoothingFactorBeta = null;
             bool newShowControlPoints = true;
 
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-
-            if (type == "Linear" || type == "Interpolating Cubic 2" || type == "Interpolating Cubic 1")
+            // Ввод данных
+            switch (type)
             {
-                var dialog = new InterpolatingSplineInputDialog(type, SelectedCurve.ShowControlPoints);
+                case "Linear":
+                case "Interpolating Cubic 1":
+                case "Interpolating Cubic 2":
+                    {
+                        var dialog = new InterpolatingSplineInputDialog(type, SelectedCurve.ShowControlPoints);
+                        if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
+                            dialog.SetInitialValues(spline.ControlPointsFile, spline.ShowControlPoints);
 
-                if (SelectedCurve is ICurve spline && !string.IsNullOrWhiteSpace(spline.ControlPointsFile))
-                {
-                    dialog.SetInitialValues(spline.ControlPointsFile, spline.ShowControlPoints);
-                }
+                        await dialog.ShowDialog(mainWindow);
+                        if (!dialog.IsOkClicked) return;
 
-                await dialog.ShowDialog(mainWindow);
+                        newPointsFile = dialog.PointsFile;
+                        newShowControlPoints = dialog.ShowControlPoints;
+                        break;
+                    }
 
-                if (!dialog.IsOkClicked)
+                case "Smoothing Cubic":
+                    {
+                        var dialog = new SmoothingSplineInputDialog(SelectedCurve.ShowControlPoints);
+                        if (SelectedCurve is ICurve spline)
+                        {
+                            dialog.SetInitialValues(
+                                spline.ControlPointsFile ?? "",
+                                spline.GridFile ?? "",
+                                spline.SmoothingCoefficientAlpha ?? "",
+                                spline.SmoothingCoefficientBeta ?? "",
+                                spline.ShowControlPoints
+                            );
+                        }
+
+                        await dialog.ShowDialog(mainWindow);
+                        if (!dialog.IsOkClicked) return;
+
+                        newPointsFile = dialog.PointsFile;
+                        newMeshFile = dialog.MeshFile;
+                        newSmoothingFactorAlpha = dialog.SmoothingFactorAlpha;
+                        newSmoothingFactorBeta = dialog.SmoothingFactorBeta;
+                        newShowControlPoints = dialog.ShowControlPoints;
+                        break;
+                    }
+
+                default:
+                    await ErrorHelper.ShowError("Ошибка", "Редактирование доступно только для сплайнов.");
                     return;
-
-                newPointsFile = dialog.PointsFile;
-                newShowControlPoints = dialog.ShowControlPoints;
-            }
-            else if (type == "Smoothing Cubic")
-            {
-                var dialog = new SmoothingSplineInputDialog(SelectedCurve.ShowControlPoints);
-
-                if (SelectedCurve is ICurve spline)
-                {
-                    dialog.SetInitialValues(
-                        spline.ControlPointsFile ?? "",
-                        spline.GridFile ?? "",
-                        spline.SmoothingCoefficientAlpha ?? "",
-                        spline.SmoothingCoefficientBeta ?? "",
-                        spline.ShowControlPoints
-                    );
-                }
-
-                await dialog.ShowDialog(mainWindow);
-
-                if (!dialog.IsOkClicked)
-                    return;
-
-                newPointsFile = dialog.PointsFile;
-                newMeshFile = dialog.MeshFile;
-                newSmoothingFactorAlpha = dialog.SmoothingFactorAlpha;
-                newSmoothingFactorBeta = dialog.SmoothingFactorBeta;
-                newShowControlPoints = dialog.ShowControlPoints;
-            }
-            else
-            {
-                await ErrorHelper.ShowError("Ошибка", "Редактирование доступно только для сплайнов.");
-                return;
             }
 
             if (string.IsNullOrWhiteSpace(newPointsFile))
@@ -383,7 +384,7 @@ namespace splines_avalonia.ViewModels
                 return;
             }
 
-            Point[]? newPoints = await FileService.ReadPoints(newPointsFile);
+            var newPoints = await FileService.ReadPoints(newPointsFile);
             double[]? newMesh = null;
 
             if (type == "Smoothing Cubic")
@@ -398,38 +399,24 @@ namespace splines_avalonia.ViewModels
             }
 
             var logic = new SplineLogic();
-            ICurve? newCurve = null;
-
-            if (type == "Linear" && newPoints != null)
+            ICurve? newCurve = type switch
             {
-                newCurve = logic.CreateLinearSpline(newPoints);
-                if (newCurve != null)
-                    newCurve.ShowControlPoints = newShowControlPoints;
-            }
-            else if (type == "Interpolating Cubic 2" && newPoints != null)
-            {
-                newCurve = logic.CreateInterpolatingSpline(newPoints, 2);
-                if (newCurve != null)
-                    newCurve.ShowControlPoints = newShowControlPoints;
-            }
-            else if (type == "Interpolating Cubic 1" && newPoints != null)
-            {
-                newCurve = logic.CreateInterpolatingSpline(newPoints, 1);
-                if (newCurve != null)
-                    newCurve.ShowControlPoints = newShowControlPoints;
-            }
-            else if (type == "Smoothing Cubic" && newPoints != null && newMesh != null && newSmoothingFactorAlpha != null && newSmoothingFactorBeta != null)
-            {
-                newCurve = logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta);
-                if (newCurve != null)
-                    newCurve.ShowControlPoints = newShowControlPoints;
-            }
+                "Linear" when newPoints != null => logic.CreateLinearSpline(newPoints),
+                "Interpolating Cubic 1" when newPoints != null => logic.CreateInterpolatingSpline(newPoints, 1),
+                "Interpolating Cubic 2" when newPoints != null => logic.CreateInterpolatingSpline(newPoints, 2),
+                "Smoothing Cubic" when newPoints != null && newMesh != null &&
+                                    newSmoothingFactorAlpha != null && newSmoothingFactorBeta != null =>
+                    logic.CreateSmoothingSpline(newMesh, newPoints, newSmoothingFactorAlpha, newSmoothingFactorBeta),
+                _ => null
+            };
 
             if (newCurve == null)
             {
                 await ErrorHelper.ShowError("Ошибка", "Не удалось изменить сплайн.");
                 return;
             }
+
+            newCurve.ShowControlPoints = newShowControlPoints;
 
             int index = CurveList.IndexOf(SelectedCurve);
             if (index >= 0 && newCurve.IsPossible)
@@ -438,13 +425,12 @@ namespace splines_avalonia.ViewModels
                 newCurve.GridFile = newMeshFile;
                 newCurve.SmoothingCoefficientAlpha = newSmoothingFactorAlpha;
                 newCurve.SmoothingCoefficientBeta = newSmoothingFactorBeta;
-                newCurve.ShowControlPoints = newShowControlPoints;
                 newCurve.Color = SelectedCurve.Color;
 
                 CurveList[index] = newCurve;
                 DrawCurves();
             }
-            else if (index >= 0 && !newCurve.IsPossible)
+            else if (index >= 0)
             {
                 if (type == "Smoothing Cubic")
                 {
@@ -490,17 +476,19 @@ namespace splines_avalonia.ViewModels
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
-            double step = CalculateGridStep();
+            double step = CalculateGridStep(); // расчет шага сетки в мировых координатах
 
+            // определение видимого диапазона
             double startX = -(CenterX() + _offsetX) / _zoom;
             double endX = (width - CenterX() - _offsetX) / _zoom;
 
             double startY = -(CenterY() + _offsetY) / _zoom;
             double endY = (height - CenterY() - _offsetY) / _zoom;
 
-            // Отрисовка линий сетки
+            // отрисовка линий сетки
             if (Globals.ShowGrid)
             {
+                // вертикальные линии сетки
                 for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
                 {
                     double screenX = x * _zoom + CenterX() + _offsetX;
@@ -514,6 +502,7 @@ namespace splines_avalonia.ViewModels
                     GraphicCanvas.Children.Add(line);
                 }
 
+                // горизонтальные линии сетки
                 for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
                 {
                     double screenY = y * _zoom + CenterY() + _offsetY;
@@ -528,14 +517,15 @@ namespace splines_avalonia.ViewModels
                 }
             }
 
-            // Отрисовка осей и числовых подписей
+            // отрисовка осей и числовых подписей
             if (Globals.ShowAxes)
             {
-                // Подписи вдоль оси X
+                // подписи вдоль оси X
                 for (double x = Math.Floor(startX / step) * step; x <= endX; x += step)
                 {
                     double screenX = x * _zoom + CenterX() + _offsetX;
 
+                    // форматирование значения подписи
                     string labelText = Math.Abs(x) < 1e-6 ? "0" : x.ToString("G12");
                     var text = new TextBlock
                     {
@@ -544,6 +534,7 @@ namespace splines_avalonia.ViewModels
                         FontSize = 10
                     };
 
+                    // расположение текста по оси Y
                     double labelY = CenterY() + _offsetY + 2;
                     if (labelY < 0 || labelY > height)
                     {
@@ -555,11 +546,12 @@ namespace splines_avalonia.ViewModels
                     GraphicCanvas.Children.Add(text);
                 }
 
-                // Подписи вдоль оси Y
+                // подписи вдоль оси Y
                 for (double y = Math.Floor(startY / step) * step; y <= endY; y += step)
                 {
                     double screenY = y * _zoom + CenterY() + _offsetY;
 
+                    // форматирование значения подписи
                     string labelText = Math.Abs(y) < 1e-6 ? "0" : (-y).ToString("G12");
                     var text = new TextBlock
                     {
@@ -568,6 +560,7 @@ namespace splines_avalonia.ViewModels
                         FontSize = 10
                     };
 
+                    // расположение текста по оси X
                     double labelX = CenterX() + _offsetX + 2;
                     if (labelX < 0 || labelX > width)
                     {
@@ -579,23 +572,29 @@ namespace splines_avalonia.ViewModels
                     GraphicCanvas.Children.Add(text);
                 }
 
-                // Отрисовка осей
+                // расчет положения
                 double axisXScreen = CenterY() + _offsetY;
                 double axisYScreen = CenterX() + _offsetX;
 
+                // видимы ли оси на экране
                 bool isXAxisVisible = axisXScreen >= 0 && axisXScreen <= height;
                 bool isYAxisVisible = axisYScreen >= 0 && axisYScreen <= width;
 
                 if (!isXAxisVisible)
                 {
+                    // если Y >= 0 (центр выше) -> 1 или 2 четверть -> ось X внизу
+                    // если Y < 0 (центр ниже) -> 3 или 4 четверть -> ось X вверху
                     axisXScreen = (_offsetY >= 0) ? height - 1 : 0;
                 }
 
                 if (!isYAxisVisible)
                 {
+                    // если X >= 0 (центр справа) -> 1 или 4 четверть -> ось Y справа
+                    // если X < 0 (центр слева) -> 2 или 3 четверть -> ось Y слева
                     axisYScreen = (_offsetX >= 0) ? width - 1 : 0;
                 }
 
+                // отрисовка оси X
                 var xAxis = new Line
                 {
                     StartPoint = new Avalonia.Point(0, axisXScreen),
@@ -605,6 +604,7 @@ namespace splines_avalonia.ViewModels
                 };
                 GraphicCanvas.Children.Add(xAxis);
 
+                // отрисовка оси Y
                 var yAxis = new Line
                 {
                     StartPoint = new Avalonia.Point(axisYScreen, 0),
@@ -621,6 +621,7 @@ namespace splines_avalonia.ViewModels
             if (GraphicCanvas == null)
                 return;
 
+            // очистка канваса
             GraphicCanvas.Children.Clear();
             GraphicCanvas.Background = new SolidColorBrush(Globals.DarkMode ? Colors.Black : Colors.White);
 
@@ -629,6 +630,7 @@ namespace splines_avalonia.ViewModels
             double width = GraphicCanvas.Bounds.Width;
             double height = GraphicCanvas.Bounds.Height;
 
+            // вычисление границ видимой области по X
             double visibleLeft = -(CenterX() + _offsetX) / _zoom;
             double visibleRight = (width - CenterX() - _offsetX) / _zoom;
 
@@ -637,12 +639,13 @@ namespace splines_avalonia.ViewModels
                 if (!curve.IsVisible || !curve.IsPossible)
                     continue;
 
-                // Автоматическая коррекция цвета
+                // автоматическая коррекция цвета
                 if (curve.Color == Colors.White && !Globals.DarkMode && Globals.AutomaticColor)
                     curve.Color = Colors.Black;
                 if (curve.Color == Colors.Black && Globals.DarkMode && Globals.AutomaticColor)
                     curve.Color = Colors.White;
 
+                // вычисление области определения кривой
                 double funcLeft = 0;
                 double funcRight = 0;
                 if (curve.Type == "Function")
@@ -656,12 +659,13 @@ namespace splines_avalonia.ViewModels
                     funcRight = curve.ControlPoints.Last().X;
                 }
 
-                // Проверка, находится ли кривая в пределах экрана
+                // проверка, находится ли кривая в пределах экрана
                 bool shouldRender = (funcRight > visibleLeft) && (funcLeft < visibleRight);
 
                 if (!shouldRender)
                     continue;
 
+                // определение интервала, который реально будет отрисован
                 double renderStart = Math.Max(funcLeft, visibleLeft);
                 double renderEnd = Math.Min(funcRight, visibleRight);
                 double renderWidth = renderEnd - renderStart;
@@ -669,15 +673,18 @@ namespace splines_avalonia.ViewModels
                 if (Globals.PointCount <= 0)
                     return;
 
+                // вычисление шага по X
                 double step = renderWidth / Globals.PointCount;
 
                 var points = new Points();
 
+                // вычисление и преобразование координат всех точек кривой
                 for (int i = 0; i <= Globals.PointCount; i++)
                 {
                     double x = renderStart + i * step;
                     double y = curve.CalculateFunctionValue(x);
 
+                    // если NaN или бесконечность, отрисовываем предыдущий сегмент
                     if (double.IsNaN(y) || double.IsInfinity(y))
                     {
                         if (points.Count >= 2)
@@ -693,12 +700,13 @@ namespace splines_avalonia.ViewModels
                         continue;
                     }
 
+                    // преобразование координат из математических в экранные
                     var screenPoint = new Avalonia.Point(
                         (x * _zoom) + CenterX() + _offsetX,
                         (-y * _zoom) + CenterY() + _offsetY
                     );
 
-                    // Проверка на выход за экран по Y
+                    // проверка на выход за экран по Y
                     if (screenPoint.Y >= -height && screenPoint.Y <= height * 2)
                     {
                         points.Add(screenPoint);
@@ -715,7 +723,7 @@ namespace splines_avalonia.ViewModels
                     }
                 }
 
-                // Финальный сегмент
+                // финальный сегмент
                 if (points.Count >= 2)
                 {
                     GraphicCanvas.Children.Add(new Polyline
@@ -726,7 +734,7 @@ namespace splines_avalonia.ViewModels
                     });
                 }
 
-                // Контрольные точки только для сплайнов
+                // контрольные точки только для сплайнов
                 if (curve.Type == "Spline" && curve.ShowControlPoints && curve.ControlPoints != null)
                 {
                     foreach (var p in curve.ControlPoints)
@@ -804,21 +812,27 @@ namespace splines_avalonia.ViewModels
         }
         public void HandleZoom(double delta)
         {
+            // получаем координаты центра
             double centerX = CenterX();
             double centerY = CenterY();
 
+            // преобразуем экранные координаты центра в мировые для удержания фокуса в центре экрана
             double worldX = (centerX - _offsetX - centerX) / _zoom;
             double worldY = (centerY - _offsetY - centerY) / _zoom;
 
             _zoom *= delta > 0 ? 1.1 : 0.9;
+
+            // ограничиваем масштаб
             _zoom = Math.Max(MinZoom, Math.Min(MaxZoom, _zoom));
 
+            // пересчитываем смещения
             _offsetX = -(worldX * _zoom);
             _offsetY = -(worldY * _zoom);
 
             DrawCurves();
         }
 
+        // положение курсора в момент начала перемещения
         public void StartPan(Avalonia.Point point)
         {
             _lastPanPosition = point;
@@ -826,24 +840,29 @@ namespace splines_avalonia.ViewModels
 
         public void DoPan(Avalonia.Point current)
         {
+            // разница между текущей и последней позицией мыши
             var dx = current.X - _lastPanPosition.X;
             var dy = current.Y - _lastPanPosition.Y;
 
+            // обновляем смещения канваса на сдвиг
             _offsetX += dx;
             _offsetY += dy;
 
+            // обновляем последнюю позицию и перерисовываем
             _lastPanPosition = current;
             DrawCurves();
         }
 
         private double CalculateGridStep()
         {
-            double minPixelStep = 40;
-            double targetStep = minPixelStep / _zoom;
+            double minPixelStep = 40; // минимальное расстояние между линиями сетки в пикселях
+            double targetStep = minPixelStep / _zoom; // целевой шаг в мировых координатах, который даст minPixelStep на экране
 
+            // вычисляем порядок числа
             double exponent = Math.Pow(10, Math.Floor(Math.Log10(targetStep)));
             double[] mantissas = { 1, 2, 5 };
 
+            // ищем минимальный шаг, который превышает targetStep
             foreach (var m in mantissas)
             {
                 double s = m * exponent;
@@ -851,6 +870,7 @@ namespace splines_avalonia.ViewModels
                     return s;
             }
 
+            // если ни один из стандартных шагов не подошёл
             return 10 * exponent;
         }
 

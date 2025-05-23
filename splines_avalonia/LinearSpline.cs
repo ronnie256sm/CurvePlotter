@@ -76,6 +76,7 @@ public class LinearSpline : ICurve
         Thickness = 2;
     }
 
+    // линейная интерполяция между ближайшими двумя точками
     public double CalculateFunctionValue(double x)
     {
         if (ControlPoints == null || ControlPoints.Length < 2)
@@ -86,17 +87,19 @@ public class LinearSpline : ICurve
             double x0 = ControlPoints[i].X;
             double x1 = ControlPoints[i + 1].X;
 
+            // проверяем, попадает ли x в отрезок
             if (x >= x0 && x <= x1)
             {
                 double y0 = ControlPoints[i].Y;
                 double y1 = ControlPoints[i + 1].Y;
 
+                // вычисляем линейную интерполяцию
                 double t = (x - x0) / (x1 - x0);
                 return y0 + t * (y1 - y0);
             }
         }
 
-        return double.NaN;
+        return double.NaN; // если x вне всех отрезков
     }
 
     public void GetLimits()

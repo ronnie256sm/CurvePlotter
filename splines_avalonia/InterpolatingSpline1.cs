@@ -66,7 +66,7 @@ namespace splines_avalonia
 
         public InterpolatingSpline1(Point[] controlPoints)
         {
-            if (Globals.DarkMode)
+            if (Globals.DarkMode && Globals.AutomaticColor)
                 Color = Colors.White;
             else
                 Color = Colors.Black;
@@ -75,16 +75,6 @@ namespace splines_avalonia
             Name = "Интерполяционный сплайн с производными, построенными с помощью полиномов Лагранжа";
             IsVisible = true;
             IsPossible = true;
-
-            // Преобразуем в список для удобства
-            var points = new List<PointData>();
-            foreach (var p in controlPoints)
-            {
-                points.Add(new PointData { X = p.X, Y = p.Y });
-            }
-
-            // Вычисляем производные
-            ComputeDerivatives(points);
         }
 
         private class PointData
@@ -104,6 +94,7 @@ namespace splines_avalonia
 
                 if (i == 0)
                 {
+                    // левая граница: используем первые три точки
                     double h1 = pts[1].X - pts[0].X;
                     double h2 = pts[2].X - pts[1].X;
                     dy = -pts[0].Y * (2 * h1 + h2) / (h1 * (h1 + h2)) +
@@ -112,6 +103,7 @@ namespace splines_avalonia
                 }
                 else if (i == n - 1)
                 {
+                    // правая граница: используем последние три точки
                     double h1 = pts[n - 1].X - pts[n - 2].X;
                     double h2 = pts[n - 2].X - pts[n - 3].X;
                     dy = pts[n - 3].Y * (h1 / (h2 * (h1 + h2))) -
@@ -120,6 +112,7 @@ namespace splines_avalonia
                 }
                 else
                 {
+                    // внутренние точки: используем соседние точки
                     double h1 = pts[i].X - pts[i - 1].X;
                     double h2 = pts[i + 1].X - pts[i].X;
                     dy = -pts[i - 1].Y * (h2 / (h1 * (h1 + h2))) +
@@ -136,6 +129,7 @@ namespace splines_avalonia
             double t2 = t * t;
             double t3 = t2 * t;
 
+            // эрмитовы базисные функции
             double h00 = 2 * t3 - 3 * t2 + 1;
             double h10 = t3 - 2 * t2 + t;
             double h01 = -2 * t3 + 3 * t2;
@@ -146,7 +140,7 @@ namespace splines_avalonia
 
         public double CalculateFunctionValue(double x)
         {
-            // Преобразуем ControlPoints в список PointData с производными
+            // создаем копию контрольных точек с производными
             var points = new List<PointData>();
             foreach (var p in ControlPoints)
             {
@@ -154,11 +148,11 @@ namespace splines_avalonia
             }
             ComputeDerivatives(points);
 
-            // Если x вне диапазона — возвращаем NaN
+            // если x выходит за пределы интервала — возвращаем NaN
             if (x < points[0].X || x > points[^1].X)
                 return double.NaN;
 
-            // Ищем сегмент, к которому принадлежит x
+            // ищем сегмент, к которому принадлежит x
             for (int i = 0; i < points.Count - 1; i++)
             {
                 var p0 = points[i];
