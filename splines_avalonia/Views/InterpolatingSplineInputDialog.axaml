@@ -30,14 +30,14 @@
                         Width="140"/>
             </StackPanel>
 
-            <!-- Добавляем CheckBox для "Отображать контрольные точки" -->
+            <!-- галочка для отображения контрольных точек -->
             <CheckBox Content="Отображать контрольные точки"
                       IsChecked="{Binding ShowControlPoints, Mode=TwoWay}"
                       HorizontalAlignment="Stretch"
                       Margin="0,0,0,0"/>
         </StackPanel>
 
-        <!-- Панель для кнопок OK и Отмена внизу -->
+        <!-- панель для кнопок OK и отмена внизу -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
             <Button Content="OK" Click="OnOkClick"/>
             <Button Content="Отмена" Click="OnCancelClick"/>

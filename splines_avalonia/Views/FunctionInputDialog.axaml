@@ -9,7 +9,7 @@
 
     <DockPanel Margin="10">
 
-        <!-- Верхняя часть для отображения выражения -->
+        <!-- верхняя часть для отображения выражения -->
         <StackPanel DockPanel.Dock="Top" Spacing="10">
             <TextBlock Text="Выражение:" FontWeight="Bold" FontSize="16"/>
 
@@ -26,10 +26,10 @@
             </ScrollViewer>
         </StackPanel>
 
-        <!-- Панель кнопок с ScrollViewer -->
+        <!-- панель кнопок -->
         <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="360">
             <StackPanel Spacing="5">
-                <!-- Цифры и переменные (в два ряда) -->
+                <!-- цифры и переменные -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -45,7 +45,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Ряд 1 -->
+                    <!-- ряд 1 -->
                     <Button Content="1" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
                     <Button Content="2" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
                     <Button Content="3" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
@@ -53,7 +53,7 @@
                     <Button Content="5" Click="OnInputClick" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Stretch"/>
                     <Button Content="6" Click="OnInputClick" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Stretch"/>
 
-                    <!-- Ряд 2 -->
+                    <!-- ряд 2 -->
                     <Button Content="7" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
                     <Button Content="8" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
                     <Button Content="9" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
@@ -69,7 +69,7 @@
                         </ToolTip.Tip>
                     </Button>
 
-                    <!-- Ряд 3 -->
+                    <!-- ряд 3 -->
                     <Button Content="π" Click="OnInputClick" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Text="Число пи"/>
@@ -77,7 +77,7 @@
                     </Button>
                 </Grid>
 
-                <!-- Операции -->
+                <!-- операции -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -112,7 +112,7 @@
                     </Button>
                 </Grid>
 
-                <!-- Функции (в два ряда) -->
+                <!-- функции -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -131,7 +131,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Ряд 1 -->
+                    <!-- ряд 1 -->
                     <Button Content="pow(" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
@@ -161,7 +161,7 @@
                         </ToolTip.Tip>
                     </Button>
 
-                    <!-- Ряд 2 -->
+                    <!-- ряд 2 -->
                     <Button Content="log(" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
@@ -184,7 +184,7 @@
                         </ToolTip.Tip>
                     </Button>
 
-                    <!-- Ряд 3 -->
+                    <!-- ряд 3 -->
                     <Button Content="sin(" Click="OnInputClick" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
@@ -228,7 +228,7 @@
                         </ToolTip.Tip>
                     </Button>
 
-                    <!-- Ряд 4 -->
+                    <!-- ряд 4 -->
                     <Button Content="arcsin(" Click="OnInputClick" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
@@ -272,7 +272,7 @@
                         </ToolTip.Tip>
                     </Button>
 
-                    <!-- Ряд 5 -->
+                    <!-- ряд 5 -->
                     <Button Content="sh(" Click="OnInputClick" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch">
                         <ToolTip.Tip>
                             <TextBlock Width="200"
@@ -317,7 +317,7 @@
                     </Button>
                 </Grid>
 
-                <!-- Скобки -->
+                <!-- скобки -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -347,7 +347,7 @@
                     </Button>
                 </Grid>
 
-                <!-- Управление -->
+                <!-- управление -->
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -363,19 +363,17 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- OK / Отмена -->
+        <!-- OK, отмена -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,10,0,0">
             <Button Content="OK" Width="120" Click="OnOkClick"/>
             <Button Content="Отмена" Width="120" Click="OnCancelClick"/>
         </StackPanel>
 
-        <!-- Область определения функции -->
+        <!-- область определения функции -->
         <Border DockPanel.Dock="Bottom" Margin="0,0,0,0" Padding="10" BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
             <StackPanel>
-                <!-- Заголовок -->
                 <TextBlock Text="Область определения функции" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
 
-                <!-- Сетка с полями -->
                 <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
                     <TextBlock Text="Начало:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Margin="0,0,20,5"/>
                     <TextBox Width="120" Text="{Binding Start, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
