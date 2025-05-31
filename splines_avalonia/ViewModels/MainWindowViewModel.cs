@@ -419,6 +419,8 @@ namespace splines_avalonia.ViewModels
             newCurve.ShowControlPoints = newShowControlPoints;
 
             int index = CurveList.IndexOf(SelectedCurve);
+            string? SmoothingFactorAlphaBackup = newCurve.SmoothingCoefficientAlpha;
+            string? SmoothingFactorBetaBackup = newCurve.SmoothingCoefficientBeta;
             if (index >= 0 && newCurve.IsPossible)
             {
                 newCurve.ControlPointsFile = newPointsFile;
@@ -437,7 +439,8 @@ namespace splines_avalonia.ViewModels
                     await ErrorHelper.ShowError("Ошибка", "Не удалось решить СЛАУ. Выберите другой коэффициент сглаживания.");
                 }
 
-                CurveList.Remove(SelectedCurve);
+                newCurve.SmoothingCoefficientAlpha = SmoothingFactorAlphaBackup;
+                newCurve.SmoothingCoefficientBeta = SmoothingFactorBetaBackup;
                 DrawCurves();
             }
         }

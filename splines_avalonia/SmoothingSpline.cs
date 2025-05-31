@@ -131,7 +131,7 @@ namespace splines_avalonia
                 // добавление интегральных членов для сглаживания
                 for (int i = 0; i < 4; i++)
                     for (int j = 0; j < 4; j++)
-                        slae.A[2 * k + i][2 * k + j] += (SumPsiAlpha(i, j, h, AlphaFunction) + SumPsiBeta(i, j, h, BetaFunction));
+                        slae.A[2 * k + i][2 * k + j] += SumPsiAlpha(i, j, h, AlphaFunction) + SumPsiBeta(i, j, h, BetaFunction);
             }
         }
 
