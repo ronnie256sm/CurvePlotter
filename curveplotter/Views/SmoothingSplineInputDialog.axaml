@@ -1,0 +1,77 @@
+<Window
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CurvePlotter.ViewModels"
+        x:Class="CurvePlotter.Views.SmoothingSplineInputDialog"
+        x:DataType="vm:SmoothingSplineInputDialogViewModel"
+        Width="500"
+        Height="500"
+        Title="Выберите файлы для сглаживающего сплайна"
+        CanResize="False">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Margin="20" Spacing="10">
+            <TextBlock Text="Файл точек:"/>
+            <TextBox Text="{Binding PointsFile}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <Button Content="Выбрать"
+                        Click="OnSelectPointsFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Создать"
+                        Click="OnCreatePointsFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Редактировать"
+                        Click="OnEditPointsFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+            </StackPanel>
+
+            <TextBlock Text="Файл сетки:"/>
+            <TextBox Text="{Binding MeshFile}" IsReadOnly="True" HorizontalAlignment="Stretch"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <Button Content="Выбрать"
+                        Click="OnSelectMeshFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Создать"
+                        Click="OnCreateMeshFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+                <Button Content="Редактировать"
+                        Click="OnEditMeshFileClick"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Width="140"/>
+            </StackPanel>
+
+            <TextBlock Text="Коэффициент сглаживания (альфа):"/>
+            <TextBox Text="{Binding SmoothingFactorAlpha}" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="Коэффициент сглаживания (бета):"/>
+            <TextBox Text="{Binding SmoothingFactorBeta}" HorizontalAlignment="Stretch"/>
+
+            <!-- Добавляем CheckBox для "Отображать контрольные точки" -->
+            <CheckBox Content="Отображать контрольные точки"
+                IsChecked="{Binding ShowControlPoints, Mode=TwoWay}"
+                HorizontalAlignment="Stretch"
+                Margin="0,0,0,0"/>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="10">
+            <Button Content="OK" Command="{Binding OkCommand}"/>
+            <Button Content="Отмена" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+    </DockPanel>
+</Window>

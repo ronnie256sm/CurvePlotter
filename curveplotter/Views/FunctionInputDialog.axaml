@@ -1,0 +1,388 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:CurvePlotter.ViewModels"
+        x:Class="CurvePlotter.Views.FunctionInputDialog"
+        x:DataType="vm:FunctionInputDialogViewModel"
+        Width="600" Height="650"
+        Title="Ввод функции"
+        CanResize="false">
+
+    <DockPanel Margin="10">
+
+        <!-- верхняя часть для отображения выражения -->
+        <StackPanel DockPanel.Dock="Top" Spacing="10">
+            <TextBlock Text="Выражение:" FontWeight="Bold" FontSize="16"/>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Disabled"
+                        Height="50"> <!-- увеличенная высота -->
+                <TextBox Text="{Binding FunctionText}"
+                        IsReadOnly="True"
+                        FontSize="18"
+                        TextWrapping="NoWrap"
+                        BorderThickness="0"
+                        Background="Transparent"
+                        Padding="0,0,0,10"/> <!-- отступ снизу под скролл -->
+            </ScrollViewer>
+        </StackPanel>
+
+        <!-- панель кнопок -->
+        <ScrollViewer DockPanel.Dock="Top" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Height="360">
+            <StackPanel Spacing="5">
+                <!-- цифры и переменные -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ряд 1 -->
+                    <Button Content="1" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="2" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="3" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="4" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                    <Button Content="5" Click="OnInputClick" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Stretch"/>
+                    <Button Content="6" Click="OnInputClick" Grid.Row="0" Grid.Column="5" HorizontalAlignment="Stretch"/>
+
+                    <!-- ряд 2 -->
+                    <Button Content="7" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <Button Content="8" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                    <Button Content="9" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch"/>
+                    <Button Content="0" Click="OnInputClick" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch"/>
+                    <Button Content="." Click="OnInputClick" Grid.Row="1" Grid.Column="4" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Точка, используется для ввода дробных чисел."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="x" Click="OnInputClick" Grid.Row="1" Grid.Column="5" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Переменная x"/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- ряд 3 -->
+                    <Button Content="π" Click="OnInputClick" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Число пи"/>
+                        </ToolTip.Tip>
+                    </Button>
+                </Grid>
+
+                <!-- операции -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="+" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Сложение"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="-" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Вычитание"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="*" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch">
+                            <ToolTip.Tip>
+                            <TextBlock Text="Умножение"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="/" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Деление"/>
+                        </ToolTip.Tip>
+                    </Button>
+                </Grid>
+
+                <!-- функции -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- ряд 1 -->
+                    <Button Content="pow(" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Возведение в степень. Пример: pow(x,y), где x - возводимое в степень число, а y - степень."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="sqrt(" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Квадратный корень. Пример: sqrt(x), где x - число, квадратный корень которого нужно найти."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="exp(" Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Экспонента. Пример: exp(x), где x - степень экспоненты."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="sgn(" Click="OnInputClick" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Сигнум. Пример: sgn(x), где x - аргумент сигнума."/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- ряд 2 -->
+                    <Button Content="log(" Click="OnInputClick" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Логарифм. Пример: log(x,y), где x - логарифмируемое число, y - основание логарифма."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="ln(" Click="OnInputClick" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Натуральный логарифм. Пример: ln(x), где x - логарифмируемое число."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="lg(" Click="OnInputClick" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Логарифм с основанием 10. Пример: lg(x), где x - логарифмируемое число."/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- ряд 3 -->
+                    <Button Content="sin(" Click="OnInputClick" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Синус. Пример: sin(x), где x - аргумент синуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="cos(" Click="OnInputClick" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Косинус. Пример: cos(x), где x - аргумент косинуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="tg(" Click="OnInputClick" Grid.Row="2" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Тангенс. Пример: tg(x), где x - аргумент тангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="ctg(" Click="OnInputClick" Grid.Row="2" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Котангенс. Пример: ctg(x), где x - аргумент котангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="sec(" Click="OnInputClick" Grid.Row="2" Grid.Column="4" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Сексанс. Пример: sec(x), где x - аргумент секанса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="cosec(" Click="OnInputClick" Grid.Row="2" Grid.Column="5" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Косеканс. Пример: cosec(x), где x - аргумент косеканса."/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- ряд 4 -->
+                    <Button Content="arcsin(" Click="OnInputClick" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арксинус. Пример: arcsin(x), где x - аргумент арксинуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="arccos(" Click="OnInputClick" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арккосинус. Пример: arccos(x), где x - аргумент арккосинуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="arctg(" Click="OnInputClick" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арктангенс. Пример: arctg(x), где x - аргумент арктангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="arcctg(" Click="OnInputClick" Grid.Row="3" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арккотангенс. Пример: arcctg(x), где x - аргумент арккотангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="arcsec(" Click="OnInputClick" Grid.Row="3" Grid.Column="4" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арксеканс. Пример: arcsec(x), где x - аргумент арксеканса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="arccsec(" Click="OnInputClick" Grid.Row="3" Grid.Column="5" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Арккосеканс. Пример: arccsec(x), где x - аргумент арккосеканса."/>
+                        </ToolTip.Tip>
+                    </Button>
+
+                    <!-- ряд 5 -->
+                    <Button Content="sh(" Click="OnInputClick" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический синус. Пример: sh(x), где x - аргумент гиперболического синуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="ch(" Click="OnInputClick" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический косинус. Пример: ch(x), где x - аргумент гиперболического косинуса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="th(" Click="OnInputClick" Grid.Row="4" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический тангенс. Пример: th(x), где x - аргумент гиперболического тангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="cth(" Click="OnInputClick" Grid.Row="4" Grid.Column="3" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический котангенс. Пример: cth(x), где x - аргумент гиперболического котангенса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="sch(" Click="OnInputClick" Grid.Row="4" Grid.Column="4" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический секанс. Пример: sch(x), где x - аргумент гиперболического секанса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="csch(" Click="OnInputClick" Grid.Row="4" Grid.Column="5" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Гиперболический косеканс. Пример: csch(x), где x - аргумент гиперболического косеканса."/>
+                        </ToolTip.Tip>
+                    </Button>
+                </Grid>
+
+                <!-- скобки -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="(" Click="OnInputClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Открывающаяся скобка"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content=")" Click="OnInputClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Text="Закрывающаяся скобка"/>
+                        </ToolTip.Tip>
+                    </Button>
+                    <Button Content="," Click="OnInputClick" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch">
+                        <ToolTip.Tip>
+                            <TextBlock Width="200"
+                                    TextWrapping="Wrap"
+                                    Text="Запятая. Нужна для разделения аргументов в функциях с несколькими аргументами."/>
+                        </ToolTip.Tip>
+                    </Button>
+                </Grid>
+
+                <!-- управление -->
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="Стереть всё" Click="OnClearAllClick" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch"/>
+                    <RepeatButton Content="Стереть последний символ" Click="OnBackspaceClick" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- OK, отмена -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10" Margin="0,10,0,0">
+            <Button Content="OK" Width="120" Click="OnOkClick"/>
+            <Button Content="Отмена" Width="120" Click="OnCancelClick"/>
+        </StackPanel>
+
+        <!-- область определения функции -->
+        <Border DockPanel.Dock="Bottom" Margin="0,0,0,0" Padding="10" BorderThickness="1" BorderBrush="Gray" CornerRadius="4">
+            <StackPanel>
+                <TextBlock Text="Область определения функции" HorizontalAlignment="Center" FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <Grid ColumnDefinitions="Auto,Auto" RowDefinitions="Auto,Auto" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock Text="Начало:" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" Margin="0,0,20,5"/>
+                    <TextBox Width="120" Text="{Binding Start, Mode=TwoWay}" Grid.Row="0" Grid.Column="1" Margin="0,0,0,5"/>
+
+                    <TextBlock Text="Конец:" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="0,0,20,5"/>
+                    <TextBox Width="120" Text="{Binding End, Mode=TwoWay}" Grid.Row="1" Grid.Column="1"/>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+    </DockPanel>
+</Window>
