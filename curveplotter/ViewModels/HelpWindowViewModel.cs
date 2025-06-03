@@ -42,7 +42,7 @@ namespace CurvePlotter
 
             if (!string.IsNullOrEmpty(args.Path))
             {
-                var gifPath = $"avares://splines_avalonia/Assets/gif/{args.Path}.gif";
+                var gifPath = $"avares://curveplotter/Assets/gif/{args.Path}.gif";
                 try
                 {
                     GifSource = gifPath;
@@ -57,7 +57,7 @@ namespace CurvePlotter
                 GifSource = null;
             }
 
-            var descriptionPath = $"avares://splines_avalonia/Assets/man/{args.Path}.txt";
+            var descriptionPath = $"avares://curveplotter/Assets/man/{args.Path}.txt";
             try
             {
                 using (var stream = AssetLoader.Open(new Uri(descriptionPath)))
