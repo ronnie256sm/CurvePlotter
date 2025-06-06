@@ -10,7 +10,7 @@ namespace CurvePlotter.ViewModels
         public AboutDialogViewModel()
         {
             AppName = "CurvePlotter";
-            Version = "Версия: 0.0.1";
+            Version = "Версия: 0.0.2";
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Avalonia.Controls;
 using Avalonia.Media;
 using CurvePlotter.ViewModels;
 
@@ -239,7 +240,7 @@ namespace CurvePlotter
         public double CalculateFunctionValue(double x)
         {
             // Проверка на допустимость значения x
-            if (x < Grid[0] || x > Grid[^1] || !IsPossible)
+            if (x < Grid[0] || x > Grid[^1] || !IsPossible || x < ControlPoints[0].X || x > ControlPoints[^1].X)
                 return double.NaN;
 
             // Поиск подходящего отрезка в сетке
