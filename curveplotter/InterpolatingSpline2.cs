@@ -116,9 +116,11 @@ namespace CurvePlotter
 
             // вычисление длины интервалов
             for (int i = 0; i < n - 1; i++)
+            {
                 h[i] = x[i + 1] - x[i];
+            }
 
-            // матрица трёхдиагональной системы
+            // массивы для трёхдиагональной системы
             double[] lower = new double[n];
             double[] main = new double[n];
             double[] upper = new double[n];
@@ -137,7 +139,7 @@ namespace CurvePlotter
                 - ((2 * h[n - 3] + h[n - 2]) / (h[n - 2] * h[n - 3])) * y[n - 2]
                 + ((3 * h[n - 2] + 2 * h[n - 3]) / (h[n - 2] * (h[n - 3] + h[n - 2]))) * y[n - 1]);
 
-            // заполнение СЛАУ для внутренних точек
+            // заполнение трёхдиагональной системы для внутренних точек
             for (int i = 1; i < n - 1; i++)
             {
                 lower[i] = 2.0 / h[i - 1];
@@ -145,15 +147,16 @@ namespace CurvePlotter
                 upper[i] = 2.0 / h[i];
 
                 rhs[i] = -y[i - 1] * (6.0 / (h[i - 1] * h[i - 1]))
-                         + y[i] * 6.0 * (1.0 / (h[i - 1] * h[i - 1]) - 1.0 / (h[i] * h[i]))
-                         + y[i + 1] * (6.0 / (h[i] * h[i]));
+                        + y[i] * 6.0 * (1.0 / (h[i - 1] * h[i - 1]) - 1.0 / (h[i] * h[i]))
+                        + y[i + 1] * (6.0 / (h[i] * h[i]));
             }
 
-            // решение СЛАУ методом прогонки
+            // решение трёхдиагональной системы методом прогонки
             double[] fPrime = SolveTridiagonal(lower, main, upper, rhs);
 
-            // вычисление коэффициентов каждого сегмента
-            var segments = new List<SplineSegment>(n - 1);
+            // вычисление коэффициентов для каждого сегмента
+            var segments = new List<SplineSegment>(n);
+
             for (int i = 0; i < n - 1; i++)
             {
                 double dx = h[i];
@@ -163,6 +166,11 @@ namespace CurvePlotter
                 double d = (2.0 / (dx * dx * dx)) * (y[i] - y[i + 1]) + (fPrime[i + 1] + fPrime[i]) / (dx * dx);
                 segments.Add(new SplineSegment(x[i], a, b, c, d));
             }
+
+            // добавление фиктивного сегмента для последней контрольной точки
+            double lastX = x[n - 1];
+            double lastY = y[n - 1];
+            segments.Add(new SplineSegment(lastX, lastY, 0, 0, 0));
 
             return segments.ToArray();
         }

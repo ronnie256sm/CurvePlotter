@@ -1,7 +1,9 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
+using CurvePlotter.Helpers;
 using CurvePlotter.ViewModels;
 
 namespace CurvePlotter.Views;
@@ -11,6 +13,11 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     public MainWindow()
     {
         InitializeComponent();
+
+        if (!OperatingSystem.IsWindows())
+        {
+            _ = ErrorHelper.ShowError("Предупреждение", "При работе программы на операционных системах, отличных от Windows, возможны вылеты при попытке отобразить окно ошибки");
+        }
         
         DataContext = new MainWindowViewModel();
         this.AddHandler(LoadedEvent, InitializeWindow, handledEventsToo: true);
