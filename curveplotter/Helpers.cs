@@ -126,7 +126,8 @@ public static class FunctionChecker
 
                 string funcName = expression.Substring(funcStart, i - funcStart);
 
-                 while (i < expression.Length && char.IsWhiteSpace(expression[i])) i++;
+                while (i < expression.Length && char.IsWhiteSpace(expression[i])) 
+                    i++;
 
                 if (i < expression.Length && expression[i] == '(')
                 {
@@ -186,8 +187,9 @@ public static class FunctionChecker
     {
         string lowerFunc = func.ToLower();
         string[] singleArg = {
-            "sin", "cos", "tg", "ctg",
-            "arcsin", "arccos", "arctg", "arcctg",
+            "sin", "cos", "tg", "ctg", "sec", "cosec",
+            "arcsin", "arccos", "arctg", "arcctg", "arcsec", "arccsec",
+            "sh", "ch", "th", "cth", "sch", "csch",
             "sqrt", "lg", "exp", "sgn", "ln"
         };
         string[] doubleArg = { "pow", "log" };
