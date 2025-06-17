@@ -438,6 +438,7 @@ namespace CurvePlotter.ViewModels
                 newCurve.SmoothingCoefficientAlpha = newSmoothingFactorAlpha;
                 newCurve.SmoothingCoefficientBeta = newSmoothingFactorBeta;
                 newCurve.Color = SelectedCurve.Color;
+                newCurve.Thickness = SelectedCurve.Thickness;
 
                 CurveList[index] = newCurve;
                 DrawCurves();
